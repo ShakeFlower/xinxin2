@@ -3497,7 +3497,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		// 绘制敌人名字，勇者名字，VS标志
 		core.fillText(ctx, "勇者", bx2 + size / 2, by - fontSize * 3 / 4, "white", font);
 		core.fillText(ctx, enemy.name, bx + size / 2, by - fontSize * 3 / 4, "white", font);
-		core.fillText(ctx, "VS", ctx.canvas.width / 3, by - fontSize * 3 / 4, "white", "Bold Italic 24px Verdana");
+		core.fillText(ctx, "VS", width / 2, by - fontSize * 3 / 4, "white", "Bold Italic 24px Verdana");
 		core.setTextAlign(ctx, "left");
 
 		// 绘制属性
@@ -3645,15 +3645,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
 		const start = 20,
 			interval = 32;
-		core.drawIcon(ctx, 'X10296', start, 0);
-		core.drawIcon(ctx, 'X10296', start + interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 2 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 3 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 4 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 5 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 6 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 7 * interval, 0);
-		core.drawIcon(ctx, 'X10296', start + 8 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 2 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 3 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 4 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 5 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 6 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 7 * interval, 0);
+		core.drawIcon(ctx, 'yellowBall.png', start + 8 * interval, 0);
 		if (core.hasItem('I325')) {
 			core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
 			core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
