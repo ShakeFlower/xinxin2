@@ -3082,7 +3082,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
 				if (this.hero.lv < this.constructor.getSkill(action, 'lv'))
 					return { success: false, reason: '等级不足' };
-				if (this.hero.mana < this.constructor.getSkill(action, 'cost') * this.hero.permana)
+				if (this.hero.mana <= this.constructor.getSkill(action, 'cost') * this.hero.permana)
 					return { success: false, reason: '气息不足' };
 				if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
 					return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
@@ -3679,7 +3679,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	}
 
 	//// 绘制底边栏
-	function drawBattleBottomBar(h) {
+	function drawBattleBottomBar(battleInfo, h) {
 		const width = core.__PIXELS__ - 16,
 			height = h || 40,
 			x = 8,
@@ -3696,8 +3696,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText(ctx, "金币：", 100, 26, "white", "20px hkbdt");
 			core.fillText(ctx, "经验值：", 200, 26, "white", "20px hkbdt");
 			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, '5', 150, 26, "gold", "20px Verdana");
-			core.fillText(ctx, '5', 270, 26, "cyan", "20px Verdana");
+			core.fillText(ctx, battleInfo.enemy.money.toString(), 150, 26, "gold", "20px Verdana");
+			core.fillText(ctx, battleInfo.enemy.exp.toString(), 270, 26, "cyan", "20px Verdana");
 		}
 	}
 
@@ -3749,7 +3749,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (timestamp - currTime < 10) return;
 					currTime = timestamp;
 					if (h < 40) h += 4;
-					drawBattleBottomBar(h);
+					drawBattleBottomBar(battle, h);
 				})
 			}
 			new Promise(res => setTimeout(res, 500)).then(() => {
