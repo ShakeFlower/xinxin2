@@ -61,5 +61,6 @@ main.floors.HG14=
     "fgmap": [
 
 ],
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }
