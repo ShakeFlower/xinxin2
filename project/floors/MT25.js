@@ -78,7 +78,7 @@ main.floors.MT25=
             },
             {
                 "type": "function",
-                "function": "function(){\ncore.triggerAchieve(10);\n}"
+                "function": "function(){\ncore.plugin.getAchievement(20);\n}"
             },
             {
                 "type": "hide",

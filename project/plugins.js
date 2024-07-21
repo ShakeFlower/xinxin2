@@ -5674,15 +5674,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	}
 
 	this.hasAchievement = function (index) {
+		if (core.isReplaying()) return false;
 		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
 		return finish[index] > 0;
 	}
 
 	// 获得成就
-	this.getAchievement = function (index) {
-		if (core.hasFlag("debug")) return;
+	this.getAchievement = function (index, test) {
+		if (core.hasFlag("debug") || core.isReplaying()) return;
 		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-		//if (finish[index] > 0) return; // 成就已完成
+		if (finish[index] > 0 && !test) return; // 成就已完成
 		finish[index] = 1;
 		core.setLocalStorage("finish", finish);
 

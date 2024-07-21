@@ -312,7 +312,7 @@ main.floors.MT17=
                     },
                     {
                         "type": "function",
-                        "function": "function(){\ncore.triggerAchieve(32);\n}"
+                        "function": "function(){\ncore.plugin.getAchievement(37);\n}"
                     }
                 ]
             },
