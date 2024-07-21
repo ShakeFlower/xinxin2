@@ -220,86 +220,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"背景图.jpg": "bg.jpg",
 			"背景音乐.mp3": "bgm.mp3"
 		},
-		"levelChoose": [
-			{
-				"title": "原版游戏",
-				"name": "Standard",
-				"hard": 1,
-				"color": [
-					255,
-					215,
-					0,
-					1
-				],
-				"action": [
-					{
-						"type": "function",
-						"function": "function(){\ncore.firstData.floorId='MT1';\n}"
-					},
-					{
-						"type": "function",
-						"function": "function(){\ncore.removeMaps(\"TU1\", \"TU5b\")\n}"
-					}
-				]
-			},
-			{
-				"title": "修复版",
-				"name": "Remake",
-				"hard": 2,
-				"color": [
-					0,
-					248,
-					255,
-					1
-				],
-				"action": [
-					{
-						"type": "setValue",
-						"name": "flag:bugFix",
-						"value": "true"
-					},
-					{
-						"type": "setValue",
-						"name": "flag:autoGetHp",
-						"value": "false"
-					},
-					{
-						"type": "function",
-						"function": "function(){\ncore.firstData.floorId='MT1';\n}"
-					},
-					{
-						"type": "function",
-						"function": "function(){\ncore.removeMaps(\"TU1\", \"TU5b\")\n}"
-					},
-					{
-						"type": "setValue",
-						"name": "item:I453",
-						"value": "1"
-					}
-				]
-			},
-			{
-				"title": "游戏教程",
-				"name": "Tutorial",
-				"hard": 3,
-				"color": [
-					134,
-					255,
-					0,
-					1
-				],
-				"action": [
-					{
-						"type": "function",
-						"function": "function(){\ncore.firstData.floorId='TU1';\n}"
-					},
-					{
-						"type": "function",
-						"function": "function(){\ncore.removeMaps(\"FT1\", \"HG18\")\n}"
-					}
-				]
-			}
-		],
+		"levelChoose": [],
 		"equipName": [
 			"剑技",
 			"防御术"
@@ -361,7 +282,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 					"fly": 1,
 					"book": 1,
 					"I305": 1,
-					"I490": 1
+					"I453": 1,
+					"I490": 1,
 				},
 				"tools": {
 					"yellowKey": 5,
@@ -1057,26 +979,6 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 				"condition": "(core.status.hard!=='Tutorial')",
 				"true": [
 					"距离上次事件大概只有三个月…在这个已恢复平静的国家里…原本被毁灭了的魔塔无故地又耸立起来。国王对此事大为紧张，随即派了数队人马去调查。及后得知这塔是旧魔塔的地下迷宫，但不知受了什么力量影响而出现在地面上。本来调查队里有一部分人负责潜入了这座塔的深层作进一步了解，可是过了一段长时间后，他们都没有回来集合…难道已遭不测吗？束手无策的国王最后去询问了迷信的祭师，他认为这次魔塔复活是因为上次的行动触怒了魔鬼。要解决的话，就必须要将公主送去当祭品。\n国王也不问公主的意愿，便派了两名王城中最强的侍卫捉了公主去魔塔当祭品，并执行仪式。\n另一方面，你从传闻中得知魔塔复活的消息，便再次赶到了这里查个究竟…"
-				]
-			},
-			{
-				"type": "choices",
-				"text": "选择优先使用的快捷键（按L查看），后续可按U（或进入设置->系统设置->高级设置）修改",
-				"choices": [
-					{
-						"text": "H5快捷键",
-						"action": []
-					},
-					{
-						"text": "新新快捷键",
-						"action": [
-							{
-								"type": "setValue",
-								"name": "flag:xinHotkey",
-								"value": "true"
-							}
-						]
-					}
 				]
 			}
 		],

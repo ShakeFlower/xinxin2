@@ -5290,6 +5290,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			},
 			"text": "调节战斗过程的速度"
 		},
+		{
+			"name": "快捷键",
+			"x": 40,
+			"y": 280,
+			"status": function () { return core.getFlag('xinHotkey') ? '新新' : 'h5' },
+			"func": function () { core.setFlag('xinHotkey', !core.getFlag('xinHotkey')); },
+			"text": "是否使用新新2原版的快捷键（具体可按L查看）。"
+		},
 	]
 
 	function drawSetting_drawOne(index, ctx) {
@@ -5632,25 +5640,51 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		point = 0; //完成的成就数
 	// 定义成就
 	const list = [
-		[0, "幻之虹币", "通过亚马逊区域", "通过亚马逊区域", false],
-		[1, "白银狙击手", "通过格斗家区域", "通过格斗家区域", false],
-		[2, "大难不死", "通过忍者区域", "通过忍者区域", false],
-		[3, "斗士的克星", "通过斗士区域", "通过斗士区域", false],
-		[4, "正义审判者", "消灭巫妖的所有手下", "消灭巫妖的所有手下", false],
-		[5, "勇往直前", "击败龙骑士", "击败龙骑士", false],
-		[6, "大骑士精神", "在10到20层不装备除了贪婪之魂外的魂", "在10到20层不装备除了贪婪之魂外的魂", false],
-		[7, "黑暗大将军", "顺利通关，救出所有伙伴", "顺利通关，救出所有伙伴", false],
-		[8, "大腹便便", "你的生命值超过9999", "你的生命值超过9999", false],
-		[9, "力拔山兮", "你的攻击力达到了750", "你的攻击力达到了750", false],
-		[10, "固若金汤", "你的防御力达到了700", "你的防御力达到了700", false],
-		[11, "完美主义", "获取所有楼层所有道具", "获取所有楼层所有道具", false],
-		[12, "横扫千军", "击杀所有楼层所有敌人", "击杀所有楼层所有敌人", false],
-		[13, "一毛不拔", "没有购买任何一个NPC的道具", "没有购买任何一个NPC的道具", false],
-		[14, "自寻死路", "？？？", "在角斗场被主持人打倒", false],
-		[15, "重磅一击", "？？？", "在角斗场击败主持人", false],
-		[16, "九星上将", "？？？", "天啊，你到达了不可思议的九级", false],
-		[17, "狮鹫骑士", "？？？", "击败王国的守护神兽狮鹫", false],
-		[18, "王国之盾", "？？？", "发现王国之盾，并顺利逃生", false],
+		[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福..."],
+		[1, "白银狙击手", "白银怪物？在我面前不值一提！"],
+		[2, "大难不死", "哇...不怕不怕..."],
+		[3, "肉盾", "一打十跟本不成问题的呢"],
+		[4, "起死回生", "我感觉死去活来！！"],
+		[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的"],
+		[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰..."],
+		[7, "命运窥视者", "我从水晶球中看到我的命运了...甚么？！这水晶球不是这样使用的吗？"],
+		[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！"],
+		[9, "防守姿态", "有人能打破我的防守吗？"],
+		[10, "熔炉", "有了这东西打白银怪物就很有效率了"],
+		[11, "冰冷的手", "呼...手很冰..."],
+		[12, "三相之力", "白银怪物？杀个稀巴烂！"],
+		[13, "剑大师", "我的剑技很华丽吧"],
+		[14, "盾大师", "你有什么方法攻击我都有方法防守！"],
+		[15, "捐血站", "卖血！卖血！有人买吗？"],
+		[16, "持匙人", "这些锁匙是开哪些门的？"],
+		[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事..."],
+		[18, "一代宗师", "我要开班授徒的话有人会来加入吗？"],
+		[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～"],
+		[20, "国家大事", "什么事都不比国家大事重要吧！"],
+		[21, "职业冒险家", "去冒险就是要做足准备！"],
+		[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的"],
+		[23, "心灵相通", "我知道你在想什么！"],
+		[24, "天上之住民", "传说以前的人都是能在空中飞翔的"],
+		[25, "透视", "嘻嘻...什么都看到了..."],
+		[26, "小叮当", "你其实是小叮当吧？！"],
+		[27, "异常状态", "初尝异常状态...感觉不错(嗯)"],
+		[28, "攻略本", "你一定是看着攻略玩的！"],
+		[29, "神之防护", "我的防御像神一般！直到我中了一箭..."],
+		[30, "出门靠朋友", "在家靠父母，出门靠朋友！"],
+		[31, "投入战斗", "热身差不多完毕了！！"],
+		[32, "见习剑士", "真想快点试试学到的剑术！"],
+		[33, "防守入门", "防守？是这样这样的吗？"],
+		[34, "圣水加护", "感谢圣水的帮助！"],
+		[35, "圣神的加护", "我简直像受到圣神般的帮助"],
+		[36, "弑神者", "遇神杀神！！谁也阻不到我！"],
+		[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了"],
+		[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？"],
+		[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！"],
+		[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药..."],
+		[41, "凝神储息", "......暂先时不要影响我......"],
+		[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈"],
+		[43, "学有所成", "只学不实践的话还是不太足够吧？"],
+		[44, "守财奴", "钱要用才是钱！钱！"],
 	];
 	const defaultList = Array(list.length).fill(0);
 
@@ -5675,21 +5709,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 	// 获得成就
 	this.getAchievement = function (index) {
-		if (list[index][4] === 1) return;
-		if (core.hasFlag("debug")) return; // 调试不能获得成就
-		// 额，但是也挡不住控制台玩家呀…
+		if (core.hasFlag("debug")) return;
 		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
 		finish[index] = 1;
 		core.setLocalStorage("finish", finish);
 
 		function effect() {
-			if (core.status.replay.replaying) {} else {
+			if (!core.isReplaying()) {
 				core.playSound('levelup.mp3');
 				core.createCanvas("effect", 0, 0, 416, 416, 200);
 				core.setTextAlign("effect", "center");
-				core.drawWindowSkin("winskin.png", "effect", 140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-				core.fillText("effect", "获得成就", 240 * 13 / 15, 120 * 13 / 15, "cyan", "24px " + core.status.globalAttribute.font);
-				core.fillText("effect", list[index][1], 240 * 13 / 15, 160 * 13 / 15, "#FFFFFF", "20px " + core.status.globalAttribute.font);
+				core.drawWindowSkin("winskin.png", "effect",
+					140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+				core.fillText("effect", "获得成就", 240 * 13 / 15, 120 * 13 / 15,
+					"cyan", "24px " + core.status.globalAttribute.font);
+				core.fillText("effect", list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+					"#FFFFFF", "20px " + core.status.globalAttribute.font);
 				let fade = setTimeout(function () {
 					delete core.animateFrame.asyncId[fade];
 					clearInterval(fade);
@@ -5751,11 +5786,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.drawTextContent("achievement", achType[i][2], config);
 				} else { // 自动放缩
 					let config = { left: 139, top: 52 * (i - first) + 89, maxWidth: 217, color: "#FFFFFF" },
-						height = core.getTextContentHeight(achType[i][3], config);
+						height = core.getTextContentHeight(achType[i][2], config);
 					if (height > 25) {
 						config.top -= 10;
 					}
-					core.drawTextContent("achievement", achType[i][3], config);
+					core.drawTextContent("achievement", achType[i][2], config);
 				}
 				// 成就点
 				core.setTextAlign("achievement", "center");

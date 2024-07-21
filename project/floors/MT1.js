@@ -27,6 +27,15 @@ main.floors.MT1=
 ],
     "firstArrive": [
         {
+            "type": "setValue",
+            "name": "flag:bugFix",
+            "value": "true"
+        },
+        {
+            "type": "function",
+            "function": "function(){\ncore.removeMaps(\"TU1\", \"TU5b\")\n}"
+        },
+        {
             "type": "setBlock",
             "number": "ground2",
             "loc": [
@@ -347,7 +356,14 @@ main.floors.MT1=
         ]
     },
     "afterGetItem": {},
-    "afterOpenDoor": {},
+    "afterOpenDoor": {
+        "6,7": [
+            {
+                "type": "useItem",
+                "id": "I490"
+            }
+        ]
+    },
     "cannotMove": {},
     "upFloor": [
         6,
