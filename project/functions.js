@@ -518,8 +518,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		});
 	}
 
-	if (hero.hp < 200 || hero.hpmax < 50) core.triggerAchieve(2);
-	if (damageInfo.znsf) core.triggerAchieve(17);
+	if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
+	if (damageInfo.znsf) core.plugin.getAchievement(17);
 	if (!flags.noBattleHint && tips && enemyId != 'E447') {
 		tips = "战斗异常提示：\n" + tips;
 		tips += "\n\n你可以在帮助->高级设置里关闭战后弹出的战斗异常提示";
@@ -577,80 +577,80 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	if (todo.length > 0) core.insertAction(todo, x, y);
 	switch (itemId) {
 	case 'I328':
-		core.triggerAchieve(1);
+		core.plugin.getAchievement(1);
 		break;
 	case 'redPotion':
-		if (hero.hp < 450) core.triggerAchieve(3);
+		if (hero.hp < 300) core.plugin.getAchievement(4);
 		break;
 	case 'bluePotion':
-		if (hero.hp < 700) core.triggerAchieve(3);
+		if (hero.hp < 300) core.plugin.getAchievement(4);
 		break;
 	case 'I315':
 	case 'I316':
 	case 'I317':
 	case 'I318':
 	case 'I319':
-		if (flags.atkm == 10) core.triggerAchieve(6);
-		else if (flags.atkm == 34) core.triggerAchieve(23);
+		if (flags.atkm == 10) core.plugin.getAchievement(32);
+		else if (flags.atkm == 34) core.plugin.getAchievement(13);
 		break;
 	case 'I320':
 	case 'I321':
 	case 'I322':
 	case 'I339':
 	case 'I375':
-		if (flags.defm == 40) core.triggerAchieve(7);
-		else if (flags.defm == 16) core.triggerAchieve(24);
+		if (flags.defm == 40) core.plugin.getAchievement(33);
+		else if (flags.defm == 16) core.plugin.getAchievement(14);
 		break;
 	case 'I451':
-		core.triggerAchieve(11);
+		core.plugin.getAchievement(23);
 		break;
 	case 'moneyPocket':
-		core.triggerAchieve(12);
+		core.plugin.getAchievement(21);
 		break;
 	case 'skill1':
 	case 'I307':
 	case 'I309':
-		if (flags.sxzl >= 2) core.triggerAchieve(15);
+		if (flags.sxzl >= 2) core.plugin.getAchievement(12);
 		break;
 	case 'pickaxe':
-		core.triggerAchieve(16);
+		core.plugin.getAchievement(22);
 		break;
 	case 'shield3':
 	case 'shield4':
 	case 'shield5':
-		core.triggerAchieve(18);
+		core.plugin.getAchievement(18);
 		break;
 	case 'iceCube':
-		core.triggerAchieve(19);
+		core.plugin.getAchievement(11);
 		break;
 	case 'snow':
-		core.triggerAchieve(20);
+		core.plugin.getAchievement(6);
 		break;
 	case 'I398':
 	case 'I400':
 	case 'I403':
 	case 'I407':
-		if (core.itemCount('I398') + core.itemCount('I400') + core.itemCount('I403') + core.itemCount('I407') > 90) core.triggerAchieve(21);
+		if (core.itemCount('I398') + core.itemCount('I400') + core.itemCount('I403') + core.itemCount('I407') > 90) core.plugin.getAchievement(1);
 		break;
 	case 'knife':
-		core.triggerAchieve(22);
+		core.plugin.getAchievement(10);
 		break;
 	case 'redKey':
 	case 'bigKey':
-		if (core.itemCount('redKey') >= 10) core.triggerAchieve(25);
+		if (core.itemCount('redKey') >= 16) core.plugin.getAchievement(25);
 		break;
 	case 'icePickaxe':
-		core.triggerAchieve(26);
+		core.plugin.getAchievement(19);
 		break;
 	case 'greenKey':
-		if (core.itemCount('greenKey') > 15) core.triggerAchieve(27);
+		if (core.itemCount('greenKey') >= 16) core.plugin.getAchievement(26);
 		break;
 	case 'cross':
-		if (hero.mdef > 260) core.triggerAchieve(28);
+		if (hero.mdef >= 265) core.plugin.getAchievement(29);
 		break;
 	case 'superPotion':
-		if (flags.achieves[28][4]) core.triggerAchieve(30);
-		else core.triggerAchieve(29);
+		if (core.plugin.hasAchievement(34)) core.plugin.getAchievement(35);
+		else core.plugin.getAchievement(34);
 		break;
 	}
 },
@@ -1781,16 +1781,18 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 更新全地图显伤
 	core.updateDamage();
 
-	// 	if (hero.hp > 5000) core.triggerAchieve(4);
-	// 	if (hero.atk > 100 && hero.def > 100) core.triggerAchieve(5);
-	// 	if (hero.mana >= hero.manamax) core.triggerAchieve(8);
-	// 	if (hero.hp > 12000) core.triggerAchieve(9);
-	// 	if (hero.money > 1000) core.triggerAchieve(13);
-	// 	if (hero.exp > 280) core.triggerAchieve(14);
-	// 	if (core.status.hero.statistics.battle > 1200) core.triggerAchieve(33);
-	// 	if (hero.atk > 1700) core.triggerAchieve(34);
-	// 	if (hero.def > 1700) core.triggerAchieve(35);
-	// 	if (hero.lv >= 140) core.triggerAchieve(36);
+	if (!core.isReplaying()) {
+		if (core.status.hero.hp > 5000) core.plugin.getAchievement(3);
+		if (core.status.hero.hp > 12000) core.plugin.getAchievement(15);
+		if (core.status.hero.atk > 100 && core.status.hero.def > 100) core.plugin.getAchievement(31);
+		if (core.status.hero.mana >= core.status.hero.manamax) core.plugin.getAchievement(41);
+		if (core.status.hero.money > 1000) core.plugin.getAchievement(44);
+		if (core.status.hero.exp > 280) core.plugin.getAchievement(43);
+		if (core.status.hero.statistics.battle > 1200) core.plugin.getAchievement(42);
+		if (core.status.hero.atk > 1700) core.plugin.getAchievement(8);
+		if (core.status.hero.def > 1700) core.plugin.getAchievement(9);
+		if (core.status.hero.lv >= 140) core.plugin.getAchievement(18);
+	}
 },
         "updateCheckBlock": function (floorId) {
 	// 领域、夹击、阻击等的伤害值计算

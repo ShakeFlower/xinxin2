@@ -2931,61 +2931,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
     "战斗画面": function () {
 	// 在此增加新插件
 
-	// 执行战后事件
-	function afterBattle(enemy) {
-		const money = enemy.money,
-			exp = enemy.exp,
-			damage = enemy.totalDamage,
-			x = enemy.x,
-			y = enemy.y,
-			special = enemy.special;
-		core.status.hero.money += money;
-		core.status.hero.statistics.money += money;
-		core.status.hero.exp += exp;
-		core.status.hero.statistics.exp += exp;
-		core.status.hero.statistics.battleDamage += damage;
-		core.status.hero.statistics.battle++;
-		let todo = [];
-
-		// 战后事件
-		if (core.status.floorId != null) {
-			core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
-		}
-		core.push(todo, enemy.afterBattle);
-
-		// 如果事件不为空，将其插入
-		if (todo.length > 0) core.insertAction(todo, x, y);
-
-		if (core.hasSpecial(enemy.special, 20)) { //白银怪，掉落钱币
-			if (enemy.id == 'swordEmperor') core.setBlock(398, x, y);
-			if (enemy.id == 'goldHornSlime') core.setBlock(400, x, y);
-			if (enemy.id == 'whiteHornSlime') core.setBlock(403, x, y);
-			if (enemy.id == 'silverSlime') core.setBlock(407, x, y);
-		} else if (core.hasSpecial(enemy.special, 23)) { // 重生怪
-			if (enemy.id == 'E384') core.setBlock(385, x, y);
-			if (enemy.id == 'darkKnight') core.setBlock(225, x, y);
-			if (enemy.id == 'soldier') core.setBlock(212, x, y);
-		} else if (core.hasSpecial(enemy.special, 70)) { //炎之身体，变熔岩
-			core.setBlock(11, x, y);
-		} else if (core.hasSpecial(enemy.special, 71)) { //极寒身体，变冰块
-			core.setBlock(374, x, y);
-		} else if (enemy.magicIce) {
-			core.setBlock(25, x, y); //掉落魔法冰块
-		} else {
-			core.removeBlock(x, y, core.status.floorId);
-		}
-		if (core.hasSpecial(enemy.special, 72) || core.hasSpecial(enemy.special, 73)) { //烈焰身体，极寒身体
-			for (var x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
-				for (var y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
-					if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
-						if (core.hasSpecial(enemy.special, 72)) core.setBlock(11, x0, y0);
-						if (core.hasSpecial(enemy.special, 73) && (hero.loc.x != x0 || hero.loc.y != y0) && (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0 || core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
-					}
-				}
-			}
-		}
-	}
-
 	const abbreviateList = { 'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320', };
 
 	class GameCore {
@@ -3013,6 +2958,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'bone': 0, // 开启凡骨转化的攻防计数，攻防的绘制改变
 				'sword': core.items.getEquip(0), //当前装备的剑技
 				'shield': core.items.getEquip(1), //当前装备的盾技
+				'smartCast': false, //是否完成智能施法成就
 			}
 			this.enemy = {
 				'id': enemy.id,
@@ -3146,6 +3092,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
 		}
 
+		isMagician() { // 是否为法师,成就判断用.条件为特技含有字段“魔法”或“秘术”
+			const especial = this.enemy.special;
+			return core.hasSpecial(especial, 2) || core.hasSpecial(especial, 60) ||
+				core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
+				core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
+				core.hasSpecial(especial, 65) || core.hasSpecial(especial, 66) ||
+				core.hasSpecial(especial, 67);
+
+		}
+
 		nextTurn() {
 			if (this.isQuit || this.isBattleEnd) return;
 			let skillSuccess = false;
@@ -3178,6 +3134,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 					case 'b': // 凡骨
 						hdamage = Math.round(1.5 * Math.max(this.hero.atk - this.enemy.def, 1));
+						if (isMagician()) this.hero.smartCast = true;
 						break;
 					case 's': //流石
 						hdamage = Math.round(1.3 * Math.max(this.hero.atk - this.enemy.def, 1));
@@ -3196,7 +3153,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 					case 'k': // 皇者
 						hdamage = Math.round(5 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (hdamage >= this.enemy.hp) hdamage = this.enemy.hp - 1;
+						if (hdamage >= this.enemy.hp) {
+							hdamage = this.enemy.hp - 1;
+							this.hero.smartCast = true;
+						}
 						this.hero.atk = this.enemy.def;
 						break;
 					default:
@@ -3367,6 +3327,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.hero.fairy = 3;
 				this.hero.fairyBuff = (this.hero.orihp + this.hero.def) % this.hero.lv;
 				this.hero.def += this.hero.fairyBuff;
+				if (isMagician()) this.hero.smartCast = true;
 				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'F';
 				break;
 			case 'E': //贤者结界
@@ -3434,7 +3395,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this.hero.hpmax -= princessDamage;
 			if (core.status.hero.hp <= 0) this.battleEnd();
 			if (reflect) { //反射盾
-				this.enemy.hp -= Math.round(oriDamage / 2.6 + this.hero.atk / 10);
+				let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
+				this.enemy.hp -= reflectDamage;
+				if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
 				if (this.enemy.hp <= 0) this.enemy.hp = 0;
 				this.enemy.hp += heal;
 				if (this.enemy.hp <= 0) this.battleEnd();
@@ -3765,7 +3728,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.updateStatusBar();
 				if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
 				core.unlockControl();
-				if (!battle.isQuit) afterBattle(battle.enemy);
+				if (!battle.isQuit) core.plugin.afterBattle(battle);
 				return;
 			})
 		}
@@ -5633,6 +5596,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
     "成就": function () {
 	// 在此增加新插件
 
+	const PX = core.__PIXELS__,
+		PY = core.__PIXELS__;
+
 	//， 成就界面
 	let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
 		type = 1, // 当前类型
@@ -5643,11 +5609,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福..."],
 		[1, "白银狙击手", "白银怪物？在我面前不值一提！"],
 		[2, "大难不死", "哇...不怕不怕..."],
-		[3, "肉盾", "一打十跟本不成问题的呢"],
+		[3, "肉盾", "一打十根本不成问题的呢"],
 		[4, "起死回生", "我感觉死去活来！！"],
 		[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的"],
 		[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰..."],
-		[7, "命运窥视者", "我从水晶球中看到我的命运了...甚么？！这水晶球不是这样使用的吗？"],
+		[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？"],
 		[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！"],
 		[9, "防守姿态", "有人能打破我的防守吗？"],
 		[10, "熔炉", "有了这东西打白银怪物就很有效率了"],
@@ -5702,33 +5668,41 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	this.resetFinish = function () {
 		core.setLocalStorage("finish", defaultList);
 		if (!core.isReplaying()) {
-			core.playSound('light.mp3');
+			core.playSound('achievement.mp3');
 			core.drawTip('成就已清空！');
 		}
+	}
+
+	this.hasAchievement = function (index) {
+		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+		return finish[index] > 0;
 	}
 
 	// 获得成就
 	this.getAchievement = function (index) {
 		if (core.hasFlag("debug")) return;
 		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+		//if (finish[index] > 0) return; // 成就已完成
 		finish[index] = 1;
 		core.setLocalStorage("finish", finish);
 
 		function effect() {
 			if (!core.isReplaying()) {
-				core.playSound('levelup.mp3');
-				core.createCanvas("effect", 0, 0, 416, 416, 200);
-				core.setTextAlign("effect", "center");
-				core.drawWindowSkin("winskin.png", "effect",
+				const canvas = "achievementEffect";
+				core.playSound('achievement.mp3');
+				core.createCanvas(canvas, 0, 0, PX, PY, 200);
+				core.setTextAlign(canvas, "center");
+				core.drawWindowSkin("winskin.png", canvas,
 					140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-				core.fillText("effect", "获得成就", 240 * 13 / 15, 120 * 13 / 15,
+				core.drawIcon(canvas, 'N454', 126, 80)
+				core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
 					"cyan", "24px " + core.status.globalAttribute.font);
-				core.fillText("effect", list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+				core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
 					"#FFFFFF", "20px " + core.status.globalAttribute.font);
 				let fade = setTimeout(function () {
 					delete core.animateFrame.asyncId[fade];
 					clearInterval(fade);
-					core.deleteCanvas('effect');
+					core.deleteCanvas(canvas);
 				}, 1000);
 				core.animateFrame.asyncId[fade] = true;
 			}
@@ -5739,8 +5713,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	// 绘制成就页面
 	this.drawAchievement = function () {
 		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-		const PX = core.__PIXELS__,
-			PY = core.__PIXELS__;
 		// 创建和清空画布
 		core.createCanvas("achievement", 0, 0, PX, PY, 130);
 		core.clearMap("achievement");
@@ -5752,6 +5724,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
 		core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
 		core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
 		core.setTextAlign("achievement", "center");
 		core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
 		core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
@@ -5778,14 +5752,26 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 				// 说明
 				if (finish[i] === 0) {
-					let config = { left: 139, top: 52 * (i - first) + 89, maxWidth: 217, color: [200, 200, 200, 0.5] },
+					let config = {
+							left: 129,
+							top: 52 * (i - first) + 89,
+							maxWidth: 227,
+							color: [200, 200, 200, 0.5],
+							fontSize: 15,
+						},
 						height = core.getTextContentHeight(achType[i][2], config);
 					if (height > 25) {
 						config.top -= 10;
 					}
 					core.drawTextContent("achievement", achType[i][2], config);
 				} else { // 自动放缩
-					let config = { left: 139, top: 52 * (i - first) + 89, maxWidth: 217, color: "#FFFFFF" },
+					let config = {
+							left: 129,
+							top: 52 * (i - first) + 89,
+							maxWidth: 227,
+							color: "#FFFFFF",
+							fontSize: 15,
+						},
 						height = core.getTextContentHeight(achType[i][2], config);
 					if (height > 25) {
 						config.top -= 10;
@@ -5814,7 +5800,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			} else {}
 			break;
 		case 40: // Down
-			if (first <= 14) first++;
+			if (first <= list.length - 7) first++;
 			break;
 		case 27: // Esc
 			core.insertAction({ "type": "break" });
@@ -5830,7 +5816,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	// 点击操作
 	this.achClickAction = function (px, py) {
 		if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-			if (first <= 14) first++;
+			if (first <= list.length - 7) first++;
 		} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
 			if (first != 0) {
 				first--;
@@ -5864,5 +5850,67 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		]);
 	}
 
+},
+    "战后事件": function () {
+	// 在此增加新插件
+	// 执行战后事件
+	function afterBattle(battle) {
+		const hero = battle.hero,
+			enemy = battle.enemy,
+			money = enemy.money,
+			exp = enemy.exp,
+			damage = enemy.totalDamage,
+			x = enemy.x,
+			y = enemy.y,
+			special = enemy.special;
+		core.status.hero.money += money;
+		core.status.hero.statistics.money += money;
+		core.status.hero.exp += exp;
+		core.status.hero.statistics.exp += exp;
+		core.status.hero.statistics.battleDamage += damage;
+		core.status.hero.statistics.battle++;
+
+		let todo = [];
+		// 战后事件
+		if (core.status.floorId != null) {
+			core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
+		}
+		core.push(todo, enemy.afterBattle);
+
+		// 如果事件不为空，将其插入
+		if (todo.length > 0) core.insertAction(todo, x, y);
+
+		if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
+		if (hero.smartCast) core.plugin.getAchievement(17);
+
+		if (core.hasSpecial(enemy.special, 20)) { //白银怪，掉落钱币
+			if (enemy.id == 'swordEmperor') core.setBlock(398, x, y);
+			if (enemy.id == 'goldHornSlime') core.setBlock(400, x, y);
+			if (enemy.id == 'whiteHornSlime') core.setBlock(403, x, y);
+			if (enemy.id == 'silverSlime') core.setBlock(407, x, y);
+		} else if (core.hasSpecial(enemy.special, 23)) { // 重生怪
+			if (enemy.id == 'E384') core.setBlock(385, x, y);
+			if (enemy.id == 'darkKnight') core.setBlock(225, x, y);
+			if (enemy.id == 'soldier') core.setBlock(212, x, y);
+		} else if (core.hasSpecial(enemy.special, 70)) { //炎之身体，变熔岩
+			core.setBlock(11, x, y);
+		} else if (core.hasSpecial(enemy.special, 71)) { //极寒身体，变冰块
+			core.setBlock(374, x, y);
+		} else if (enemy.magicIce) {
+			core.setBlock(25, x, y); //掉落魔法冰块
+		} else {
+			core.removeBlock(x, y, core.status.floorId);
+		}
+		if (core.hasSpecial(enemy.special, 72) || core.hasSpecial(enemy.special, 73)) { //烈焰身体，极寒身体
+			for (var x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
+				for (var y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
+					if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
+						if (core.hasSpecial(enemy.special, 72)) core.setBlock(11, x0, y0);
+						if (core.hasSpecial(enemy.special, 73) && (hero.loc.x != x0 || hero.loc.y != y0) && (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0 || core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
+					}
+				}
+			}
+		}
+	}
 }
 }
