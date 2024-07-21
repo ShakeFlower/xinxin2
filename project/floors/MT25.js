@@ -321,6 +321,22 @@ main.floors.MT25=
                 "shadow": 0
             },
             "data": [
+                {
+                    "type": "if",
+                    "condition": "switch:A",
+                    "true": [],
+                    "false": [
+                        {
+                            "type": "setValue",
+                            "name": "switch:A",
+                            "value": "true"
+                        },
+                        {
+                            "type": "function",
+                            "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                        }
+                    ]
+                },
                 "\t[识别老人,man]怎么气喘喘的? \n发生了什么事吗? ",
                 "\t[勇者,hero]原来你来了这里。\n刚刚魔王把第一层毁了！现在这里没有出口了！ ",
                 "\t[识别老人,man]哈哈哈！幸好我赶得及离开呢！",

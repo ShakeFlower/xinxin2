@@ -70,6 +70,24 @@ main.floors.B25=
             "\t[勇者,hero]好像是这样了...",
             "\t[行商人,woman]哈哈，如果小兄弟你懂结晶盾的话也可以找点水来试试看！",
             "\t[行商人,woman]不过不要像那家伙那样疯了啊！哈哈"
+        ],
+        "8,10": [
+            {
+                "type": "if",
+                "condition": "switch:A",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:A",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            }
         ]
     },
     "changeFloor": {
@@ -131,5 +149,6 @@ main.floors.B25=
     ],
     "downFloor": null,
     "underGround": true,
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

@@ -134,6 +134,10 @@ main.floors.MT1=
                         "type": "setValue",
                         "name": "switch:A",
                         "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
                     }
                 ]
             }
@@ -232,6 +236,10 @@ main.floors.MT1=
                                 "type": "setValue",
                                 "name": "switch:A",
                                 "value": "true"
+                            },
+                            {
+                                "type": "function",
+                                "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
                             }
                         ]
                     }
@@ -356,14 +364,7 @@ main.floors.MT1=
         ]
     },
     "afterGetItem": {},
-    "afterOpenDoor": {
-        "6,7": [
-            {
-                "type": "useItem",
-                "id": "I490"
-            }
-        ]
-    },
+    "afterOpenDoor": {},
     "cannotMove": {},
     "upFloor": [
         6,

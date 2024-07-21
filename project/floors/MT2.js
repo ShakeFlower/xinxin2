@@ -58,7 +58,11 @@ main.floors.MT2=
                         "type": "openShop",
                         "id": "doorShop"
                     },
-                    "系统提示：\n复刻版已为你显示出所有能使用随意门的位置（用紫色门标识），直接撞上去便自动使用随意门，无须按T键。"
+                    "系统提示：\n复刻版已为你显示出所有能使用随意门的位置（用紫色门标识），直接撞上去便自动使用随意门，无须按T键。",
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
                 ]
             }
         ]

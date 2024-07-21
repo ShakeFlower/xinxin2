@@ -51,7 +51,11 @@ main.floors.MT5=
                         "floorId": "MT10",
                         "remove": true
                     },
-                    "系统提示：\n复刻版开局送楼传，但上11楼前仍未与此老人对话会将其移除。"
+                    "系统提示：\n复刻版开局送楼传，但上11楼前仍未与此老人对话会将其移除。",
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.plugin.getAchievement(24);\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
                 ]
             }
         ],
@@ -109,5 +113,6 @@ main.floors.MT5=
     "downFloor": null,
     "autoEvent": {},
     "bgm": "bgm1.mp3",
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

@@ -43,6 +43,10 @@ main.floors.B23=
                         "type": "setValue",
                         "name": "switch:A",
                         "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
                     }
                 ]
             }
@@ -94,5 +98,6 @@ main.floors.B23=
     ],
     "downFloor": null,
     "underGround": true,
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

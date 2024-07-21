@@ -47,6 +47,10 @@ main.floors.MT13=
                     {
                         "type": "openShop",
                         "id": "keyshop"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
                     }
                 ]
             }

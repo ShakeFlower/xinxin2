@@ -39,6 +39,10 @@ main.floors.MT11=
                         "type": "setValue",
                         "name": "switch:A",
                         "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.plugin.getAchievement(25);\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
                     }
                 ]
             }
@@ -90,5 +94,6 @@ main.floors.MT11=
 
 ],
     "bgm": "bgm1.mp3",
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

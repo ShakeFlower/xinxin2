@@ -20,6 +20,22 @@ main.floors.B13=
         "10,6": [
             {
                 "type": "if",
+                "condition": "switch:B",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:B",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            },
+            {
+                "type": "if",
                 "condition": "switch:A",
                 "true": [
                     "\t[商人,woman]在体力不足时最好看看道具袋啊！\n可能你会发现有很多回复药还未喝的，哈哈！"

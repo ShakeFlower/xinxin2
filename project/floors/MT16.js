@@ -19,6 +19,22 @@ main.floors.MT16=
         "3,4": [
             {
                 "type": "if",
+                "condition": "switch:B",
+                "true": [],
+                "false": [
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    },
+                    {
+                        "type": "setValue",
+                        "name": "switch:B",
+                        "value": "true"
+                    }
+                ]
+            },
+            {
+                "type": "if",
                 "condition": "switch:A",
                 "true": [
                     "\t[商人,N410]最近有很多人进来这里寻宝，应该\n还有很多像我这样的商人。"
@@ -108,5 +124,6 @@ main.floors.MT16=
 
 ],
     "bgm": "bgm1.mp3",
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

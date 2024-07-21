@@ -31,6 +31,22 @@ main.floors.B17=
         "11,5": [
             {
                 "type": "if",
+                "condition": "switch:B",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:B",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            },
+            {
+                "type": "if",
                 "condition": "switch:A",
                 "true": [
                     "\t[商人,woman]在这边的经验之神能更大的提升你的能力啊！"

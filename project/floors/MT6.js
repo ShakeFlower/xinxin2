@@ -17,6 +17,22 @@ main.floors.MT6=
         "8,7": [
             {
                 "type": "if",
+                "condition": "switch:B",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:B",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            },
+            {
+                "type": "if",
                 "condition": "switch:A",
                 "true": [
                     "\t[商人,woman]如果那个贪婪之神不是直接提升能力，\n而是用这些提升能力的宝石代替。",

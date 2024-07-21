@@ -13,7 +13,12 @@ main.floors.HG4=
     "item_ratio": 1,
     "defaultGround": "ground",
     "bgm": "bgm4.mp3",
-    "firstArrive": [],
+    "firstArrive": [
+        {
+            "type": "function",
+            "function": "function(){\ncore.plugin.getAchievement(28);\n}"
+        }
+    ],
     "eachArrive": [],
     "parallelDo": "",
     "events": {

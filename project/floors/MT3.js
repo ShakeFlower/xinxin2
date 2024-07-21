@@ -36,6 +36,24 @@ main.floors.MT3=
             "\t[健壮老人,N409]当然这应急方案有它的弊端，就是要转用其他秘籍就必需再花上生命才可。",
             "\t[勇者,hero]这样也好!谢谢提醒",
             "\t[健壮老人,N409]而且使用它们的前提是要你有足够的等级。\n实战经验不足就驾驭不了，是个很简单的道理呢。"
+        ],
+        "11,11": [
+            {
+                "type": "if",
+                "condition": "switch:A",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:A",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            }
         ]
     },
     "changeFloor": {

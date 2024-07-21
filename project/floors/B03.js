@@ -18,6 +18,22 @@ main.floors.B03=
     "parallelDo": "",
     "events": {
         "5,3": [
+            {
+                "type": "if",
+                "condition": "switch:A",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:A",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            },
             "\t[妖精,fairy]啊！是你们！你们怎么会在这里！？",
             "\t[勇者,hero]是上次帮助过我们的妖精！",
             "\t[妖精,fairy]想不到还有机会见面呢。可是你们知道这里是哪里吗？踏入了这座魔塔啊，那证明了你们已闯入魔界了！",

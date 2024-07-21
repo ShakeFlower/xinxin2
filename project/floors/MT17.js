@@ -135,6 +135,22 @@ main.floors.MT17=
         "6,1": [
             {
                 "type": "if",
+                "condition": "switch:C",
+                "true": [],
+                "false": [
+                    {
+                        "type": "setValue",
+                        "name": "switch:C",
+                        "value": "true"
+                    },
+                    {
+                        "type": "function",
+                        "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+                    }
+                ]
+            },
+            {
+                "type": "if",
                 "condition": "(blockCls:3,5!=='enemys')",
                 "true": [
                     {

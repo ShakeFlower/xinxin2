@@ -137,7 +137,11 @@ main.floors.HG10=
                 "type": "setCurtain",
                 "time": 500
             },
-            "从白银之间凯旋归来，共战胜白银史莱姆×13，黄金史莱姆×10，白银史莱姆王×15，黄金史莱姆王×10"
+            "从白银之间凯旋归来，共战胜白银史莱姆×13，黄金史莱姆×10，白银史莱姆王×15，黄金史莱姆王×10",
+            {
+                "type": "function",
+                "function": "function(){\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"
+            }
         ]
     },
     "changeFloor": {
