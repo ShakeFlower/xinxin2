@@ -2947,6 +2947,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'permana': core.status.hero.manamax / 6, //每一管气息的长度
 				'hpmax': core.status.hero.hpmax, // 公主体力
 				'fatigue': 0, //疲劳
+				'misfortune': 0, //负面事件计数
+				'totalFatigue': 0, //总疲劳计数
 				'atkm': core.getFlag('atkm', 10),
 				'defm': core.getFlag('defm', 40), //攻防临界值
 				'lv': core.status.hero.lv,
@@ -2967,6 +2969,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'atk': enemy.atk,
 				'def': enemy.def,
 				'fatigue': 0,
+				'totalFatigue': 0, //总疲劳计数
+				'hasMisfortune': core.hasSpecial(enemy.special, 12) || core.hasSpecial(enemy.special, 13) ||
+					core.hasSpecial(enemy.special, 61) || core.hasSpecial(enemy.special, 82) ||
+					core.hasSpecial(enemy.special, 87) || core.hasSpecial(enemy.special, 81) ||
+					core.hasSpecial(enemy.special, 89), //该敌人是否带有负面事件
+				'poisonPoss': enemy.atkValue || 0,
+				'weakPoss': enemy.defValue || 0,
+				'weakPoint': enemy.damage || 0,
 				'mana': 0,
 				'manamax': enemy.manamax, // 敌人最大气息值
 				'special': enemy.special, // 敌人特殊属性
@@ -3029,7 +3039,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
 				if (this.hero.lv < this.constructor.getSkill(action, 'lv'))
 					return { success: false, reason: '等级不足' };
-				if (this.hero.mana <= this.constructor.getSkill(action, 'cost') * this.hero.permana)
+				if (this.hero.mana < this.constructor.getSkill(action, 'cost') * this.hero.permana)
 					return { success: false, reason: '气息不足' };
 				if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
 					return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
@@ -3109,6 +3119,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			switch (this.actor) {
 			case 'hero':
 				let hdamage = 0;
+				this.hero.totalFatigue += this.hero.fatigue;
 				if (this.hero.freeze) { // 冻结，结晶盾特效
 					hdamage = 0;
 					atkStatus.freeze = true;
@@ -3117,9 +3128,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.turn++;
 					return;
 				}
-				if (this.hero.fatigue >= 100) {
+				if (this.hero.totalFatigue >= 100) {
 					hdamage = 0;
 					atkStatus.miss = true;
+					this.hero.totalFatigue -= 100;
 				}
 				if (this.swordSkill.length > 0) {
 					atkStatus.skill = this.swordSkill;
@@ -3253,10 +3265,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			let damage = 0,
 				oriDamage = 0,
 				princessDamage = 0, //公主受到的伤害
-				heal = 0; //敌人吸血回复
+				heal = 0, //敌人吸血回复
+				isPoisoned = false; // 是否被反射盾反弹中毒
 			let atkStatus = { 'damage': 0 };
 			const combo = this.enemy.combo,
 				especial = this.enemy.special;
+			this.enemy.totalFatigue += this.enemy.fatigue;
 			if (this.enemy.freeze > 0) {
 				atkStatus.freeze = true;
 				this.enemy.freeze--;
@@ -3270,9 +3284,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
 					else damage = Math.max(this.enemy.atk - this.hero.def, 1);
 				}
-				if (this.enemy.fatigue >= 100) {
+				if (this.enemy.totalFatigue >= 100) {
 					damage = 0;
 					atkStatus.miss = true;
+					this.enemy.totalFatigue -= 100;
 				}
 				if (this.shieldSkill.length > 0) {
 					this.hero.mana -= this.constructor.getSkill(this.shieldSkill, 'cost') * this.hero.permana;
@@ -3365,16 +3380,64 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.hasSpecial(especial, 67)) { //血魔法
 					heal = Math.round(0.5 * damage);
 				}
-				if (core.hasSpecial(especial, 81) && true) {
-					if (reflect) { this.enemy.def -= 12; } else this.hero.def -= 12;
-				}
-				if (core.hasSpecial(especial, 88) && true) {
-					if (reflect) {} else {
-						this.hero.mana -= 40;
-						this.enemy.mana += 40;
+				if (core.hasSpecial(especial, 88)) {
+					if (reflect) {
+						this.hero.mana = core.clamp(this.hero.mana + 40, 0, this.hero.manamax);
+						this.enemy.mana = core.clamp(this.enemy.mana - 40, 0, this.enemy.manamax);
+
+					} else {
+						this.hero.mana = core.clamp(this.hero.mana - 40, 0, this.hero.manamax);
+						this.enemy.mana = core.clamp(this.enemy.mana + 40, 0, this.enemy.manamax);
 					}
 				}
 				if (core.hasSpecial(especial, 84)) { damage += 100; }
+				// 执行敌人的负面事件
+				if (this.enemy.hasMisfortune) {
+					if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
+						this.hero.misfortune += 40;
+						if (this.hero.misfortune >= 100) {
+							this.hero.misfortune -= 100;
+							if (reflect) this.enemy.def -= 12;
+							else this.hero.def -= 12;
+						}
+					} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
+						this.hero.misfortune += 60;
+						if (this.hero.misfortune >= 100) {
+							this.hero.misfortune -= 100;
+							if (reflect) {
+								this.enemy.atk -= 20;
+								this.enemy.def -= 5;
+							} else {
+								this.hero.atk -= 20;
+								this.hero.def -= 5;
+							}
+						}
+					} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
+						core.hasSpecial(especial, 82)) { // 12-中毒
+						this.hero.misfortune += this.enemy.poisonPoss;
+						if (this.hero.misfortune >= 100) {
+							this.hero.misfortune -= 100;
+							if (reflect) isPoisoned = true;
+							else if (!core.getFlag('weak')) {
+								core.triggerDebuff('get', 'poison');
+							}
+						}
+					} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
+						this.hero.misfortune += this.enemy.weakPoss;
+						if (this.hero.misfortune >= 100) {
+							this.hero.misfortune -= 100;
+							if (reflect) {
+								this.enemy.atk -= this.enemy.weakPoint;
+								this.enemy.def -= this.enemy.weakPoint;
+							} else if (!core.getFlag('poison')) {
+								// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
+								core.setFlag('weakV', this.enemy.weakPoint);
+								core.triggerDebuff('get', 'weak');
+							}
+						}
+					}
+
+				}
 				this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
 				if (this.hero.fairy > 0) {
 					atkStatus.fairy = true;
@@ -3396,6 +3459,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (core.status.hero.hp <= 0) this.battleEnd();
 			if (reflect) { //反射盾
 				let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
+				if (isPoisoned) reflectDamage += 25; // 反弹中毒会多弹25血
+				atkStatus.reflectDamage = reflectDamage;
 				this.enemy.hp -= reflectDamage;
 				if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
 				if (this.enemy.hp <= 0) this.enemy.hp = 0;
@@ -3470,6 +3535,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.fillText(ctx, '疲劳：', tx, ty + 3 * (textFontSize + lineHeight), "white", textFont);
 		core.fillText(ctx, '气息：', tx - 50, ty + 4 * (textFontSize + lineHeight), "white", textFont);
 
+		core.setTextAlign(ctx, "left");
+		core.fillText(ctx, enemy.totalFatigue, tx - 30, ty + 3 * (textFontSize + lineHeight),
+			"orange", 'Bold 12px Arial');
+		core.setTextAlign(ctx, "right");
+		if (enemy.hasMisfortune) {
+			core.fillText(ctx, hero.misfortune, width - tx + 20, ty + 2 * (textFontSize + lineHeight),
+				"cyan", 'Bold12px Arial');
+		}
+		core.fillText(ctx, hero.totalFatigue, width - tx + 20, ty + 3 * (textFontSize + lineHeight),
+			"orange", 'Bold12px Arial');
+
 		let atkColor = 'white',
 			defColor = 'white',
 			atkBuff = 0,
@@ -3486,6 +3562,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			defBuff += Math.round(hero.fairyBuff);
 		}
 
+		core.setTextAlign(ctx, "left");
 		core.fillText(ctx, ':体力', width - tx - 50, ty, "white", textFont);
 		core.fillText(ctx, ':攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
 		core.fillText(ctx, ':防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
@@ -3609,14 +3686,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const start = 20,
 			interval = 32;
 		core.drawImage(ctx, 'yellowBall.png', start, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 2 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 3 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 4 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 5 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 6 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 7 * interval, 0);
-		core.drawIcon(ctx, 'yellowBall.png', start + 8 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
+		core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
 		if (core.hasItem('I325')) {
 			core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
 			core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
@@ -3702,6 +3779,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'manamax': core.material.enemys[id].value,
 			'special': especial,
 			'combo': combo,
+			'atkValue': core.material.enemys[id].atkValue,
+			'defValue': core.material.enemys[id].defValue,
+			'damage': core.material.enemys[id].damage,
 		});
 
 		function finish() {
@@ -3728,7 +3808,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.updateStatusBar();
 				if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
 				core.unlockControl();
-				if (!battle.isQuit) core.plugin.afterBattle(battle);
+				if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
 				return;
 			})
 		}
@@ -3840,7 +3920,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.nextTurn();
 			}
 			core.updateStatusBar();
-			if (!battle.isQuit) afterBattle(battle.enemy);
+			if (!battle.isQuit) core.plugin.afterBattleInTurn(battle.enemy);
 			if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
 		} else {
 			const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
@@ -5666,11 +5746,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 	// 重置成就获得情况
 	this.resetFinish = function () {
+		if (core.isReplaying()) return;
 		core.setLocalStorage("finish", defaultList);
-		if (!core.isReplaying()) {
-			core.playSound('achievement.mp3');
-			core.drawTip('成就已清空！');
-		}
+		core.playSound('achievement.mp3');
+		core.drawTip('成就已清空！');
+
 	}
 
 	this.hasAchievement = function (index) {
@@ -5688,25 +5768,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.setLocalStorage("finish", finish);
 
 		function effect() {
-			if (!core.isReplaying()) {
-				const canvas = "achievementEffect";
-				core.playSound('achievement.mp3');
-				core.createCanvas(canvas, 0, 0, PX, PY, 200);
-				core.setTextAlign(canvas, "center");
-				core.drawWindowSkin("winskin.png", canvas,
-					140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-				core.drawIcon(canvas, 'N454', 126, 80)
-				core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
-					"cyan", "24px " + core.status.globalAttribute.font);
-				core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
-					"#FFFFFF", "20px " + core.status.globalAttribute.font);
-				let fade = setTimeout(function () {
-					delete core.animateFrame.asyncId[fade];
-					clearInterval(fade);
-					core.deleteCanvas(canvas);
-				}, 1000);
-				core.animateFrame.asyncId[fade] = true;
-			}
+			const canvas = "achievementEffect";
+			core.playSound('achievement.mp3');
+			core.createCanvas(canvas, 0, 0, PX, PY, 200);
+			core.setTextAlign(canvas, "center");
+			core.drawWindowSkin("winskin.png", canvas,
+				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+			core.drawIcon(canvas, 'N454', 126, 80)
+			core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
+				"cyan", "24px " + core.status.globalAttribute.font);
+			core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+				"#FFFFFF", "20px " + core.status.globalAttribute.font);
+			let fade = setTimeout(function () {
+				delete core.animateFrame.asyncId[fade];
+				clearInterval(fade);
+				core.deleteCanvas(canvas);
+			}, 1000);
+			core.animateFrame.asyncId[fade] = true;
+
 		}
 		effect();
 	};
@@ -5855,7 +5934,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
     "战后事件": function () {
 	// 在此增加新插件
 	// 执行战后事件
-	function afterBattle(battle) {
+	this.afterBattleInTurn = function (battle) {
 		const hero = battle.hero,
 			enemy = battle.enemy,
 			money = enemy.money,
@@ -5902,6 +5981,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		} else {
 			core.removeBlock(x, y, core.status.floorId);
 		}
+		if (core.hasFlag('poison') || core.hasFlag('weak')) core.plugin.getAchievement(27);
 		if (core.hasSpecial(enemy.special, 72) || core.hasSpecial(enemy.special, 73)) { //烈焰身体，极寒身体
 			for (var x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
 				for (var y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {

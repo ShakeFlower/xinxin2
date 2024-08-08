@@ -283,7 +283,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 					"book": 1,
 					"I305": 1,
 					"I453": 1,
-					"I490": 1,
+					"I490": 1
 				},
 				"tools": {
 					"yellowKey": 5,
@@ -619,7 +619,9 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"followers": [],
 			"steps": 0,
 			"breath": 0,
-			"fatigue": 0
+			"fatigue": 0,
+			"poison": 0,
+			"weak": 0
 		},
 		"startCanvas": [
 			{
