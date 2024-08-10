@@ -3401,10 +3401,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 				if (core.hasSpecial(especial, 93)) // 魔界之王古顿
 				{
-					atkStatus.firstDamage = damage;
+					atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
+						Math.round(0.64 * damage), Math.round(0.512 * damage)
+					];
 					atkStatus.aim = 'lastBoss';
-					damage = Math.round(1.64 * damage);
-					princessDamage = Math.round(1.312 * damage);
 				}
 
 				if (core.hasSpecial(especial, 52) || core.hasSpecial(especial, 53)) {
@@ -3510,6 +3510,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this.enemy.totalDamage += damage;
 			this.hero.hp -= damage;
 			this.hero.hpmax -= princessDamage;
+			if (core.hasSpecial(especial, 93)) { // 古顿
+				this.hero.hp -= atkStatus.bounceDamage[2];
+				this.hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
+			}
 			if (this.hero.hp <= 0 || this.hero.hpmax <= 0) this.battleEnd();
 			if (reflect) { //反射盾
 				let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
@@ -3951,11 +3955,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							})
 						}
 						if (atkStatusE.aim === 'lastBoss') { // 古顿的伤害动画单独处理
-							let currDamage = atkStatusE.firstDamage,
+							let bounceDamage = atkStatusE.bounceDamage,
 								currstr = '',
 								count = 0;
 							let bounce = setInterval(function () {
-								currstr = currDamage.toString();
+								currstr = bounceDamage[count].toString();
 								if (atkStatusE.crit) {
 									currstr += 'crit';
 								}
@@ -3971,7 +3975,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 									'tmax': 100,
 									'type': 'down'
 								});
-								currDamage = Math.round(0.8 * currDamage);
 								count++;
 								if (count >= 4) clearInterval(bounce);
 							}, 50)
