@@ -152,9 +152,136 @@ main.floors.HG10=
                     "\t[白银史莱姆,oldMan]在我身后的是白银之穴，一个只会出现白银系怪物的洞穴，也是我们的乐园！",
                     "\t[白银史莱姆,oldMan]如果你有兴趣我再多说一点与你听，嘻嘻",
                     {
-                        "type": "setValue",
-                        "name": "switch:A",
-                        "value": "true"
+                        "type": "choices",
+                        "text": "\t[白银史莱姆,oldMan]是否要挑战白银之穴",
+                        "choices": [
+                            {
+                                "text": "是",
+                                "action": [
+                                    {
+                                        "type": "setValue",
+                                        "name": "switch:A",
+                                        "value": "true"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "temp:B",
+                                        "value": "status:hp"
+                                    },
+                                    {
+                                        "type": "setCurtain",
+                                        "color": [
+                                            0,
+                                            0,
+                                            0,
+                                            1
+                                        ],
+                                        "time": 500,
+                                        "keep": true,
+                                        "async": true
+                                    },
+                                    {
+                                        "type": "waitAsync"
+                                    },
+                                    {
+                                        "type": "for",
+                                        "name": "temp:B",
+                                        "from": "0",
+                                        "to": "12",
+                                        "step": "1",
+                                        "data": [
+                                            {
+                                                "type": "battle",
+                                                "id": "swordEmperor"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "for",
+                                        "name": "temp:B",
+                                        "from": "0",
+                                        "to": "9",
+                                        "step": "1",
+                                        "data": [
+                                            {
+                                                "type": "battle",
+                                                "id": "goldHornSlime"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "for",
+                                        "name": "temp:B",
+                                        "from": "0",
+                                        "to": "14",
+                                        "step": "1",
+                                        "data": [
+                                            {
+                                                "type": "battle",
+                                                "id": "whiteHornSlime"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "for",
+                                        "name": "temp:B",
+                                        "from": "0",
+                                        "to": "9",
+                                        "step": "1",
+                                        "data": [
+                                            {
+                                                "type": "battle",
+                                                "id": "silverSlime"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:I398",
+                                        "operator": "+=",
+                                        "value": "13"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:I400",
+                                        "operator": "+=",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:I403",
+                                        "operator": "+=",
+                                        "value": "15"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:I407",
+                                        "operator": "+=",
+                                        "value": "10"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "item:I328",
+                                        "operator": "+=",
+                                        "value": "1"
+                                    },
+                                    {
+                                        "type": "setValue",
+                                        "name": "status:hp",
+                                        "value": "temp:B"
+                                    },
+                                    {
+                                        "type": "setCurtain",
+                                        "time": 500
+                                    },
+                                    "从白银之间凯旋归来，共战胜白银史莱姆×13，黄金史莱姆×10，白银史莱姆王×15，黄金史莱姆王×10"
+                                ]
+                            },
+                            {
+                                "text": "否",
+                                "action": []
+                            }
+                        ]
                     },
                     {
                         "type": "function",

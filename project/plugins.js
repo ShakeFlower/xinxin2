@@ -2977,7 +2977,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'poisonPoss': enemy.atkValue || 0,
 				'weakPoss': enemy.defValue || 0,
 				'weakPoint': enemy.damage || 0,
-				'mana': 0,
+				'mana': enemy.id === 'E437' ? 10 : 0,
 				'manamax': enemy.manamax, // 敌人最大气息值
 				'special': enemy.special, // 敌人特殊属性
 				'type': enemy.type, // 敌人为enemys还是enemy48 绘制用
@@ -2991,6 +2991,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'combo': enemy.combo, //敌人连击数
 				'freeze': 0, //被冰冻的回合数,结晶盾特效
 				'magicIce': false, // 产出魔法冰块
+				'sword': 0, //剑大师计数
+				'shield': 0, //盾大师计数
 			}
 			this.actor = 'hero'; // 本回合行动角色
 			this.swordSkill = ''; // 当前剑技
@@ -3031,7 +3033,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (action === 'q')
 				return { success: true, reason: '' };
 			else if (action === 'v') {
-				if (this.hero.mana < this.hero.permana) return { success: false, reason: '气息不足' };
+				if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
 				if (this.hero.fatigue <= 0) return { success: false, reason: '当前未处于疲劳状态' };
 				return { success: true, reason: '' };
 			} else if (['b', 's', 'd', 'h', 'k', 'c', 'M', 'C', 'R', 'F', 'E'].includes(action)) { //剑技
@@ -3109,30 +3111,91 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
 				core.hasSpecial(especial, 65) || core.hasSpecial(especial, 66) ||
 				core.hasSpecial(especial, 67);
-
 		}
 
 		nextTurn() {
 			if (this.isQuit || this.isBattleEnd) return;
-			let skillSuccess = false;
-			let atkStatus = { 'damage': 0, 'animate': 'swords' };
 			switch (this.actor) {
 			case 'hero':
-				let hdamage = 0;
-				this.hero.totalFatigue += this.hero.fatigue;
-				if (this.hero.freeze) { // 冻结，结晶盾特效
-					hdamage = 0;
-					atkStatus.freeze = true;
-					this.hero.freeze = false;
-					this.actor = 'enemy';
-					this.turn++;
-					return;
+				this.heroAct();
+				break;
+			case 'enemy':
+				this.enemyAct();
+				break;
+			}
+		}
+
+		battleEnd() {
+			if (!core.isReplaying() && this.route.length > 3) { core.status.route.push(this.route); }
+			if (this.isQuit) {
+				core.status.hero.hp = Math.min(this.hero.hp, core.status.hero.hp);
+				core.status.hero.hpmax = Math.min(this.hero.hpmax, core.status.hero.hpmax);
+			} else {
+				core.status.hero.hp = this.hero.hp;
+				core.status.hero.mana = this.hero.mana;
+				core.status.hero.hpmax = this.hero.hpmax;
+			}
+			this.isBattleEnd = true;
+		}
+
+		// 攻防后增加气息
+		addMana(actor, damage, enemyCrit) {
+			switch (actor) {
+			case 'hero':
+				if (this.swordSkill.length > 0 || core.hasSpecial(this.enemy.special, 64) ||
+					this.enemy.def >= this.hero.atk) {
+					//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
+				} else {
+					this.hero.mana += Math.round((10 * this.enemy.def) / (this.hero.atk)); // 角色攻增气
 				}
+				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
+				if ((this.hero.sword === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
+					// 装备流石用C,怪物不加防增气
+				} else {
+					this.enemy.mana += Math.round(damage / 3); // 怪物防增气
+				}
+				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
+				break;
+			case 'enemy':
+				if (core.hasSpecial(this.special, 60) || core.hasSpecial(this.enemy.special, 64)) {
+					//暗魔法无防增气，魔神些多的死寂光环角色不加气
+				} else {
+					this.hero.mana += Math.round(0.1 * damage); // 角色防增气
+				}
+				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
+				if (!enemyCrit && !core.hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
+					if (core.hasSpecial(this.special, 55)) {
+						this.enemy.mana += Math.round((10 * this.hero.mdef) / (this.enemy.atk))
+					} else if (core.hasSpecial(this.special, 61) || core.hasSpecial(this.special, 62) ||
+						core.hasSpecial(this.special, 63) || core.hasSpecial(this.special, 64) ||
+						core.hasSpecial(this.special, 65)) { // 怪物攻增气
+						this.enemy.mana += Math.round((10 * (this.hero.mdef + this.hero.def)) / (this.enemy.atk));
+					} else this.enemy.mana += Math.round((10 * this.hero.def) / (this.enemy.atk));
+				}
+				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
+				break;
+			}
+		}
+
+
+		//角色行动
+		heroAct() {
+			let atkStatus = { 'damage': 0, 'animate': 'swords' };
+			let hdamage = 0;
+			if (this.hero.freeze) { // 冻结，结晶盾特效
+				hdamage = 0;
+				atkStatus.freeze = true;
+				this.hero.freeze = false;
+			} else {
+				// 增加疲劳计数，决定是否miss
+				this.hero.totalFatigue += this.hero.fatigue;
 				if (this.hero.totalFatigue >= 100) {
 					hdamage = 0;
 					atkStatus.miss = true;
 					this.hero.totalFatigue -= 100;
 				}
+
+				// 检测是否发动技能
 				if (this.swordSkill.length > 0) {
 					atkStatus.skill = this.swordSkill;
 					this.hero.mana -= this.constructor.getSkill(this.swordSkill, 'cost') * this.hero.permana;
@@ -3184,79 +3247,38 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.hero.def -= this.hero.lv;
 					this.hero.bone += this.hero.lv;
 				}
-
 				this.swordSkill = ''; // 需要根据本回合剑技判断气息增减
-				atkStatus.damage = hdamage;
-				this.hero.atkStatus = atkStatus;
 
+				if (core.hasSpecial(this.enemy.special, 92)) { // 盾大师
+					switch (this.enemy.shield) {
+					case 0:
+						hdamage = Math.round(hdamage / 2);
+						this.enemy.shield = 1;
+						break;
+					case 1:
+						this.hero.freeze = true;
+						this.enemy.shield = 2;
+						break;
+					case 2:
+						this.hero.hp -= Math.round(hdamage / 4);
+						this.enemy.shield = 0;
+						break;
+					}
+				}
+
+				atkStatus.damage = hdamage;
 				this.enemy.hp -= hdamage;
 				if (this.enemy.hp <= 0) {
 					this.enemy.hp = 0;
 					this.battleEnd();
 				}
-				this.actor = 'enemy';
-				this.turn++;
-				break;
-			case 'enemy':
-				this.enemyAct();
 				if (this.hero.hp <= 0) {
-					this.hero.hp = 0;
 					this.battleEnd();
 				}
-				break;
 			}
-		}
-
-		battleEnd() {
-			if (!core.isReplaying() && this.route.length > 3) { core.status.route.push(this.route); }
-			if (this.isQuit) {
-				core.status.hero.hp = Math.min(this.hero.hp, core.status.hero.hp);
-				core.status.hero.hpmax = Math.min(this.hero.hpmax, core.status.hero.hpmax);
-			} else {
-				core.status.hero.hp = this.hero.hp;
-				core.status.hero.mana = this.hero.mana;
-				core.status.hero.hpmax = this.hero.hpmax;
-			}
-			this.isBattleEnd = true;
-		}
-
-		// 攻防后增加气息
-		addMana(actor, damage, enemyCrit) {
-			switch (actor) {
-			case 'hero':
-				if (this.swordSkill.length > 0 || core.hasSpecial(this.enemy.special, 64) ||
-					this.enemy.def >= this.hero.atk) {
-					//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
-				} else {
-					this.hero.mana += Math.round((10 * this.enemy.def) / (this.hero.atk)); // 角色攻增气
-				}
-				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-				if ((this.hero.sword === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
-					// 装备流石用C,怪物不加防增气
-				} else {
-					this.enemy.mana += Math.round(damage / 3); // 怪物防增气
-				}
-				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-				break;
-			case 'enemy':
-				if (core.hasSpecial(this.special, 60) || core.hasSpecial(this.enemy.special, 64)) {
-					//暗魔法无防增气，魔神些多的死寂光环角色不加气
-				} else {
-					this.hero.mana += Math.round(0.1 * damage); // 角色防增气
-				}
-				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-				if (!enemyCrit) { //怪物会心一击时无攻增气
-					if (core.hasSpecial(this.special, 55)) {
-						this.enemy.mana += Math.round((10 * this.hero.mdef) / (this.enemy.atk))
-					} else if (core.hasSpecial(this.special, 61) || core.hasSpecial(this.special, 62) ||
-						core.hasSpecial(this.special, 63) || core.hasSpecial(this.special, 64) ||
-						core.hasSpecial(this.special, 65)) { // 怪物攻增气
-						this.enemy.mana += Math.round((10 * (this.hero.mdef + this.hero.def)) / (this.enemy.atk));
-					} else this.enemy.mana += Math.round((10 * this.hero.def) / (this.enemy.atk));
-				}
-				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-				break;
-			}
+			this.hero.atkStatus = atkStatus;
+			this.actor = 'enemy';
+			this.turn++;
 		}
 
 		//敌人行动
@@ -3275,7 +3297,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				atkStatus.freeze = true;
 				this.enemy.freeze--;
 			} else {
-				if (core.hasSpecial(especial, 2) || core.hasSpecial(especial, 61) ||
+				if (core.hasSpecial(especial, 80)) { // 魔眼
+					if (this.hero.def - this.hero.atk > this.hero.atkm) damage = 0;
+					else damage = Math.max(this.hero.atk - this.hero.def, 1);
+				} else if (core.hasSpecial(especial, 2) || core.hasSpecial(especial, 61) ||
 					core.hasSpecial(especial, 62) || core.hasSpecial(especial, 63) ||
 					core.hasSpecial(especial, 64) || core.hasSpecial(especial, 65) ||
 					core.hasSpecial(especial, 66)) { //魔攻
@@ -3284,7 +3309,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
 					else damage = Math.max(this.enemy.atk - this.hero.def, 1);
 				}
-				if (this.enemy.totalFatigue >= 100) {
+				if (core.hasSpecial(especial, 80) && this.hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
+					damage = 0;
+					atkStatus.miss = true;
+					this.hero.totalFatigue -= 100;
+				} else if (this.enemy.totalFatigue >= 100) {
 					damage = 0;
 					atkStatus.miss = true;
 					this.enemy.totalFatigue -= 100;
@@ -3353,6 +3382,31 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				break;
 			}
 			if (!atkStatus.freeze && !atkStatus.miss) {
+				if (core.hasSpecial(especial, 91)) { // 剑大师
+					switch (this.enemy.sword) {
+					case 0:
+						this.hero.fatigue += 8;
+						this.enemy.sword = 1;
+						break;
+					case 1:
+						this.hero.mana -= this.hero.permana;
+						if (this.hero.mana < 0) this.hero.mana = 0;
+						this.enemy.sword = 2;
+						break;
+					case 2:
+						heal = Math.round(damage / 5);
+						this.enemy.sword = 0;
+						break;
+					}
+				}
+				if (core.hasSpecial(especial, 93)) // 魔界之王古顿
+				{
+					atkStatus.firstDamage = damage;
+					atkStatus.aim = 'lastBoss';
+					damage = Math.round(1.64 * damage);
+					princessDamage = Math.round(1.312 * damage);
+				}
+
 				if (core.hasSpecial(especial, 52) || core.hasSpecial(especial, 53)) {
 					if (reflect) this.enemy.fatigue++;
 					else this.hero.fatigue++;
@@ -3391,7 +3445,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 				}
 				if (core.hasSpecial(especial, 84)) { damage += 100; }
-				// 执行敌人的负面事件
+				// 执行敌人带有的debuff技能
 				if (this.enemy.hasMisfortune) {
 					if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
 						this.hero.misfortune += 40;
@@ -3456,7 +3510,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this.enemy.totalDamage += damage;
 			this.hero.hp -= damage;
 			this.hero.hpmax -= princessDamage;
-			if (core.status.hero.hp <= 0) this.battleEnd();
+			if (this.hero.hp <= 0 || this.hero.hpmax <= 0) this.battleEnd();
 			if (reflect) { //反射盾
 				let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
 				if (isPoisoned) reflectDamage += 25; // 反弹中毒会多弹25血
@@ -3464,9 +3518,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.enemy.hp -= reflectDamage;
 				if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
 				if (this.enemy.hp <= 0) this.enemy.hp = 0;
-				this.enemy.hp += heal;
-				if (this.enemy.hp <= 0) this.battleEnd();
 			}
+			this.enemy.hp += heal; //吸血效果
+			if (this.enemy.hp <= 0) this.battleEnd();
 			if (this.turn % (this.enemy.combo + 1) === this.enemy.combo) { this.actor = 'hero'; }
 			this.turn++;
 
@@ -3591,7 +3645,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// 绘制气息条
 		function drawMana() {
-			const enemyManaRatio = enemy.mana / enemy.manamax,
+			const enemyManaRatio = (enemy.manamax === 0) ? 0 : enemy.mana / enemy.manamax,
 				heroManaRemainder = (hero.mana) % (hero.permana);
 			let heroManaRatio = heroManaRemainder / hero.permana;
 			if (hero.mana >= hero.manamax) heroManaRatio = 1;
@@ -3743,6 +3797,20 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	}
 
+	function drawBattleHint() {
+		if (core.isReplaying()) return;
+		const ctx = "battleHint";
+		core.createCanvas(ctx, 0, 0, core.__PIXELS__, 100, 66);
+		let hintList = ['向脸书求援可以回复血量', '设置里可以调整战斗速度', '复刻版中，疲劳值每回合都会增加你的疲劳计数（显示为橙色数字），每达到100就miss一次', '复刻版中，敌人施加的毒衰debuff会根据释放概率增加你的负面计数（显示为浅蓝数字），每达到100就触发一次'],
+			l = hintList.length,
+			k = Math.floor(l * Math.random());
+		core.setAlpha(ctx, 0.7);
+		core.fillRect(ctx, 64, 58, core.__PIXELS__ - 128, 32, 'gray');
+		core.setAlpha(ctx, 1);
+		core.setTextAlign(ctx, 'center');
+		core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
+	}
+
 	//// 每回合的战斗过程
 	function battleByTurn(id, x, y) {
 		if (!core.isReplaying()) core.lockControl();
@@ -3830,7 +3898,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusH.miss) damageH = 'miss';
 					drawBattleUI(battle);
 					if (currDelay > 100) {
-						if (!atkStatusH.freeze) core.plugin.drawAnimateByPixel(atkStatusH.animate, 60, 152);
+
+						core.plugin.drawAnimateByPixel(atkStatusH.animate, 60, 152);
 						core.plugin.addScrollingText(damageH, {
 							'x': 54,
 							'y': 180,
@@ -3880,6 +3949,32 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								'tmax': 50,
 								'type': 'down'
 							})
+						}
+						if (atkStatusE.aim === 'lastBoss') { // 古顿的伤害动画单独处理
+							let currDamage = atkStatusE.firstDamage,
+								currstr = '',
+								count = 0;
+							let bounce = setInterval(function () {
+								currstr = currDamage.toString();
+								if (atkStatusE.crit) {
+									currstr += 'crit';
+								}
+								if (atkStatusE.miss) {
+									currstr = 'miss';
+								}
+								core.plugin.addScrollingText(currstr, {
+									'x': (count % 2 === 0) ? 350 : 220,
+									'y': (count % 2 === 0) ? 180 : 250,
+									'vy': 1,
+									'style': 'Tomato ',
+									'font': 'Bold 18px Arial',
+									'tmax': 100,
+									'type': 'down'
+								});
+								currDamage = Math.round(0.8 * currDamage);
+								count++;
+								if (count >= 4) clearInterval(bounce);
+							}, 50)
 						}
 					}
 				}

@@ -277,6 +277,18 @@ main.floors.HG18=
                         "norefresh": true
                     },
                     {
+                        "type": "if",
+                        "condition": "flag:hasCheated",
+                        "true": [
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "value": "1",
+                                "norefresh": true
+                            }
+                        ]
+                    },
+                    {
                         "type": "win",
                         "reason": "综合能力计分"
                     }
