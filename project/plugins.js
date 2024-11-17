@@ -5460,7 +5460,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		//角色行动
 		heroAct() {
-			let atkStatus = { 'damage': 0, 'animate': 'swords' };
+			let atkStatus = { 'damage': 0, 'animate': 'g3' };
 			let hdamage = 0;
 			if (this.hero.freeze) { // 冻结，结晶盾特效
 				hdamage = 0;
@@ -5489,22 +5489,26 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 					case 'b': // 凡骨
 						hdamage = Math.round(1.5 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (isMagician()) this.hero.smartCast = true;
+						if (this.isMagician()) this.hero.smartCast = true;
+						atkStatus.animate = "gsw1";
 						break;
 					case 's': //流石
 						hdamage = Math.round(1.3 * Math.max(this.hero.atk - this.enemy.def, 1));
 						if (!core.hasSpecial(this.enemy.special, 64)) //魔神些多的死寂光环下角色不加气
 							this.hero.mana += Math.round(this.enemy.mana / 2);
 						this.enemy.mana -= Math.round(this.enemy.mana / 2);
+						atkStatus.animate = "gsw2";
 						break;
 					case 'd': //深红
 						hdamage = Math.round(0.8 * Math.max(this.hero.atk - this.enemy.def, 1));
 						if (hdamage >= this.enemy.hp) hdamage = this.enemy.hp - 1;
 						this.hero.hp += Math.round(0.3 * hdamage);
+						atkStatus.animate = "gsw3";
 						break;
 					case 'h': //天灵
 						hdamage = Math.round(1.8 * Math.max(this.hero.atk - this.enemy.def, 1));
 						this.enemy.fatigue += 15;
+						atkStatus.animate = "gsw4";
 						break;
 					case 'k': // 皇者
 						hdamage = Math.round(5 * Math.max(this.hero.atk - this.enemy.def, 1));
@@ -5513,6 +5517,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							this.hero.smartCast = true;
 						}
 						this.hero.atk = this.enemy.def;
+						atkStatus.animate = "gsw5";
 						break;
 					default:
 						hdamage = Math.max(this.hero.atk - this.enemy.def, 1);
@@ -5651,7 +5656,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.hero.fairy = 3;
 				this.hero.fairyBuff = (this.hero.orihp + this.hero.def) % this.hero.lv;
 				this.hero.def += this.hero.fairyBuff;
-				if (isMagician()) this.hero.smartCast = true;
+				if (this.isMagician()) this.hero.smartCast = true;
 				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'F';
 				break;
 			case 'E': //贤者结界
@@ -5813,11 +5818,85 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				switch (id) {
 				case 'bat':
 				case 'bigBat':
-					return critical ? 'biteC' : 'biteN';
+				case 'redBat':
+				case 'poisonBat':
+					return critical ? 'g1' : 'g1-cri';
 				case 'bluePriest':
-					return critical ? 'waterC' : 'waterN';
+					return critical ? 'g4' : 'g4-cri'; //初级法师攻击
+				case 'skeletonSoilder':
+				case 'yellowKnight':
+				case 'swordsman':
+					return critical ? 'g5' : 'g5-cri'; //骷髅兵，骑士，双手剑士攻击
+				case 'zombie':
+					return critical ? 'g6' : 'g6-cri'; //兽人攻击
+				case 'grayPriest':
+					return critical ? 'g7' : 'g7-cri'; //中级法师攻击
+				case 'E330':
+				case 'E334':
+					return critical ? 'g8' : 'g8-cri'; //八爪鱼，四手史莱姆人攻击
+				case 'skeletonCaptain':
+				case 'blueKnight':
+				case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
+					return critical ? 'g9' : 'g9-cri';
+				case 'redKnight':
+				case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
+					return critical ? 'g10' : 'g10-cri';
+				case 'redWizard':
+					return critical ? 'g11' : 'g11-cri'; //红衣巫师攻击
+				case 'vampire':
+					return critical ? 'g13' : 'g13-cri'; //魔王格勒第攻击
+				case 'E377':
+				case 'E378':
+					return critical ? 'g14' : 'g14-cri'; //弓兵，精锐弓兵攻击
+				case 'magicDragon':
+					return critical ? 'g19' : 'g19-cri'; //恶龙攻击
+				case 'E432':
+					return critical ? 'g20' : 'g20-cri'; //毒龙攻击
+				case 'brownWizard':
+				case 'greenKing':
+					return critical ? 'g22' : 'g22-cri'; //初级巫师，绿衣魔王攻击
+				case 'redWizard':
+					return critical ? 'g23' : 'g23-cri'; //高级法师攻击
+				case 'redSwordsman':
+					return critical ? 'g24' : 'g24-cri'; //剑王攻击
+				case 'whiteGhost':
+					return critical ? 'g25' : 'g25-cri'; //水银人攻击
+				case 'whiteKing':
+				case 'E413':
+					return critical ? 'g26' : 'g26-cri'; //蓝衣魔王，极地法师攻击
+				case 'skeletonPriest':
+				case 'E444':
+				case 'E442':
+					return critical ? 'g28' : 'g28-cri'; //混沌术士，血使者，血剑士攻击
+				case 'E446':
+					return critical ? 'g29' : 'g29-cri'; //史莱姆阿修罗攻击
+				case 'yellowKing':
+					return critical ? 'g30' : 'g30-cri'; //黄衣魔王攻击
+				case 'redKing':
+					return critical ? 'g31' : 'g31-cri'; //红衣魔王攻击
+				case 'E337':
+					return critical ? 'g33' : 'g33-cri'; //邪眼史莱姆攻击
+				case 'skeletonKing':
+					return critical ? 'g34' : 'g34-cri'; //魔神·些多攻击
+				case 'goldSlime':
+					return critical ? 'g35' : 'g35-cri'; //剑神沙士攻击
+				case 'E380':
+					return critical ? 'g36' : 'g36-cri'; //斗神高巴攻击
+				case 'E379':
+					return critical ? 'g37' : 'g37-cri'; //箭神法比攻击
+				case 'yellowGuard':
+				case 'ghostSkeleton':
+					return critical ? 'g38' : 'g38-cri'; //卫兵、冥骷髅攻击
+				case 'E382':
+					return critical ? 'g41' : 'g41-cri'; //冻死骨攻击
+				case 'E436':
+					return critical ? 'g43' : 'g43-cri'; //冥界矮人战士攻击
+				case 'E435':
+					return critical ? 'g44' : 'g44-cri'; //生气灵攻击
+				case 'E447':
+					return critical ? 'g48' : 'g48-cri'; //最终BOSS
 				default:
-					return critical ? 'fightC' : 'fightN';
+					return critical ? 'g2' : 'g2-cri';
 				}
 			}
 		}

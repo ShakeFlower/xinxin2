@@ -54,5 +54,7 @@ main.floors.B02=
     "fgmap": [
 
 ],
-    "underGround": true
+    "underGround": true,
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }
