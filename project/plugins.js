@@ -6224,8 +6224,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} x 
 		 * @param {number} y 
 		 */
-		async function battleByTurn(enemyId,x,y) {
-			let battle = new Battle(enemyId,x,y);
+		async function battleByTurn(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
 
 			core.lockControl();
 			while (true) {
@@ -6256,7 +6256,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			await new Promise((res) => { setTimeout(res, 500) });
 			clearCanvasAndEvent();
 			updateHeroStatus(battle);
-			afterBattleEvent(battle,x,y);
+			afterBattleEvent(battle, x, y);
 			core.unlockControl();
 		}
 
@@ -6266,8 +6266,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} x 
 		 * @param {number} y 
 		 */
-		function battleByTurn_replaying(enemyId,x,y){
-			let battle = new Battle(enemyId,x,y);
+		function battleByTurn_replaying(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
 			let actionList = getActionList();
 			while (battle.status === 'pending') {
 				const currTurn = battle.turn;
@@ -6279,7 +6279,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (battle.status === 'quit') break;
 				else battle.nextTurn();
 				if (battle.checkEnd()) break;
-			}	
+			}
 			updateHeroStatus(battle);
 		}
 
@@ -6314,9 +6314,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.setFlag('weakV', hero.weakPoint);
 					break;
 			}
+			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquipedd);
+			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
 			switch (battle.status) {
 				case 'win':
-					const info = battle.enemyInfo,
+					const info = battle.enemy.info,
 						money = info.money,
 						exp = info.exp;
 
@@ -6389,7 +6391,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (core.status.floorId != null) {
 				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
 			}
-			core.push(todo, battle.enemyData.afterBattle);
+			core.push(todo, enemy.data.afterBattle);
 
 			// 如果事件不为空，将其插入
 			if (todo.length > 0) core.insertAction(todo, x, y);
@@ -6399,7 +6401,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #region 回合制战斗的具体过程
 		const abbreviateList = {
-			'b': 'I315','s': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 
+			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
 		};
 		class ActorBase {
@@ -6408,6 +6410,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			freeze = 0;
 			/** 状态，分为'normal''poisoned','weak'*/
 			status = 'normal';
+			/** 每回合的动画信息*/
+			animateInfo;
 			get mana() {
 				return this._mana;
 			};
@@ -6417,8 +6421,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else this._mana = value;
 			};
 			constructor(hp, atk, def, manamax, mana, weakPoint) {
+				/** 生命值*/
 				this.hp = hp;
+				/** 攻击*/
 				this.atk = atk;
+				/** 防御*/
 				this.def = def;
 				/** 气息上限*/
 				this.manamax = manamax;
@@ -6452,17 +6459,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		class Hero extends ActorBase {
+			/** 公主的体力值 */
+			hpmax = core.status.hero.hpmax;
 			/** 攻击临界值 */
 			atkm = core.getFlag('atkm', 10);
 			/** 防御临界值 */
 			defm = core.getFlag('defm', 10);
+			/** 等级 */
 			lv = core.status.hero.lv;
-			/** 公主的体力值 */
-			hpmax = core.status.hero.hpmax;
+			/** 一次深呼吸减少的疲劳值*/
+			deepBreath = core.getFlag('deepBreath', 5);
 
-			/** 即将发动的剑技*/
+			/** 即将发动的剑技*
+			 * @type {string}
+			 */
 			swordSkill = '';
-			/** 即将发动的盾技*/
+			/** 即将发动的盾技
+			 * @type {string}
+			*/
 			shieldSkill = '';
 			/** 当前装备的剑技*/
 			swordEquiped = core.items.getEquip(0);
@@ -6491,10 +6505,139 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if (core.hasFlag('weak')) this.status = 'weak';
 			}
+
+			/**
+			 * 勇士行动
+			 * @param {Enemy} enemy 
+			 */
+			act(enemy) {
+				/** 本次攻击的状态 */
+				let atkStatus = {
+					/**本次攻击造成的伤害 */
+					'damage': 0,
+					/**本次攻击的动画 */
+					'animate': 'g3',
+					/**勇士是否被冻结 */
+					'frozen': false,
+					/**勇士是否miss */
+					'miss': false,
+					/**本次攻击发动的技能 */
+					'skill': '',
+				};
+				let hdamage = 0;
+
+				// 检查勇士是否被冰冻
+				if (this.checkFrozen()) {
+					atkStatus.frozen = true;
+					this.animateInfo = atkStatus;
+					if (hasSpecial(enemy.special, 92)) { //盾大师
+						if (enemy.phase++ > 2) enemy.phase = 0;
+					}
+					return;
+				}
+
+				// 发动技能
+				if (this.swordSkill.length > 0) {
+					atkStatus.skill = this.swordSkill;
+					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
+					this.fatigue += getSkill(this.swordSkill, 'fatigue');
+				}
+				switch (this.swordSkill) {
+					case 'c':
+						hdamage = 2 * Math.max(this.atk - enemy.def, 1);
+						atkStatus.animate = "g3-cri";
+						break;
+					case 'b': // 凡骨
+						hdamage = Math.round(1.5 * Math.max(this.atk - enemy.def, 1));
+						if (isMagician(enemy.special)) this.smartCast = true;
+						if (Math.round(1.5 * (this.atk - enemy.def)) < this.lv) {
+							// 伤害太低时，发动凡骨只有伤害1.5倍的效果，属性不增加
+							this.atk += Math.round(1.5 * this.lv);
+							this.def -= this.lv;
+							this.bone += this.lv;
+						}
+						atkStatus.animate = "gsw1";
+						break;
+					case 's': //流石
+						hdamage = Math.round(1.3 * Math.max(this.atk - enemy.def, 1));
+						if (!hasSpecial(enemy.special, 64)) //魔神些多的死寂光环下角色不加气
+							this.mana += Math.round(enemy.mana / 2);
+						enemy.mana -= Math.round(enemy.mana / 2);
+						atkStatus.animate = "gsw2";
+						break;
+					case 'd': //深红
+						hdamage = Math.round(0.8 * Math.max(this.atk - enemy.def, 1));
+						if (hdamage >= enemy.hp) hdamage = enemy.hp - 1;
+						this.hp += Math.round(0.3 * hdamage);
+						atkStatus.animate = "gsw3";
+						break;
+					case 'h': //天灵
+						hdamage = Math.round(1.8 * Math.max(this.atk - enemy.def, 1));
+						atkStatus.animate = "gsw4";
+						break;
+					case 'k': // 皇者
+						hdamage = Math.round(5 * Math.max(this.atk - this.enemy.def, 1));
+						if (hdamage >= enemy.hp) {
+							hdamage = enemy.hp - 1;
+							this.smartCast = true;
+						}
+						this.atk = enemy.def;
+						atkStatus.animate = "gsw5";
+						break;
+					default:
+						hdamage = Math.max(this.atk - enemy.def, 1);
+						break;
+				}
+				if (enemy.def - this.atk > this.atkm) hdamage = 0; //攻临界
+
+				if (hasSpecial(enemy.special, 92)) { // 盾大师
+					switch (enemy.phase) {
+						case 0:
+							hdamage = Math.round(hdamage / 2);
+							break;
+						case 1:
+							this.freeze++;
+							break;
+						case 2:
+							hero.hp -= Math.round(hdamage / 4);
+							break;
+					}
+					if (enemy.phase++ > 2) enemy.phase = 0;
+				}
+
+				// 检查勇士是否miss
+				if (this.checkMiss()) {
+					atkStatus.miss = true;
+				}
+				else {
+					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
+					if (this.swordSkill === 'h') enemy.fatigue += 15; //天灵
+					this.addMana(enemy);
+					atkStatus.damage = hdamage;
+					enemy.hp -= hdamage;
+				}
+
+				this.swordSkill = '';
+				this.animateInfo = atkStatus;
+			}
+
+			/** 双方回复气息 
+			 * @param {Enemy} enemy 
+			*/
+			addMana(enemy) {
+				if (this.swordSkill.length > 0 || hasSpecial(enemy.special, 64) ||
+					enemy.def >= this.atk) {
+					//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
+				} else this.mana += Math.round((10 * enemy.def) / (this.atk)); // 角色攻增气
+
+				if ((this.swordEquiped === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
+					// 装备流石用C,怪物不加防增气
+				} else enemy.mana += Math.round(damage / 3); // 怪物防增气			
+			}
 		}
 
 		class Enemy extends ActorBase() {
-			/** 敌人本场战斗的累计伤害 */
+			/** 敌人本场战斗累计造成的伤害 */
 			totalDamage = 0;
 			/** 剑大师，盾大师当前的行动阶段 */
 			phase = 0;
@@ -6508,6 +6651,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			constructor(info, data) {
 				super(info.hp, info.atk, info.def,
 					data.manamax, data.id === 'E437' ? 0 : 10, data.damage || 0);
+				/** getEnemyInfo获得的敌人info */
+				this.info = info;
+				/** core.material.enemys中的敌人数据 */
+				this.data = data;
 				/** 敌人的英文id */
 				this.id = id;
 
@@ -6527,7 +6674,39 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					else if (hasSpecial(special, 87)) return 6;
 					else return 1;
 				})(this.special);
+			}
 
+			/** 敌人行动
+			 * @param {Hero} hero 
+			 */
+			act(hero) {
+
+			}
+
+			/** 双方回复气息 
+			 * 
+			 * @param {Hero} hero 
+			 * @param {boolean} enemyCrit 敌人是否暴击
+			 * @param {string} enemyAim 敌人的目标
+			 */
+			addMana(hero, enemyCrit, enemyAim) {
+				if (hasSpecial(this.special, 60) || hasSpecial(this.special, 64)) {
+					//暗魔法无防增气，魔神些多的死寂光环角色不加气
+				} else hero.mana += Math.round(0.1 * damage); // 角色防增气
+				if (!enemyCrit && !hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
+					switch (enemyAim) {
+						case 'princess':
+							this.mana += Math.round((10 * hero.mdef) / (this.atk));
+							break;
+						case 'all':
+							this.mana += Math.round((10 * (hero.mdef + hero.def)) / (this.atk));
+							break;
+						case 'hero':
+						case 'bounce':
+							this.mana += Math.round((10 * hero.def) / (this.atk));
+							break;
+					}
+				}
 			}
 		}
 
@@ -6536,7 +6715,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			status = 'pending';
 			/** 执行下一回合前等待的时间*/
 			waitTime = 500;
-			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 */
+			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 
+			 * @type {string}
+			*/
 			route = 'bs';
 			/**
 			 * Battle构造函数
@@ -6546,15 +6727,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			constructor(enemyId, x, y) {
 
-				/** getEnemyInfo获得的敌人info */
-				this.enemyInfo = core.enemys.getEnemyInfo(enemyId, null, x, y, core.status.floorId);
-				/** core.material.enemys中的敌人数据 */
-				this.enemyData = core.material.enemys[enemyId];
+				const enemyInfo = core.enemys.getEnemyInfo(enemyId, null, x, y, core.status.floorId),
+					enemyData = core.material.enemys[enemyId];
 
 				/** 本场战斗的勇士 */
 				this.hero = new Hero();
 				/** 本场战斗的敌人 */
-				this.enemy = new Enemy(this.enemyInfo, this.enemyData);
+				this.enemy = new Enemy(enemyInfo, enemyData);
 
 				/** 当前总计进行了多少回合 */
 				this.turn = 0;
@@ -6573,10 +6752,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			nextTurn() {
 				switch (this.actor) {
 					case 'hero':
-						this.hero.Act();
+						this.hero.act();
 						break;
 					case 'enemy':
-						this.enemy.Act();
+						this.enemy.act();
 						break;
 				}
 				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
@@ -6597,7 +6776,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * 执行用户输入的行为并写入录像
 			 * @param {string} action 用户输入的行为
 			 */
-			execUserAction(action){
+			execUserAction(action) {
 				const outcome = this.canExecAction(action);
 				if (!outcome.success) {
 					if (!core.isReplaying()) {
@@ -6609,7 +6788,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (action === 'q') this.status = 'quit';
 				else if (action === 'v') {
 					this.hero.mana -= this.hero.permana;
-					this.hero.fatigue -= core.getFlag('deepBreath', 5);
+					this.hero.fatigue -= this.hero.deepBreath;
 					if (this.hero.fatigue < 0) this.hero.fatigue = 0;
 				}
 				else if (action === 'c') this.hero.swordSkill = 'c';
@@ -6704,7 +6883,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * 读取录像的下一项，解析为actionList
 		 */
-		function getActionList(){
+		function getActionList() {
 			let actionList = {};
 			if (core.status.replay.toReplay.length > 0) {
 				const next = core.status.replay.toReplay[0];
@@ -6741,6 +6920,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			if (list.hasOwnProperty(skill) && list[skill].hasOwnProperty(type)) return list[skill][type];
 			else return NaN;
+		}
+
+		/**  是否为法师,成就判断用.条件为特技含有字段“魔法”或“秘术”
+		 * @param {Array} special 
+		*/
+		function isMagician(special) {
+			return hasSpecial(special, [2, 60, 61, 62, 63, 64, 65, 66, 67]);
 		}
 
 		// #endregion
