@@ -6634,7 +6634,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					// 装备流石用C,怪物不加防增气
 				} else enemy.mana += Math.round(damage / 3); // 怪物防增气			
 			}
-		}
+		};
 
 		class Enemy extends ActorBase() {
 			/** 敌人本场战斗累计造成的伤害 */
@@ -6680,7 +6680,252 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {Hero} hero 
 			 */
 			act(hero) {
+				/** 敌人本次攻击对勇士造成的伤害 */
+				let damage = 0,
+					/** 基础伤害，用于反射盾的计算 */
+					oriDamage = 0;
+				/** 敌人的特殊属性数组 */
+				const especial = this.special;
+				/** 敌人的攻击状态 */
+				let atkStatus = {
+					/** 敌人本次攻击对勇士造成的伤害 */
+					damage: 0,
+					/** 敌人本次攻击对公主造成的伤害 */
+					princessDamage: 0,
+					/** 最终BOSS造成的弹跳伤害 */
+					bounceDamage: [0, 0, 0],
+					/** 勇士反射盾反弹的伤害*/
+					reflectDamage: 0,
+					/** 敌人生命回复 */
+					heal: 0,
+					/** 敌人是否被冰冻 */
+					frozen: false,
+					/** 敌人本次攻击是否miss */
+					miss: false,
+					/** 敌人本次攻击是否暴击 */
+					crit: false,
+					/** 敌人是否是魔眼 */
+					evilEye: false,
+					/** 敌人本次攻击的动画*/
+					animate: '',
+					/** 勇士盾牌的动画*/
+					heroAnimate: '',
+				};
+				this.enemy.totalFatigue += this.enemy.fatigue;
+				if (this.checkFrozen()) {
+					atkStatus.frozen = true;
+					return
+				}
+				if (core.hasSpecial(especial, 80)) { // 魔眼
+					atkStatus.evilEye = true;
+					if (hero.def - hero.atk > hero.atkm) damage = 0;
+					else damage = Math.max(this.hero.atk - this.hero.def, 1);
+					if (hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
+						damage = 0;
+						atkStatus.miss = true;
+						hero.totalFatigue -= 100;
+					}
+				}
 
+				//// 判断敌人攻击范围atkStatus.aim////
+				if (core.hasSpecial(especial, [61, 62, 63, 64, 65])) {
+					atkStatus.aim = 'all';
+					atkStatus.princessDamage = Math.max(this.enemy.atk - this.hero.mdef, 0);
+				} else if (core.hasSpecial(especial, 55)) {
+					atkStatus.aim = 'princess';
+					atkStatus.princessDamage = this.enemy.atk;
+				} else { atkStatus.aim = 'hero'; }
+				if (hasSpecial(especial, 93)) // 魔界之王古顿
+				{
+					atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
+						Math.round(0.64 * damage), Math.round(0.512 * damage)
+					];
+					atkStatus.aim = 'lastBoss';
+				}
+
+				if (hasSpecial(especial, [2, 61, 62, 63, 64, 65, 66])) damage = this.atk; // 魔攻
+
+				else {
+					if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
+					else damage = Math.max(this.enemy.atk - this.hero.def, 1);
+				}
+
+				// 判断敌人是否暴击atkStatus.crit
+				if (this.mana >= this.manamax && hero.def - this.atk < hero.defm) {
+					//满气息时怪物释放必杀，但若不能破防主角则永远不会释放
+					if (core.hasSpecial(especial, 91)) {
+						// 剑大师不会释放必杀
+					} else {
+						let critRatio = 2;
+						if (hasSpecial(especial, 51)) critRatio = 2.5;
+						if (hasSpecial(especial, 59)) critRatio = 4;
+						if (hasSpecial(especial, 67)) critRatio = 3;
+						damage = Math.round(critRatio * damage);
+						princessDamage = Math.round(critRatio * princessDamage);
+						this.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
+						atkStatus.crit = true; //暴击
+					}
+					this.mana = 0;
+				}
+
+				if (this.shieldSkill.length > 0) {
+					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
+					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
+				}
+				/** 本回合是否成功开启反射盾 */
+				let reflect = false;
+				switch (this.shieldSkill) { //盾技
+					case 'M': //镜膜盾
+						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
+						atkStatus.heroAnimate = "gsh1";
+						break;
+					case 'C': //结晶盾
+						damage = Math.ceil(damage / 1.5);
+						if (this.id === 'bluePriest') this.magicIce = true; //制取魔法冰块
+						// this.enemy.freeze = 2 * combo - this.turn % (combo + 1); ???
+						atkStatus.heroAnimate = "gsh2";
+						break;
+					case 'R': //反射
+						oriDamage = damage;
+						damage = Math.ceil(damage / 1.3);
+						reflect = true;
+						atkStatus.heroAnimate = "gsh3";
+						break;
+					case 'F': //精灵罩
+						hero.fairy = 3;
+						hero.fairyBuff = (hero.orihp + hero.def) % hero.lv;
+						hero.def += hero.fairyBuff;
+						if (isMagician()) hero.smartCast = true;
+						atkStatus.heroAnimate = "gsh4";
+						break;
+					case 'E': //贤者结界
+						this.hero.hpmax += Math.round(1.5 * damage);
+						atkStatus.heroAnimate = "gsh5";
+						break;
+					default:
+						break;
+				}
+				hero.shieldSkill = '';
+
+				if (this.checkMiss()) atkStatus.miss = true;
+				else {
+					if (core.hasSpecial(especial, 91)) { // 剑大师
+						switch (this.enemy.sword) {
+							case 0:
+								this.hero.fatigue += 8;
+								this.enemy.sword = 1;
+								break;
+							case 1:
+								this.hero.mana -= this.hero.permana;
+								if (this.hero.mana < 0) this.hero.mana = 0;
+								this.enemy.sword = 2;
+								break;
+							case 2:
+								heal = Math.round(damage / 5);
+								this.enemy.sword = 0;
+								break;
+						}
+					}
+
+					if (hasSpecial(especial, [52,53])) hero.fatigue ++;
+					if (hasSpecial(especial, 54)) hero.fatigue += 3;
+					if (hasSpecial(especial, 56)) hero.fatigue += 4;
+					if (core.hasSpecial(especial, 62)) {
+						this.fatigue -= 1;
+						if (this.fatigue <= 0) this.fatigue = 0;
+					}
+					if (hasSpecial(especial, 58) && atkStatus.crit) hero.mana -= hero.permana;		
+					if (hasSpecial(especial, 65)) { //血秘术
+						heal = Math.round(0.5 * (damage + princessDamage));
+					}
+					if (hasSpecial(especial, [57,66,67])) { //血魔法
+						heal = Math.round(0.5 * damage);
+					}
+					if (hasSpecial(especial, 88)) {
+							hero.mana -= 40;
+							this.mana += 40;					
+					}
+					if (core.hasSpecial(especial, 84)) damage += 100; 
+					// 执行敌人带有的debuff技能
+						if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
+							this.hero.misfortune += 40;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) this.enemy.def -= 12;
+								else this.hero.def -= 12;
+							}
+						} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
+							this.hero.misfortune += 60;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) {
+									this.enemy.atk -= 20;
+									this.enemy.def -= 5;
+								} else {
+									this.hero.atk -= 20;
+									this.hero.def -= 5;
+								}
+							}
+						} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
+							core.hasSpecial(especial, 82)) { // 12-中毒
+							this.hero.misfortune += this.enemy.poisonPoss;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) isPoisoned = true;
+								else if (!core.getFlag('weak')) {
+									core.triggerDebuff('get', 'poison');
+								}
+							}
+						} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
+							this.hero.misfortune += this.enemy.weakPoss;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) {
+									this.enemy.atk -= this.enemy.weakPoint;
+									this.enemy.def -= this.enemy.weakPoint;
+								} else if (!core.getFlag('poison')) {
+									// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
+									core.setFlag('weakV', this.enemy.weakPoint);
+									core.triggerDebuff('get', 'weak');
+								}
+							}
+						}
+
+					
+					this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
+					if (this.hero.fairy > 0) {
+						atkStatus.fairy = true;
+						this.hero.fairy--;
+						if (this.hero.fairy === 0) {
+							this.hero.def -= Math.round(this.hero.def / 50) + (this.hero.orihp % this.hero.lv);
+							this.hero.fairyBuff = 0;
+						}
+					}
+
+					this.totalDamage += damage;
+					hero.hp -= damage;
+					hero.hpmax -= princessDamage;
+					if (core.hasSpecial(especial, 93)) { // 古顿
+						hero.hp -= atkStatus.bounceDamage[2];
+						hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
+						this.totalDamage += atkStatus.bounceDamage[2];
+					}
+				}
+
+				//// 结算反射盾和吸血效果
+				if (reflect) { //反射盾
+					let reflectDamage = Math.round(oriDamage / 2.6 + hero.atk / 10);
+					if (this.status === 'poisoned') reflectDamage += 25; // 反弹中毒会多弹25血
+					atkStatus.reflectDamage = reflectDamage;
+					this.hp -= reflectDamage;
+					if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
+					if (this.hp <= 0) this.hp = 0;
+				}
+				this.hp += atkStatus.heal; //吸血效果
+
+				atkStatus.damage = damage;
+				atkStatus.animate = enemyAni(this.id, atkStatus.crit);
+				this.animateInfo = atkStatus;
 			}
 
 			/** 双方回复气息 
@@ -6706,6 +6951,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							this.mana += Math.round((10 * hero.def) / (this.atk));
 							break;
 					}
+				}
+			}
+
+			/** 执行概率性的负面事件
+			 * 
+			 * @param {Hero} hero 
+			 * @param {Enemy} enemy
+			 * @param {number} probability 敌人触发负面事件的概率
+			 * @param {boolean} reflect 反射盾是否生效
+			 * @param {function} event 敌人触发的负面事件
+			 */
+			execDebuff(hero,enemy,probability,reflect,event){
+				hero.misfortune+=probability;
+				if (hero.misfortune>100){
+					hero.misfortune -= 100;
 				}
 			}
 		}
@@ -6840,6 +7100,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return { success: false, reason: '未定义的行为' };
 			}
 		}
+
 		// #endregion
 
 		// #region 动画
@@ -6927,6 +7188,98 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		*/
 		function isMagician(special) {
 			return hasSpecial(special, [2, 60, 61, 62, 63, 64, 65, 66, 67]);
+		}
+
+		/**  
+		 * 获取敌人攻击动画名称
+		 * @param {string} id
+		 * @param {boolean} critical 
+		 * @returns {string}
+		 */
+		function enemyAni(id, critical) {
+			switch (id) {
+				case 'bat':
+				case 'bigBat':
+				case 'redBat':
+				case 'poisonBat':
+					return critical ? 'g1-cri' : 'g1';
+				case 'bluePriest':
+					return critical ? 'g4-cri' : 'g4'; //初级法师攻击
+				case 'skeletonSoilder':
+				case 'yellowKnight':
+				case 'swordsman':
+					return critical ? 'g5-cri' : 'g5'; //骷髅兵，骑士，双手剑士攻击
+				case 'zombie':
+					return critical ? 'g6-cri' : 'g6'; //兽人攻击
+				case 'grayPriest':
+					return critical ? 'g7-cri' : 'g7'; //中级法师攻击
+				case 'E330':
+				case 'E334':
+					return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人攻击
+				case 'skeletonCaptain':
+				case 'blueKnight':
+				case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
+					return critical ? 'g9-cri' : 'g9';
+				case 'redKnight':
+				case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
+					return critical ? 'g10-cri' : 'g10';
+				case 'redWizard':
+					return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
+				case 'vampire':
+					return critical ? 'g13-cri' : 'g13'; //魔王格勒第攻击
+				case 'E377':
+				case 'E378':
+					return critical ? 'g14-cri' : 'g14'; //弓兵，精锐弓兵攻击
+				case 'magicDragon':
+					return critical ? 'g19-cri' : 'g19'; //恶龙攻击
+				case 'E432':
+					return critical ? 'g20-cri' : 'g20'; //毒龙攻击
+				case 'brownWizard':
+				case 'greenKing':
+					return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
+				case 'redWizard':
+					return critical ? 'g23-cri' : 'g23'; //高级法师攻击
+				case 'redSwordsman':
+					return critical ? 'g24-cri' : 'g24'; //剑王攻击
+				case 'whiteGhost':
+					return critical ? 'g25-cri' : 'g25'; //水银人攻击
+				case 'whiteKing':
+				case 'E413':
+					return critical ? 'g26-cri' : 'g26'; //蓝衣魔王，极地法师攻击
+				case 'skeletonPriest':
+				case 'E444':
+				case 'E442':
+					return critical ? 'g28-cri' : 'g28'; //混沌术士，血使者，血剑士攻击
+				case 'E446':
+					return critical ? 'g29-cri' : 'g29'; //史莱姆阿修罗攻击
+				case 'yellowKing':
+					return critical ? 'g30-cri' : 'g30'; //黄衣魔王攻击
+				case 'redKing':
+					return critical ? 'g31-cri' : 'g31'; //红衣魔王攻击
+				case 'E337':
+					return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆攻击
+				case 'skeletonKing':
+					return critical ? 'g34-cri' : 'g34'; //魔神·些多攻击
+				case 'goldSlime':
+					return critical ? 'g35-cri' : 'g35'; //剑神沙士攻击
+				case 'E380':
+					return critical ? 'g36-cri' : 'g36'; //斗神高巴攻击
+				case 'E379':
+					return critical ? 'g37-cri' : 'g37'; //箭神法比攻击
+				case 'yellowGuard':
+				case 'ghostSkeleton':
+					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
+				case 'E382':
+					return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
+				case 'E436':
+					return critical ? 'g43-cri' : 'g43'; //冥界矮人战士攻击
+				case 'E435':
+					return critical ? 'g44-cri' : 'g44'; //生气灵攻击
+				case 'E447':
+					return critical ? 'g48-cri' : 'g48'; //最终BOSS
+				default:
+					return critical ? 'g2-cri' : 'g2';
+			}
 		}
 
 		// #endregion
