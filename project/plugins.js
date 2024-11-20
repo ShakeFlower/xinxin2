@@ -6227,23 +6227,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		async function battleByTurn(enemyId,x,y) {
 			let battle = new Battle(enemyId,x,y);
 
-			if (!core.isReplaying()) core.lockControl();
+			core.lockControl();
 			while (true) {
-				battle.nextTurn();
-				battle.checkEnd();
 				if (battle.status !== 'pending') break;
 				await Promise.race([
-					new Promise((res) => { setTimeout(res, 1000); }),
+					new Promise((res) => { setTimeout(res, battle.waitTime); }),
 					new Promise((res) => {
 						core.unregisterAction('keyDown', 'quit');
 						core.registerAction('keyDown', 'quit', (keyCode) => {
 							if (keyCode === 81) {
-								battle.status = 'quit';
+								battle.execUserAction('q');
 								res();
 							}
 						})
 					})
 				]);
+				battle.nextTurn();
+				battle.checkEnd();
 				if (battle.status === 'quit') break;
 			}
 			// 获胜时，绘制底边栏
@@ -6266,8 +6266,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} x 
 		 * @param {number} y 
 		 */
-		function battleByTurn_Replaying(enemyId,x,y){
+		function battleByTurn_replaying(enemyId,x,y){
 			let battle = new Battle(enemyId,x,y);
+			let actionList = getActionList();
+			while (battle.status === 'pending') {
+				const currTurn = battle.turn;
+				if (actionList.hasOwnProperty(currTurn)) {
+					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
+						battle.execUserAction(actionList[currTurn][i]);
+					}
+				}
+				if (battle.status === 'quit') break;
+				else battle.nextTurn();
+				if (battle.checkEnd()) break;
+			}	
+			updateHeroStatus(battle);
 		}
 
 		/** 注销所有监听事件和画布 */
@@ -6323,9 +6336,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'quit':
 					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
 					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
-
 					break;
 			}
+			core.updateStatusBar();
 		}
 
 		/**
@@ -6385,6 +6398,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		// #endregion
 
 		// #region 回合制战斗的具体过程
+		const abbreviateList = {
+			'b': 'I315','s': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 
+			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
+		};
 		class ActorBase {
 			_mana;
 			/** 将要被冻结的回合数*/
@@ -6443,9 +6460,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 公主的体力值 */
 			hpmax = core.status.hero.hpmax;
 
-			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 */
-			route = 'bs';
-
 			/** 即将发动的剑技*/
 			swordSkill = '';
 			/** 即将发动的盾技*/
@@ -6472,6 +6486,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			constructor() {
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
 					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakV', 0));
+				/** 一管气息的容量 */
 				this.permana = this.mana / 6;
 
 				if (core.hasFlag('weak')) this.status = 'weak';
@@ -6519,7 +6534,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		class Battle {
 			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 'quit'临阵脱逃*/
 			status = 'pending';
-			/** 玩家是否按下撤退键 */
+			/** 执行下一回合前等待的时间*/
+			waitTime = 500;
+			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 */
+			route = 'bs';
 			/**
 			 * Battle构造函数
 			 * @param {string} enemyId 敌人ID
@@ -6533,16 +6551,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				/** core.material.enemys中的敌人数据 */
 				this.enemyData = core.material.enemys[enemyId];
 
+				/** 本场战斗的勇士 */
 				this.hero = new Hero();
+				/** 本场战斗的敌人 */
 				this.enemy = new Enemy(this.enemyInfo, this.enemyData);
 
+				/** 当前总计进行了多少回合 */
 				this.turn = 0;
+				/** 当前每一轮次的行动次序 */
 				this.order = ((combo) => {
 					let order = ['hero'];
 					for (let i = 0; i < combo; i++) order.push('enemy');
 					return order;
 				})(this.enemy.combo);
+				/** 当前轮次进行到了哪一步 */
 				this.actIndex = 0;
+				/** 当前的行动者 */
 				this.actor = this.order[this.actIndex];
 			}
 
@@ -6569,8 +6593,72 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 			}
 
-			updateHeroStatus() {
+			/**
+			 * 执行用户输入的行为并写入录像
+			 * @param {string} action 用户输入的行为
+			 */
+			execUserAction(action){
+				const outcome = this.canExecAction(action);
+				if (!outcome.success) {
+					if (!core.isReplaying()) {
+						core.playSound('error.mp3');
+						core.drawTip(outcome.reason);
+					}
+					return;
+				}
+				if (action === 'q') this.status = 'quit';
+				else if (action === 'v') {
+					this.hero.mana -= this.hero.permana;
+					this.hero.fatigue -= core.getFlag('deepBreath', 5);
+					if (this.hero.fatigue < 0) this.hero.fatigue = 0;
+				}
+				else if (action === 'c') this.hero.swordSkill = 'c';
 
+				else if (['b', 's', 'd', 'h', 'k'].includes(action)) {
+					const aimSword = abbreviateList[action];
+					this.hero.sword = aimSword;
+					this.hero.swordSkill = action;
+				} else if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
+					const aimShield = abbreviateList[action];
+					this.hero.shield = aimShield;
+					this.hero.shieldSkill = action;
+				}
+				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
+			}
+
+			canExecAction(action) {
+				if (this.status !== 'pending') return { success: false, reason: '战斗已结束' };
+				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
+					const aimSword = abbreviateList[action];
+					if (!core.hasEquip(aimSword) && (!core.hasItem('I325') || !core.hasItem(aimSword)))
+						return { success: false, reason: '当前未持有该剑技' };
+				}
+				if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
+					const aimShield = abbreviateList[action];
+					if (!core.hasEquip(aimShield) && (!core.hasItem('I327') || !core.hasItem(aimShield)))
+						return { success: false, reason: '当前未持有该盾技' };
+				}
+				if (action === 'q')
+					return { success: true, reason: '' };
+				else if (action === 'v') {
+					if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
+					if (this.hero.fatigue <= 0) return { success: false, reason: '当前未处于疲劳状态' };
+					return { success: true, reason: '' };
+				} else if (['b', 's', 'd', 'h', 'k', 'c', 'M', 'C', 'R', 'F', 'E'].includes(action)) { //剑技
+					if (action !== 'c' && this.hero.fatigue >= core.getFlag('tiredMax', 20))
+						return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
+					if (this.hero.lv < getSkill(action, 'lv'))
+						return { success: false, reason: '等级不足' };
+					if (this.hero.mana < getSkill(action, 'cost') * this.hero.permana)
+						return { success: false, reason: '气息不足' };
+					if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
+						return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
+					// 攻小于等于敌人防御，剑技和会心不能使用
+					if (action === 'F' && this.hero.fairy > 0)
+						return { success: false, reason: '精灵罩效果持续期间，不能再发动精灵罩' };
+					return { success: true, reason: '' };
+				}
+				return { success: false, reason: '未定义的行为' };
 			}
 		}
 		// #endregion
@@ -6610,6 +6698,49 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				currTime = timestamp;
 				event();
 			});
+		}
+
+
+		/**
+		 * 读取录像的下一项，解析为actionList
+		 */
+		function getActionList(){
+			let actionList = {};
+			if (core.status.replay.toReplay.length > 0) {
+				const next = core.status.replay.toReplay[0];
+				if (next.startsWith('bs:')) {
+					const nextList = next.split(':');
+					for (let i = 1, l = nextList.length; i < l; i++) {
+						const currTurn = parseInt(nextList[i]);
+						if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
+						actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
+					}
+				}
+			}
+			return actionList;
+		}
+
+		/** 查找技能的对应数据
+		 * @param {string} skill 
+		 * @param {string} type 
+		 * @returns {number}
+		 */
+		function getSkill(skill, type) {
+			const list = {
+				'c': { 'lv': 1, 'cost': 1, 'fatigue': 2 },
+				'b': { 'lv': 1, 'cost': 1, 'fatigue': 10 },
+				's': { 'lv': 20, 'cost': 1, 'fatigue': 4 },
+				'd': { 'lv': 26, 'cost': 1, 'fatigue': 4 },
+				'h': { 'lv': 79, 'cost': 2, 'fatigue': 8 },
+				'k': { 'lv': 100, 'cost': 2, 'fatigue': 30 },
+				'M': { 'lv': 1, 'cost': 1, 'fatigue': 3 },
+				'C': { 'lv': 18, 'cost': 2, 'fatigue': 12 },
+				'R': { 'lv': 28, 'cost': 1, 'fatigue': 3 },
+				'F': { 'lv': 57, 'cost': 2, 'fatigue': 9 },
+				'E': { 'lv': 100, 'cost': 2, 'fatigue': 2 },
+			}
+			if (list.hasOwnProperty(skill) && list[skill].hasOwnProperty(type)) return list[skill][type];
+			else return NaN;
 		}
 
 		// #endregion
