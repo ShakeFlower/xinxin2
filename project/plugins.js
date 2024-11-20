@@ -6186,6 +6186,36 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #region 回合制战斗的执行
 
+		// 逻辑 执行battle.nextTurn()后，立即检查状态是否为End 不是则立即跳出循环并同步状态 按Quit也立即跳出循环并同步状态
+		// promise.race
+		async function battleByTurn(){
+			let battle = new Battle();
+
+			let wait = Promise.race([
+				new Promise((res) => {
+					battle.nextTurn();
+					if (battle.isBattleEnd) {
+						res();
+					}
+					setTimeout(res, 1000);
+				}),
+				new Promise((res) => {
+					core.unregisterAction('keyDown', 'quit');
+					core.registerAction('keyDown', 'quit', (keyCode) => {
+						if (keyCode === 81) {
+							battle.isBattleEnd = true;
+							res();
+						}
+					})
+				})
+			])
+			await wait.then(()=>{
+				if (!battle.isBattleEnd) return wait;
+				else return new Promise();
+			}
+			)
+
+		}
 		// #endregion
 
 		// #region 回合制战斗的具体过程
@@ -6201,7 +6231,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else if (value > this.manamax) this._mana = this.manamax;
 				else this._mana = value;
 			};
-			constructor(hp,atk,def,manamax,mana) {
+			constructor(hp, atk, def, manamax, mana, weakPoint) {
 				this.hp = hp;
 				this.atk = atk;
 				this.def = def;
@@ -6211,21 +6241,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.mana = mana;
 				/** 疲劳值。每回合，疲劳计数会增加该值*/
 				this.fatigue = 0;
-				/** 疲劳计数，超过100时将会MISS*/
+				/** 疲劳计数，超过100时将会MISS并减少100该计数*/
 				this.totalFatigue = 0;
+				/** 对于勇士，为其本次战斗中受到衰弱累计减少的属性。对于敌人，为其造成一次衰弱效果降低属性的值。*/
+				this.weakPoint = weakPoint;
 			};
 
-			checkFrozen(){
-				if (this.freeze>0){
+			checkFrozen() {
+				if (this.freeze > 0) {
 					this.freeze--;
 					return true;
 				}
 				return false;
 			}
 
-			checkMiss(){
+			checkMiss() {
 				this.totalFatigue += this.fatigue;
-				if (this.totalFatigue>100){
+				if (this.totalFatigue > 100) {
 					this.totalFatigue -= -100;
 					return true;
 				}
@@ -6234,7 +6266,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		}
 
-		class Hero extends ActorBase{
+		class Hero extends ActorBase {
 			/** 攻击临界值 */
 			atkm = core.getFlag('atkm', 10);
 			/** 防御临界值 */
@@ -6244,41 +6276,124 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			hpmax = core.status.hero.hpmax;
 
 			/** 即将发动的剑技*/
-			swordSkill = ''; 
+			swordSkill = '';
 			/** 即将发动的盾技*/
-			shieldSkill = ''; 
+			shieldSkill = '';
 			/** 当前装备的剑技*/
-			swordEquiped=core.items.getEquip(0); 
+			swordEquiped = core.items.getEquip(0);
 			/** 当前装备的盾技*/
-			shieldEquiped=core.items.getEquip(1); 
+			shieldEquiped = core.items.getEquip(1);
 
 			/** 负面事件计数 */
 			misfortune = 0;
 
 			/** 本次战斗凡骨剑转化的攻防计数 */
-			bone= 0; 
+			bone = 0;
 			/** 精灵罩剩余使用次数*/
-			fairy = 0; 
+			fairy = 0;
 			/** 精灵罩防御增加量*/
-			fairyBuff=0; 	
+			fairyBuff = 0;
 			/** 初始血量，影响精灵罩加防数值*/
-			orihp = core.status.hero.hp; 
+			orihp = core.status.hero.hp;
 			/** 本场战斗是否达成智能施法成就的完成条件 */
 			smartCast = false;
 
-			constructor(){
-				super(core.status.hero.hp,core.status.hero.atk,core.status.hero.def,
-					core.status.hero.manamax,core.status.hero.mana);
-				this.permana = this.mana/6;
+			constructor() {
+				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
+					core.status.hero.manamax, core.status.hero.mana, 0);
+				this.permana = this.mana / 6;
 			}
 		}
 
-		class Enemy extends ActorBase(){
-
-			constructor(data){
-				super(info.hp,info.atk,info.def,this.data.manamax,0);
+		class Enemy extends ActorBase() {
+			/** 敌人本场战斗的累计伤害 */
+			totalDamage = 0;
+			/** 剑大师，盾大师当前的行动阶段 */
+			phase = 0;
+			/** 敌人本场战斗是否掉落魔法冰块 */
+			magicIce = false;
+			/**
+			 * Enemy构造函数
+			 * @param {object} info enemyInfo
+			 * @param {object} data core.material.enemys中的敌人数据
+			 */
+			constructor(info, data) {
+				super(info.hp, info.atk, info.def,
+					data.manamax, data.id === 'E437' ? 0 : 10, data.damage || 0);
 				/** 敌人的英文id */
 				this.id = id;
+				/** 敌人的特殊属性数组
+				 * @type {Array}
+				 */
+				this.special = ((special) => {
+					if (typeof special === 'number') return [special];
+					else if (special instanceof Array) return special;
+					else return [];
+				})(info.special);
+				/** 敌人的连击数 */
+				this.combo = ((special) => {
+					if (hasSpecial(special, [4, 53])) return 2;
+					else if (hasSpecial(special, [5, 83])) return 3;
+					else if (hasSpecial(special, 6)) return data.n || 1;
+					else if (hasSpecial(special, 87)) return 6;
+					else return 1;
+				})(this.special);
+
+			}
+		}
+
+		class Battle {
+			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 */
+			status = 'pending';
+			/** 玩家是否按下撤退键 */
+			isQuit = false;
+			/**
+			 * Battle构造函数
+			 * @param {string} enemyId 敌人ID
+			 * @param {number} x 敌人所在x坐标
+			 * @param {number} y 敌人所在y坐标
+			 */
+			constructor(enemyId, x, y) {
+				const enemyInfo = core.enemys.getEnemyInfo(enemyIdid, null, x, y, core.status.floorId),
+					enemyData = core.material.enemys[enemyId];
+
+				this.hero = new Hero();
+				this.enemy = new Enemy(enemyInfo, enemyData);
+
+				this.turn = 0;
+				this.order = ((combo) => {
+					let order = ['hero'];
+					for (let i = 0; i < combo; i++) order.push('enemy');
+					return order;
+				})(this.enemy.combo);
+				this.actIndex = 0;
+				this.actor = this.order[this.actIndex];
+			}
+
+			nextTurn() {
+				switch (this.actor) {
+					case 'hero':
+						this.hero.Act();
+						break;
+					case 'enemy':
+						this.enemy.Act();
+						break;
+				}
+				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
+				this.actor = this.order[this.actIndex];
+				this.turn++;
+			}
+
+			checkEnd(){
+				if (this.hero.hp<=0 || this.hero.hpmax<=0) {
+					this.status = 'lose';
+				}
+				else if (this.enemy.hp<=0) {
+					this.status = 'win';
+				}
+			}
+
+			updateHeroStatus(){
 				
 			}
 		}
@@ -6289,6 +6404,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		// #endregion
 
 		// #region 工具函数
+
+		/** 判断敌人是否具有列表中的某项特殊属性
+		 * @param {Array} enemySpecial 
+		 * @param {Array | number} specialList 
+		 * @returns {boolean}
+		 */
+		function hasSpecial(enemySpecial, specialList) {
+			const setA = new Set(enemySpecial);
+			if (typeof specialList === 'number') return enemySpecial.includes(specialList);
+			for (let element of specialList) {
+				if (setA.has(element)) {
+					return true;
+				}
+			}
+			return false;
+		}
 
 		// #endregion
 	}
