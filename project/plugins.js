@@ -1,6 +1,7 @@
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+///<reference path="../types/core.d.ts" />
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
-    "init": function () {
+	"init": function () {
 
 		console.log("插件编写测试");
 
@@ -1303,7 +1304,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "drawLight": function () {
+	"drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1364,7 +1365,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-    "shop": function () {
+	"shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1549,7 +1550,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-    "removeMap": function () {
+	"removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1636,7 +1637,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-    "fiveLayers": function () {
+	"fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1791,7 +1792,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-    "itemShop": function () {
+	"itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2097,7 +2098,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "enemyLevel": function () {
+	"enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2185,7 +2186,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-    "dynamicHp": function () {
+	"dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2217,7 +2218,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-    "multiHeros": function () {
+	"multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2362,7 +2363,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-    "itemCategory": function () {
+	"itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2500,7 +2501,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-    "heroFourFrames": function () {
+	"heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2555,7 +2556,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-    "startCanvas": function () {
+	"startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2641,7 +2642,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "自动拾取": function () {
+	"自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2795,7 +2796,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-    "修复装备Bug": function () {
+	"修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -2928,7 +2929,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "战斗画面": function () {
+	"战斗画面": function () {
 		// 在此增加新插件
 
 		const fontSize = 18; // 战斗角色名字的字体大小
@@ -3324,7 +3325,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return id;
 		}
 	},
-    "新版道具栏": function () {
+	"新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -4315,7 +4316,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "跳字插件": function () {
+	"跳字插件": function () {
 		// 在此增加新插件
 
 		let sTextList = new Set([]);
@@ -4423,7 +4424,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		})
 
 	},
-    "切装事件": function () {
+	"切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4481,7 +4482,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "自定义设置": function () {
+	"自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4721,7 +4722,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4888,7 +4889,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "成就": function () {
+	"成就": function () {
 		// 在此增加新插件
 
 		const PX = core.__PIXELS__,
@@ -5146,7 +5147,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "战后事件": function () {
+	"战后事件": function () {
 
 		// 执行战后事件
 		this.afterBattleInTurn = function (battle) {
@@ -5209,991 +5210,1030 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "战斗过程": function () {
-	// 在此增加新插件
+	"战斗过程": function () {
+		// 在此增加新插件
 
-	const abbreviateList = { 'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320', };
+		const abbreviateList = { 'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320', };
 
-	class GameCore {
-		constructor(enemy) {
-			this.isBattleEnd = false;
-			this.turn = 0; //当前回合数
-			this.hero = {
-				'hp': core.status.hero.hp,
-				'atk': core.status.hero.atk,
-				'def': core.status.hero.def,
-				'mdef': core.status.hero.mdef, //公主的魔法防御
-				'mana': core.status.hero.mana,
-				'manamax': core.status.hero.manamax,
-				'permana': core.status.hero.manamax / 6, //每一管气息的长度
-				'hpmax': core.status.hero.hpmax, // 公主体力
-				'fatigue': 0, //疲劳
-				'misfortune': 0, //负面事件计数
-				'totalFatigue': 0, //总疲劳计数
-				'atkm': core.getFlag('atkm', 10),
-				'defm': core.getFlag('defm', 40), //攻防临界值
-				'lv': core.status.hero.lv,
-				'freeze': false, //本回合是否不能行动 结晶盾特效
-				'fairy': 0, // 精灵罩剩余使用次数
-				'fairyBuff': 0, // 精灵罩防御增加量	
-				'orihp': core.status.hero.hp, // 初始血量，影响精灵罩加防数值
-				'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
-				'bone': 0, // 开启凡骨转化的攻防计数，攻防的绘制改变
-				'sword': core.items.getEquip(0), //当前装备的剑技
-				'shield': core.items.getEquip(1), //当前装备的盾技
-				'smartCast': false, //是否完成智能施法成就
-			}
-			this.enemy = {
-				'id': enemy.id,
-				'name': enemy.name, // 敌人中文名
-				'hp': enemy.hp,
-				'atk': enemy.atk,
-				'def': enemy.def,
-				'fatigue': 0,
-				'totalFatigue': 0, //总疲劳计数
-				'hasMisfortune': core.hasSpecial(enemy.special, 12) || core.hasSpecial(enemy.special, 13) ||
-					core.hasSpecial(enemy.special, 61) || core.hasSpecial(enemy.special, 82) ||
-					core.hasSpecial(enemy.special, 87) || core.hasSpecial(enemy.special, 81) ||
-					core.hasSpecial(enemy.special, 89), //该敌人是否带有负面事件
-				'poisonPoss': enemy.atkValue || 0,
-				'weakPoss': enemy.defValue || 0,
-				'weakPoint': enemy.damage || 0,
-				'mana': enemy.id === 'E437' ? 10 : 0,
-				'manamax': enemy.manamax, // 敌人最大气息值
-				'special': enemy.special, // 敌人特殊属性
-				'type': enemy.type, // 敌人为enemys还是enemy48 绘制用
-				'x': enemy.x,
-				'y': enemy.y,
-				'money': enemy.money,
-				'exp': enemy.exp,
-				'totalDamage': 0, // 对角色累计造成的伤害
-				'turn': 0, //敌人累计行动轮次
-				'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
-				'combo': enemy.combo, //敌人连击数
-				'freeze': 0, //被冰冻的回合数,结晶盾特效
-				'magicIce': false, // 产出魔法冰块
-				'sword': 0, //剑大师计数
-				'shield': 0, //盾大师计数
-			}
-			this.actor = 'hero'; // 本回合行动角色
-			this.swordSkill = ''; // 当前剑技
-			this.shieldSkill = ''; // 当前盾技
-			this.isQuit = false; // 玩家是否从战斗中撤退。
-			this.route = 'bs'; //角色的操作序列(bs即battleSkill)
-		}
-
-		static getSkill(skill, type) {
-			const list = {
-				'c': { 'lv': 1, 'cost': 1, 'fatigue': 2 },
-				'b': { 'lv': 1, 'cost': 1, 'fatigue': 10 },
-				's': { 'lv': 20, 'cost': 1, 'fatigue': 4 },
-				'd': { 'lv': 26, 'cost': 1, 'fatigue': 4 },
-				'h': { 'lv': 79, 'cost': 2, 'fatigue': 8 },
-				'k': { 'lv': 100, 'cost': 2, 'fatigue': 30 },
-				'M': { 'lv': 1, 'cost': 1, 'fatigue': 3 },
-				'C': { 'lv': 18, 'cost': 2, 'fatigue': 12 },
-				'R': { 'lv': 28, 'cost': 1, 'fatigue': 3 },
-				'F': { 'lv': 57, 'cost': 2, 'fatigue': 9 },
-				'E': { 'lv': 100, 'cost': 2, 'fatigue': 2 },
-			}
-			if (list.hasOwnProperty(skill)) return list[skill][type];
-		}
-
-		canExecAction(action) {
-			if (this.isQuit || this.isBattleEnd) return { success: false, reason: '战斗已结束' };
-			if (['b', 's', 'd', 'h', 'k'].includes(action)) {
-				const aimSword = abbreviateList[action];
-				if (!core.hasEquip(aimSword) && (!core.hasItem('I325') || !core.hasItem(aimSword)))
-					return { success: false, reason: '当前未持有该剑技' };
-			}
-			if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
-				const aimShield = abbreviateList[action];
-				if (!core.hasEquip(aimShield) && (!core.hasItem('I327') || !core.hasItem(aimShield)))
-					return { success: false, reason: '当前未持有该盾技' };
-			}
-			if (action === 'q')
-				return { success: true, reason: '' };
-			else if (action === 'v') {
-				if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
-				if (this.hero.fatigue <= 0) return { success: false, reason: '当前未处于疲劳状态' };
-				return { success: true, reason: '' };
-			} else if (['b', 's', 'd', 'h', 'k', 'c', 'M', 'C', 'R', 'F', 'E'].includes(action)) { //剑技
-				if (action !== 'c' && this.hero.fatigue >= core.getFlag('tiredMax', 20))
-					return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
-				if (this.hero.lv < this.constructor.getSkill(action, 'lv'))
-					return { success: false, reason: '等级不足' };
-				if (this.hero.mana < this.constructor.getSkill(action, 'cost') * this.hero.permana)
-					return { success: false, reason: '气息不足' };
-				if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
-					return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
-				// 攻小于等于敌人防御，剑技和会心不能使用
-				if (action === 'F' && this.hero.fairy > 0)
-					return { success: false, reason: '精灵罩效果持续期间，不能再发动精灵罩' };
-				return { success: true, reason: '' };
-			}
-			return { success: false, reason: '未定义的行为' };
-		}
-
-		execInstantAction(action) {
-			const outcome = this.canExecAction(action);
-			if (!outcome.success) {
-				if (!core.isReplaying()) {
-					core.playSound('error.mp3');
-					core.drawTip(outcome.reason);
+		class GameCore {
+			constructor(enemy) {
+				this.isBattleEnd = false;
+				this.turn = 0; //当前回合数
+				this.hero = {
+					'hp': core.status.hero.hp,
+					'atk': core.status.hero.atk,
+					'def': core.status.hero.def,
+					'mdef': core.status.hero.mdef, //公主的魔法防御
+					'mana': core.status.hero.mana,
+					'manamax': core.status.hero.manamax,
+					'permana': core.status.hero.manamax / 6, //每一管气息的长度
+					'hpmax': core.status.hero.hpmax, // 公主体力
+					'fatigue': 0, //疲劳
+					'misfortune': 0, //负面事件计数
+					'totalFatigue': 0, //总疲劳计数
+					'atkm': core.getFlag('atkm', 10),
+					'defm': core.getFlag('defm', 40), //攻防临界值
+					'lv': core.status.hero.lv,
+					'freeze': false, //本回合是否不能行动 结晶盾特效
+					'fairy': 0, // 精灵罩剩余使用次数
+					'fairyBuff': 0, // 精灵罩防御增加量	
+					'orihp': core.status.hero.hp, // 初始血量，影响精灵罩加防数值
+					'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
+					'bone': 0, // 开启凡骨转化的攻防计数，攻防的绘制改变
+					'sword': core.items.getEquip(0), //当前装备的剑技
+					'shield': core.items.getEquip(1), //当前装备的盾技
+					'smartCast': false, //是否完成智能施法成就
 				}
-				return;
-			}
-			switch (action) {
-			case 'q':
-				this.isQuit = true;
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'q'; //撤退
-				this.battleEnd();
-				break;
-			case 'v':
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'v'; //深呼吸
-				this.hero.mana -= this.hero.permana;
-				this.hero.fatigue -= core.getFlag('deepBreath', 5);
-				if (this.hero.fatigue < 0) this.hero.fatigue = 0;
-				break;
-			}
-		}
-
-		// 录像格式 bs:3f:3v:5q => 第3回合凡骨+深呼吸，第5回合逃跑
-		// 只记录有效技能，b-凡骨(bone)，s-流石(stone)，d-深红(darkRed)，h-天灵(heaven)，k-皇者(king)，c-会心一击
-		// M-镜膜盾(mirror)，C-结晶盾(crystal)，R-反射盾(reflection),F-精灵罩(fairy),E-贤者结界(enchantment)
-		execUserAction(action) {
-			const outcome = this.canExecAction(action);
-			if (!outcome.success) {
-				if (!core.isReplaying()) {
-					core.playSound('error.mp3');
-					core.drawTip(outcome.reason);
+				this.enemy = {
+					'id': enemy.id,
+					'name': enemy.name, // 敌人中文名
+					'hp': enemy.hp,
+					'atk': enemy.atk,
+					'def': enemy.def,
+					'fatigue': 0,
+					'totalFatigue': 0, //总疲劳计数
+					'hasMisfortune': core.hasSpecial(enemy.special, 12) || core.hasSpecial(enemy.special, 13) ||
+						core.hasSpecial(enemy.special, 61) || core.hasSpecial(enemy.special, 82) ||
+						core.hasSpecial(enemy.special, 87) || core.hasSpecial(enemy.special, 81) ||
+						core.hasSpecial(enemy.special, 89), //该敌人是否带有负面事件
+					'poisonPoss': enemy.atkValue || 0,
+					'weakPoss': enemy.defValue || 0,
+					'weakPoint': enemy.damage || 0,
+					'mana': enemy.id === 'E437' ? 10 : 0,
+					'manamax': enemy.manamax, // 敌人最大气息值
+					'special': enemy.special, // 敌人特殊属性
+					'type': enemy.type, // 敌人为enemys还是enemy48 绘制用
+					'x': enemy.x,
+					'y': enemy.y,
+					'money': enemy.money,
+					'exp': enemy.exp,
+					'totalDamage': 0, // 对角色累计造成的伤害
+					'turn': 0, //敌人累计行动轮次
+					'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
+					'combo': enemy.combo, //敌人连击数
+					'freeze': 0, //被冰冻的回合数,结晶盾特效
+					'magicIce': false, // 产出魔法冰块
+					'sword': 0, //剑大师计数
+					'shield': 0, //盾大师计数
 				}
-				return;
+				this.actor = 'hero'; // 本回合行动角色
+				this.swordSkill = ''; // 当前剑技
+				this.shieldSkill = ''; // 当前盾技
+				this.isQuit = false; // 玩家是否从战斗中撤退。
+				this.route = 'bs'; //角色的操作序列(bs即battleSkill)
 			}
-			if (action === 'c') {
-				this.swordSkill = 'c';
-			}
-			if (['b', 's', 'd', 'h', 'k'].includes(action)) {
-				const aimSword = abbreviateList[action];
-				this.hero.sword = aimSword;
-				this.swordSkill = action;
-			} else if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
-				const aimShield = abbreviateList[action];
-				this.hero.shield = aimShield;
-				this.shieldSkill = action;
-			}
-			if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
-		}
 
-		isMagician() { // 是否为法师,成就判断用.条件为特技含有字段“魔法”或“秘术”
-			const especial = this.enemy.special;
-			return core.hasSpecial(especial, 2) || core.hasSpecial(especial, 60) ||
-				core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
-				core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
-				core.hasSpecial(especial, 65) || core.hasSpecial(especial, 66) ||
-				core.hasSpecial(especial, 67);
-		}
-
-		nextTurn() {
-			if (this.isQuit || this.isBattleEnd) return;
-			switch (this.actor) {
-			case 'hero':
-				this.heroAct();
-				break;
-			case 'enemy':
-				this.enemyAct();
-				break;
+			static getSkill(skill, type) {
+				const list = {
+					'c': { 'lv': 1, 'cost': 1, 'fatigue': 2 },
+					'b': { 'lv': 1, 'cost': 1, 'fatigue': 10 },
+					's': { 'lv': 20, 'cost': 1, 'fatigue': 4 },
+					'd': { 'lv': 26, 'cost': 1, 'fatigue': 4 },
+					'h': { 'lv': 79, 'cost': 2, 'fatigue': 8 },
+					'k': { 'lv': 100, 'cost': 2, 'fatigue': 30 },
+					'M': { 'lv': 1, 'cost': 1, 'fatigue': 3 },
+					'C': { 'lv': 18, 'cost': 2, 'fatigue': 12 },
+					'R': { 'lv': 28, 'cost': 1, 'fatigue': 3 },
+					'F': { 'lv': 57, 'cost': 2, 'fatigue': 9 },
+					'E': { 'lv': 100, 'cost': 2, 'fatigue': 2 },
+				}
+				if (list.hasOwnProperty(skill)) return list[skill][type];
 			}
-		}
 
-		battleEnd() {
-			if (!core.isReplaying() && this.route.length > 3) { core.status.route.push(this.route); }
-			if (this.isQuit) {
-				core.status.hero.hp = Math.min(this.hero.hp, core.status.hero.hp);
-				core.status.hero.hpmax = Math.min(this.hero.hpmax, core.status.hero.hpmax);
-			} else {
-				core.status.hero.hp = this.hero.hp;
-				core.status.hero.mana = this.hero.mana;
-				core.status.hero.hpmax = this.hero.hpmax;
+			canExecAction(action) {
+				if (this.isQuit || this.isBattleEnd) return { success: false, reason: '战斗已结束' };
+				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
+					const aimSword = abbreviateList[action];
+					if (!core.hasEquip(aimSword) && (!core.hasItem('I325') || !core.hasItem(aimSword)))
+						return { success: false, reason: '当前未持有该剑技' };
+				}
+				if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
+					const aimShield = abbreviateList[action];
+					if (!core.hasEquip(aimShield) && (!core.hasItem('I327') || !core.hasItem(aimShield)))
+						return { success: false, reason: '当前未持有该盾技' };
+				}
+				if (action === 'q')
+					return { success: true, reason: '' };
+				else if (action === 'v') {
+					if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
+					if (this.hero.fatigue <= 0) return { success: false, reason: '当前未处于疲劳状态' };
+					return { success: true, reason: '' };
+				} else if (['b', 's', 'd', 'h', 'k', 'c', 'M', 'C', 'R', 'F', 'E'].includes(action)) { //剑技
+					if (action !== 'c' && this.hero.fatigue >= core.getFlag('tiredMax', 20))
+						return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
+					if (this.hero.lv < this.constructor.getSkill(action, 'lv'))
+						return { success: false, reason: '等级不足' };
+					if (this.hero.mana < this.constructor.getSkill(action, 'cost') * this.hero.permana)
+						return { success: false, reason: '气息不足' };
+					if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
+						return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
+					// 攻小于等于敌人防御，剑技和会心不能使用
+					if (action === 'F' && this.hero.fairy > 0)
+						return { success: false, reason: '精灵罩效果持续期间，不能再发动精灵罩' };
+					return { success: true, reason: '' };
+				}
+				return { success: false, reason: '未定义的行为' };
 			}
-			this.isBattleEnd = true;
-		}
 
-		// 攻防后增加气息
-		addMana(actor, damage, enemyCrit) {
-			switch (actor) {
-			case 'hero':
-				if (this.swordSkill.length > 0 || core.hasSpecial(this.enemy.special, 64) ||
-					this.enemy.def >= this.hero.atk) {
-					//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
+			execInstantAction(action) {
+				const outcome = this.canExecAction(action);
+				if (!outcome.success) {
+					if (!core.isReplaying()) {
+						core.playSound('error.mp3');
+						core.drawTip(outcome.reason);
+					}
+					return;
+				}
+				switch (action) {
+					case 'q':
+						this.isQuit = true;
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'q'; //撤退
+						this.battleEnd();
+						break;
+					case 'v':
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'v'; //深呼吸
+						this.hero.mana -= this.hero.permana;
+						this.hero.fatigue -= core.getFlag('deepBreath', 5);
+						if (this.hero.fatigue < 0) this.hero.fatigue = 0;
+						break;
+				}
+			}
+
+			// 录像格式 bs:3f:3v:5q => 第3回合凡骨+深呼吸，第5回合逃跑
+			// 只记录有效技能，b-凡骨(bone)，s-流石(stone)，d-深红(darkRed)，h-天灵(heaven)，k-皇者(king)，c-会心一击
+			// M-镜膜盾(mirror)，C-结晶盾(crystal)，R-反射盾(reflection),F-精灵罩(fairy),E-贤者结界(enchantment)
+			execUserAction(action) {
+				const outcome = this.canExecAction(action);
+				if (!outcome.success) {
+					if (!core.isReplaying()) {
+						core.playSound('error.mp3');
+						core.drawTip(outcome.reason);
+					}
+					return;
+				}
+				if (action === 'c') {
+					this.swordSkill = 'c';
+				}
+				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
+					const aimSword = abbreviateList[action];
+					this.hero.sword = aimSword;
+					this.swordSkill = action;
+				} else if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
+					const aimShield = abbreviateList[action];
+					this.hero.shield = aimShield;
+					this.shieldSkill = action;
+				}
+				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
+			}
+
+			isMagician() { // 是否为法师,成就判断用.条件为特技含有字段“魔法”或“秘术”
+				const especial = this.enemy.special;
+				return core.hasSpecial(especial, 2) || core.hasSpecial(especial, 60) ||
+					core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
+					core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
+					core.hasSpecial(especial, 65) || core.hasSpecial(especial, 66) ||
+					core.hasSpecial(especial, 67);
+			}
+
+			nextTurn() {
+				if (this.isQuit || this.isBattleEnd) return;
+				switch (this.actor) {
+					case 'hero':
+						this.heroAct();
+						break;
+					case 'enemy':
+						this.enemyAct();
+						break;
+				}
+			}
+
+			battleEnd() {
+				if (!core.isReplaying() && this.route.length > 3) { core.status.route.push(this.route); }
+				if (this.isQuit) {
+					core.status.hero.hp = Math.min(this.hero.hp, core.status.hero.hp);
+					core.status.hero.hpmax = Math.min(this.hero.hpmax, core.status.hero.hpmax);
 				} else {
-					this.hero.mana += Math.round((10 * this.enemy.def) / (this.hero.atk)); // 角色攻增气
+					core.status.hero.hp = this.hero.hp;
+					core.status.hero.mana = this.hero.mana;
+					core.status.hero.hpmax = this.hero.hpmax;
 				}
-				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-				if ((this.hero.sword === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
-					// 装备流石用C,怪物不加防增气
-				} else {
-					this.enemy.mana += Math.round(damage / 3); // 怪物防增气
-				}
-				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-				break;
-			case 'enemy':
-				if (core.hasSpecial(this.special, 60) || core.hasSpecial(this.enemy.special, 64)) {
-					//暗魔法无防增气，魔神些多的死寂光环角色不加气
-				} else {
-					this.hero.mana += Math.round(0.1 * damage); // 角色防增气
-				}
-				if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-				if (!enemyCrit && !core.hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
-					if (core.hasSpecial(this.special, 55)) {
-						this.enemy.mana += Math.round((10 * this.hero.mdef) / (this.enemy.atk))
-					} else if (core.hasSpecial(this.special, 61) || core.hasSpecial(this.special, 62) ||
-						core.hasSpecial(this.special, 63) || core.hasSpecial(this.special, 64) ||
-						core.hasSpecial(this.special, 65)) { // 怪物攻增气
-						this.enemy.mana += Math.round((10 * (this.hero.mdef + this.hero.def)) / (this.enemy.atk));
-					} else this.enemy.mana += Math.round((10 * this.hero.def) / (this.enemy.atk));
-				}
-				if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-				break;
+				this.isBattleEnd = true;
 			}
-		}
 
-
-		//角色行动
-		heroAct() {
-			let atkStatus = { 'damage': 0, 'animate': 'g3' };
-			let hdamage = 0;
-			if (this.hero.freeze) { // 冻结，结晶盾特效
-				hdamage = 0;
-				atkStatus.freeze = true;
-				this.hero.freeze = false;
-			} else {
-				// 增加疲劳计数，决定是否miss
-				this.hero.totalFatigue += this.hero.fatigue;
-				if (this.hero.totalFatigue >= 100) {
-					hdamage = 0;
-					atkStatus.miss = true;
-					this.hero.totalFatigue -= 100;
-				}
-
-				// 检测是否发动技能
-				if (this.swordSkill.length > 0) {
-					atkStatus.skill = this.swordSkill;
-					this.hero.mana -= this.constructor.getSkill(this.swordSkill, 'cost') * this.hero.permana;
-					this.hero.fatigue += this.constructor.getSkill(this.swordSkill, 'fatigue');
-				}
-				if (!atkStatus.miss) {
-					if (core.hasSpecial(this.enemy.special, 86)) this.hero.fatigue += 10;
-					switch (this.swordSkill) {
-					case 'c':
-						hdamage = 2 * Math.max(this.hero.atk - this.enemy.def, 1);
-						atkStatus.animate = "g3-cri";
-						break;
-					case 'b': // 凡骨
-						hdamage = Math.round(1.5 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (this.isMagician()) this.hero.smartCast = true;
-						atkStatus.animate = "gsw1";
-						break;
-					case 's': //流石
-						hdamage = Math.round(1.3 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (!core.hasSpecial(this.enemy.special, 64)) //魔神些多的死寂光环下角色不加气
-							this.hero.mana += Math.round(this.enemy.mana / 2);
-						this.enemy.mana -= Math.round(this.enemy.mana / 2);
-						atkStatus.animate = "gsw2";
-						break;
-					case 'd': //深红
-						hdamage = Math.round(0.8 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (hdamage >= this.enemy.hp) hdamage = this.enemy.hp - 1;
-						this.hero.hp += Math.round(0.3 * hdamage);
-						atkStatus.animate = "gsw3";
-						break;
-					case 'h': //天灵
-						hdamage = Math.round(1.8 * Math.max(this.hero.atk - this.enemy.def, 1));
-						this.enemy.fatigue += 15;
-						atkStatus.animate = "gsw4";
-						break;
-					case 'k': // 皇者
-						hdamage = Math.round(5 * Math.max(this.hero.atk - this.enemy.def, 1));
-						if (hdamage >= this.enemy.hp) {
-							hdamage = this.enemy.hp - 1;
-							this.hero.smartCast = true;
+			// 攻防后增加气息
+			addMana(actor, damage, enemyCrit) {
+				switch (actor) {
+					case 'hero':
+						if (this.swordSkill.length > 0 || core.hasSpecial(this.enemy.special, 64) ||
+							this.enemy.def >= this.hero.atk) {
+							//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
+						} else {
+							this.hero.mana += Math.round((10 * this.enemy.def) / (this.hero.atk)); // 角色攻增气
 						}
-						this.hero.atk = this.enemy.def;
-						atkStatus.animate = "gsw5";
+						if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
+						if ((this.hero.sword === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
+							// 装备流石用C,怪物不加防增气
+						} else {
+							this.enemy.mana += Math.round(damage / 3); // 怪物防增气
+						}
+						if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
+						break;
+					case 'enemy':
+						if (core.hasSpecial(this.special, 60) || core.hasSpecial(this.enemy.special, 64)) {
+							//暗魔法无防增气，魔神些多的死寂光环角色不加气
+						} else {
+							this.hero.mana += Math.round(0.1 * damage); // 角色防增气
+						}
+						if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
+						if (!enemyCrit && !core.hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
+							if (core.hasSpecial(this.special, 55)) {
+								this.enemy.mana += Math.round((10 * this.hero.mdef) / (this.enemy.atk))
+							} else if (core.hasSpecial(this.special, 61) || core.hasSpecial(this.special, 62) ||
+								core.hasSpecial(this.special, 63) || core.hasSpecial(this.special, 64) ||
+								core.hasSpecial(this.special, 65)) { // 怪物攻增气
+								this.enemy.mana += Math.round((10 * (this.hero.mdef + this.hero.def)) / (this.enemy.atk));
+							} else this.enemy.mana += Math.round((10 * this.hero.def) / (this.enemy.atk));
+						}
+						if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
+						break;
+				}
+			}
+
+
+			//角色行动
+			heroAct() {
+				let atkStatus = { 'damage': 0, 'animate': 'g3' };
+				let hdamage = 0;
+				if (this.hero.freeze) { // 冻结，结晶盾特效
+					hdamage = 0;
+					atkStatus.freeze = true;
+					this.hero.freeze = false;
+				} else {
+					// 增加疲劳计数，决定是否miss
+					this.hero.totalFatigue += this.hero.fatigue;
+					if (this.hero.totalFatigue >= 100) {
+						hdamage = 0;
+						atkStatus.miss = true;
+						this.hero.totalFatigue -= 100;
+					}
+
+					// 检测是否发动技能
+					if (this.swordSkill.length > 0) {
+						atkStatus.skill = this.swordSkill;
+						this.hero.mana -= this.constructor.getSkill(this.swordSkill, 'cost') * this.hero.permana;
+						this.hero.fatigue += this.constructor.getSkill(this.swordSkill, 'fatigue');
+					}
+					if (!atkStatus.miss) {
+						if (core.hasSpecial(this.enemy.special, 86)) this.hero.fatigue += 10;
+						switch (this.swordSkill) {
+							case 'c':
+								hdamage = 2 * Math.max(this.hero.atk - this.enemy.def, 1);
+								atkStatus.animate = "g3-cri";
+								break;
+							case 'b': // 凡骨
+								hdamage = Math.round(1.5 * Math.max(this.hero.atk - this.enemy.def, 1));
+								if (this.isMagician()) this.hero.smartCast = true;
+								atkStatus.animate = "gsw1";
+								break;
+							case 's': //流石
+								hdamage = Math.round(1.3 * Math.max(this.hero.atk - this.enemy.def, 1));
+								if (!core.hasSpecial(this.enemy.special, 64)) //魔神些多的死寂光环下角色不加气
+									this.hero.mana += Math.round(this.enemy.mana / 2);
+								this.enemy.mana -= Math.round(this.enemy.mana / 2);
+								atkStatus.animate = "gsw2";
+								break;
+							case 'd': //深红
+								hdamage = Math.round(0.8 * Math.max(this.hero.atk - this.enemy.def, 1));
+								if (hdamage >= this.enemy.hp) hdamage = this.enemy.hp - 1;
+								this.hero.hp += Math.round(0.3 * hdamage);
+								atkStatus.animate = "gsw3";
+								break;
+							case 'h': //天灵
+								hdamage = Math.round(1.8 * Math.max(this.hero.atk - this.enemy.def, 1));
+								this.enemy.fatigue += 15;
+								atkStatus.animate = "gsw4";
+								break;
+							case 'k': // 皇者
+								hdamage = Math.round(5 * Math.max(this.hero.atk - this.enemy.def, 1));
+								if (hdamage >= this.enemy.hp) {
+									hdamage = this.enemy.hp - 1;
+									this.hero.smartCast = true;
+								}
+								this.hero.atk = this.enemy.def;
+								atkStatus.animate = "gsw5";
+								break;
+							default:
+								hdamage = Math.max(this.hero.atk - this.enemy.def, 1);
+								break;
+						}
+						if (this.enemy.def - this.hero.atk > this.hero.atkm) hdamage = 0; //攻临界
+						this.addMana(this.actor, hdamage);
+					}
+					if (this.swordSkill === 'b' && Math.round(1.5 * (this.hero.atk - this.enemy.def)) < this.hero.lv) {
+						// 伤害太低时，发动凡骨只有伤害1.5倍的效果，属性不增加
+						this.hero.atk += Math.round(1.5 * this.hero.lv);
+						this.hero.def -= this.hero.lv;
+						this.hero.bone += this.hero.lv;
+					}
+					this.swordSkill = ''; // 需要根据本回合剑技判断气息增减
+
+					if (core.hasSpecial(this.enemy.special, 92)) { // 盾大师
+						switch (this.enemy.shield) {
+							case 0:
+								hdamage = Math.round(hdamage / 2);
+								this.enemy.shield = 1;
+								break;
+							case 1:
+								this.hero.freeze = true;
+								this.enemy.shield = 2;
+								break;
+							case 2:
+								this.hero.hp -= Math.round(hdamage / 4);
+								this.enemy.shield = 0;
+								break;
+						}
+					}
+
+					atkStatus.damage = hdamage;
+					this.enemy.hp -= hdamage;
+					if (this.enemy.hp <= 0) {
+						this.enemy.hp = 0;
+						this.battleEnd();
+					}
+					if (this.hero.hp <= 0) {
+						this.battleEnd();
+					}
+				}
+				this.hero.atkStatus = atkStatus;
+				this.actor = 'enemy';
+				this.turn++;
+			}
+
+			//敌人行动
+			enemyAct() {
+				this.enemy.turn++;
+				let damage = 0,
+					oriDamage = 0,
+					princessDamage = 0, //公主受到的伤害
+					heal = 0, //敌人吸血回复
+					isPoisoned = false; // 是否被反射盾反弹中毒
+				let atkStatus = { 'damage': 0 };
+				const combo = this.enemy.combo,
+					especial = this.enemy.special;
+				this.enemy.totalFatigue += this.enemy.fatigue;
+				if (this.enemy.freeze > 0) {
+					atkStatus.freeze = true;
+					this.enemy.freeze--;
+				} else {
+					if (core.hasSpecial(especial, 80)) { // 魔眼
+						if (this.hero.def - this.hero.atk > this.hero.atkm) damage = 0;
+						else damage = Math.max(this.hero.atk - this.hero.def, 1);
+					} else if (core.hasSpecial(especial, 2) || core.hasSpecial(especial, 61) ||
+						core.hasSpecial(especial, 62) || core.hasSpecial(especial, 63) ||
+						core.hasSpecial(especial, 64) || core.hasSpecial(especial, 65) ||
+						core.hasSpecial(especial, 66)) { //魔攻
+						damage = this.enemy.atk;
+					} else {
+						if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
+						else damage = Math.max(this.enemy.atk - this.hero.def, 1);
+					}
+					if (core.hasSpecial(especial, 80) && this.hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
+						damage = 0;
+						atkStatus.miss = true;
+						this.hero.totalFatigue -= 100;
+					} else if (this.enemy.totalFatigue >= 100) {
+						damage = 0;
+						atkStatus.miss = true;
+						this.enemy.totalFatigue -= 100;
+					}
+					if (this.shieldSkill.length > 0) {
+						this.hero.mana -= this.constructor.getSkill(this.shieldSkill, 'cost') * this.hero.permana;
+						this.hero.fatigue += this.constructor.getSkill(this.shieldSkill, 'fatigue');
+					}
+					if (core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
+						core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
+						core.hasSpecial(especial, 65)) {
+						atkStatus.aim = 'all';
+						princessDamage = Math.max(this.enemy.atk - this.hero.mdef, 0);
+					} else if (core.hasSpecial(especial, 55)) {
+						atkStatus.aim = 'princess';
+						princessDamage = this.enemy.atk;
+					} else { atkStatus.aim = 'hero'; }
+					if (atkStatus.miss) princessDamage = 0;
+
+					if (this.enemy.mana >= this.enemy.manamax &&
+						this.hero.def - this.enemy.atk < this.hero.defm) { //满气息时怪物释放必杀，但若不能破防主角则永远不会释放
+						if (core.hasSpecial(especial, 91)) { } else {
+							let critRatio = 2;
+							if (core.hasSpecial(especial, 51)) critRatio = 2.5;
+							if (core.hasSpecial(especial, 59)) critRatio = 4;
+							if (core.hasSpecial(especial, 67)) critRatio = 3;
+							damage = Math.round(critRatio * damage);
+							princessDamage = Math.round(critRatio * princessDamage);
+							this.enemy.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
+							atkStatus.crit = true; //暴击
+						}
+						this.enemy.mana = 0;
+					}
+				}
+				let reflect = false;
+				switch (this.shieldSkill) { //盾技
+					case 'M': //镜膜盾
+						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'M';
+						atkStatus.heroAnimate = "gsh1";
+						break;
+					case 'C': //结晶盾
+						damage = Math.ceil(damage / 1.5);
+						atkStatus.freeze = true;
+						if (this.enemy.id === 'bluePriest') this.enemy.magicIce = true; //制取魔法冰块
+						this.enemy.freeze = 2 * combo - this.turn % (combo + 1);
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'C';
+						atkStatus.heroAnimate = "gsh2";
+						break;
+					case 'R': //反射
+						oriDamage = damage;
+						damage = Math.ceil(damage / 1.3);
+						reflect = true;
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'R';
+						atkStatus.heroAnimate = "gsh3";
+						break;
+					case 'F': //精灵罩
+						this.hero.fairy = 3;
+						this.hero.fairyBuff = (this.hero.orihp + this.hero.def) % this.hero.lv;
+						this.hero.def += this.hero.fairyBuff;
+						if (this.isMagician()) this.hero.smartCast = true;
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'F';
+						atkStatus.heroAnimate = "gsh4";
+						break;
+					case 'E': //贤者结界
+						this.hero.hpmax += Math.round(1.5 * damage);
+						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'E';
+						atkStatus.heroAnimate = "gsh5";
 						break;
 					default:
-						hdamage = Math.max(this.hero.atk - this.enemy.def, 1);
 						break;
+				}
+				if (!atkStatus.freeze && !atkStatus.miss) {
+					if (core.hasSpecial(especial, 91)) { // 剑大师
+						switch (this.enemy.sword) {
+							case 0:
+								this.hero.fatigue += 8;
+								this.enemy.sword = 1;
+								break;
+							case 1:
+								this.hero.mana -= this.hero.permana;
+								if (this.hero.mana < 0) this.hero.mana = 0;
+								this.enemy.sword = 2;
+								break;
+							case 2:
+								heal = Math.round(damage / 5);
+								this.enemy.sword = 0;
+								break;
+						}
 					}
-					if (this.enemy.def - this.hero.atk > this.hero.atkm) hdamage = 0; //攻临界
-					this.addMana(this.actor, hdamage);
-				}
-				if (this.swordSkill === 'b' && Math.round(1.5 * (this.hero.atk - this.enemy.def)) < this.hero.lv) {
-					// 伤害太低时，发动凡骨只有伤害1.5倍的效果，属性不增加
-					this.hero.atk += Math.round(1.5 * this.hero.lv);
-					this.hero.def -= this.hero.lv;
-					this.hero.bone += this.hero.lv;
-				}
-				this.swordSkill = ''; // 需要根据本回合剑技判断气息增减
-
-				if (core.hasSpecial(this.enemy.special, 92)) { // 盾大师
-					switch (this.enemy.shield) {
-					case 0:
-						hdamage = Math.round(hdamage / 2);
-						this.enemy.shield = 1;
-						break;
-					case 1:
-						this.hero.freeze = true;
-						this.enemy.shield = 2;
-						break;
-					case 2:
-						this.hero.hp -= Math.round(hdamage / 4);
-						this.enemy.shield = 0;
-						break;
+					if (core.hasSpecial(especial, 93)) // 魔界之王古顿
+					{
+						atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
+							Math.round(0.64 * damage), Math.round(0.512 * damage)
+						];
+						atkStatus.aim = 'lastBoss';
 					}
-				}
 
-				atkStatus.damage = hdamage;
-				this.enemy.hp -= hdamage;
-				if (this.enemy.hp <= 0) {
-					this.enemy.hp = 0;
-					this.battleEnd();
-				}
-				if (this.hero.hp <= 0) {
-					this.battleEnd();
-				}
-			}
-			this.hero.atkStatus = atkStatus;
-			this.actor = 'enemy';
-			this.turn++;
-		}
-
-		//敌人行动
-		enemyAct() {
-			this.enemy.turn++;
-			let damage = 0,
-				oriDamage = 0,
-				princessDamage = 0, //公主受到的伤害
-				heal = 0, //敌人吸血回复
-				isPoisoned = false; // 是否被反射盾反弹中毒
-			let atkStatus = { 'damage': 0 };
-			const combo = this.enemy.combo,
-				especial = this.enemy.special;
-			this.enemy.totalFatigue += this.enemy.fatigue;
-			if (this.enemy.freeze > 0) {
-				atkStatus.freeze = true;
-				this.enemy.freeze--;
-			} else {
-				if (core.hasSpecial(especial, 80)) { // 魔眼
-					if (this.hero.def - this.hero.atk > this.hero.atkm) damage = 0;
-					else damage = Math.max(this.hero.atk - this.hero.def, 1);
-				} else if (core.hasSpecial(especial, 2) || core.hasSpecial(especial, 61) ||
-					core.hasSpecial(especial, 62) || core.hasSpecial(especial, 63) ||
-					core.hasSpecial(especial, 64) || core.hasSpecial(especial, 65) ||
-					core.hasSpecial(especial, 66)) { //魔攻
-					damage = this.enemy.atk;
-				} else {
-					if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
-					else damage = Math.max(this.enemy.atk - this.hero.def, 1);
-				}
-				if (core.hasSpecial(especial, 80) && this.hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
-					damage = 0;
-					atkStatus.miss = true;
-					this.hero.totalFatigue -= 100;
-				} else if (this.enemy.totalFatigue >= 100) {
-					damage = 0;
-					atkStatus.miss = true;
-					this.enemy.totalFatigue -= 100;
-				}
-				if (this.shieldSkill.length > 0) {
-					this.hero.mana -= this.constructor.getSkill(this.shieldSkill, 'cost') * this.hero.permana;
-					this.hero.fatigue += this.constructor.getSkill(this.shieldSkill, 'fatigue');
-				}
-				if (core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
-					core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
-					core.hasSpecial(especial, 65)) {
-					atkStatus.aim = 'all';
-					princessDamage = Math.max(this.enemy.atk - this.hero.mdef, 0);
-				} else if (core.hasSpecial(especial, 55)) {
-					atkStatus.aim = 'princess';
-					princessDamage = this.enemy.atk;
-				} else { atkStatus.aim = 'hero'; }
-				if (atkStatus.miss) princessDamage = 0;
-
-				if (this.enemy.mana >= this.enemy.manamax &&
-					this.hero.def - this.enemy.atk < this.hero.defm) { //满气息时怪物释放必杀，但若不能破防主角则永远不会释放
-					if (core.hasSpecial(especial, 91)) {} else {
-						let critRatio = 2;
-						if (core.hasSpecial(especial, 51)) critRatio = 2.5;
-						if (core.hasSpecial(especial, 59)) critRatio = 4;
-						if (core.hasSpecial(especial, 67)) critRatio = 3;
-						damage = Math.round(critRatio * damage);
-						princessDamage = Math.round(critRatio * princessDamage);
-						this.enemy.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
-						atkStatus.crit = true; //暴击
+					if (core.hasSpecial(especial, 52) || core.hasSpecial(especial, 53)) {
+						if (reflect) this.enemy.fatigue++;
+						else this.hero.fatigue++;
 					}
-					this.enemy.mana = 0;
-				}
-			}
-			let reflect = false;
-			switch (this.shieldSkill) { //盾技
-			case 'M': //镜膜盾
-				damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'M';
-				atkStatus.heroAnimate = "gsh1";
-				break;
-			case 'C': //结晶盾
-				damage = Math.ceil(damage / 1.5);
-				atkStatus.freeze = true;
-				if (this.enemy.id === 'bluePriest') this.enemy.magicIce = true; //制取魔法冰块
-				this.enemy.freeze = 2 * combo - this.turn % (combo + 1);
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'C';
-				atkStatus.heroAnimate = "gsh2";
-				break;
-			case 'R': //反射
-				oriDamage = damage;
-				damage = Math.ceil(damage / 1.3);
-				reflect = true;
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'R';
-				atkStatus.heroAnimate = "gsh3";
-				break;
-			case 'F': //精灵罩
-				this.hero.fairy = 3;
-				this.hero.fairyBuff = (this.hero.orihp + this.hero.def) % this.hero.lv;
-				this.hero.def += this.hero.fairyBuff;
-				if (this.isMagician()) this.hero.smartCast = true;
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'F';
-				atkStatus.heroAnimate = "gsh4";
-				break;
-			case 'E': //贤者结界
-				this.hero.hpmax += Math.round(1.5 * damage);
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'E';
-				atkStatus.heroAnimate = "gsh5";
-				break;
-			default:
-				break;
-			}
-			if (!atkStatus.freeze && !atkStatus.miss) {
-				if (core.hasSpecial(especial, 91)) { // 剑大师
-					switch (this.enemy.sword) {
-					case 0:
-						this.hero.fatigue += 8;
-						this.enemy.sword = 1;
-						break;
-					case 1:
+					if (core.hasSpecial(especial, 54)) {
+						if (reflect) this.enemy.fatigue += 3;
+						else this.hero.fatigue += 3;
+					}
+					if (core.hasSpecial(especial, 56)) {
+						if (reflect) this.enemy.fatigue += 4;
+						else this.hero.fatigue += 4;
+					}
+					if (core.hasSpecial(especial, 62)) {
+						this.enemy.fatigue -= 1;
+						if (this.enemy.fatigue <= 0) this.enemy.fatigue = 0;
+					}
+					if (core.hasSpecial(especial, 58) && atkStatus.crit) {
 						this.hero.mana -= this.hero.permana;
 						if (this.hero.mana < 0) this.hero.mana = 0;
-						this.enemy.sword = 2;
-						break;
-					case 2:
-						heal = Math.round(damage / 5);
-						this.enemy.sword = 0;
-						break;
 					}
-				}
-				if (core.hasSpecial(especial, 93)) // 魔界之王古顿
-				{
-					atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
-						Math.round(0.64 * damage), Math.round(0.512 * damage)
-					];
-					atkStatus.aim = 'lastBoss';
-				}
-
-				if (core.hasSpecial(especial, 52) || core.hasSpecial(especial, 53)) {
-					if (reflect) this.enemy.fatigue++;
-					else this.hero.fatigue++;
-				}
-				if (core.hasSpecial(especial, 54)) {
-					if (reflect) this.enemy.fatigue += 3;
-					else this.hero.fatigue += 3;
-				}
-				if (core.hasSpecial(especial, 56)) {
-					if (reflect) this.enemy.fatigue += 4;
-					else this.hero.fatigue += 4;
-				}
-				if (core.hasSpecial(especial, 62)) {
-					this.enemy.fatigue -= 1;
-					if (this.enemy.fatigue <= 0) this.enemy.fatigue = 0;
-				}
-				if (core.hasSpecial(especial, 58) && atkStatus.crit) {
-					this.hero.mana -= this.hero.permana;
-					if (this.hero.mana < 0) this.hero.mana = 0;
-				}
-				if (core.hasSpecial(especial, 65)) { //血秘术
-					heal = Math.round(0.5 * (damage + princessDamage));
-				}
-				if (core.hasSpecial(especial, 57) || core.hasSpecial(especial, 66) ||
-					core.hasSpecial(especial, 67)) { //血魔法
-					heal = Math.round(0.5 * damage);
-				}
-				if (core.hasSpecial(especial, 88)) {
-					if (reflect) {
-						this.hero.mana = core.clamp(this.hero.mana + 40, 0, this.hero.manamax);
-						this.enemy.mana = core.clamp(this.enemy.mana - 40, 0, this.enemy.manamax);
-
-					} else {
-						this.hero.mana = core.clamp(this.hero.mana - 40, 0, this.hero.manamax);
-						this.enemy.mana = core.clamp(this.enemy.mana + 40, 0, this.enemy.manamax);
+					if (core.hasSpecial(especial, 65)) { //血秘术
+						heal = Math.round(0.5 * (damage + princessDamage));
 					}
-				}
-				if (core.hasSpecial(especial, 84)) { damage += 100; }
-				// 执行敌人带有的debuff技能
-				if (this.enemy.hasMisfortune) {
-					if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
-						this.hero.misfortune += 40;
-						if (this.hero.misfortune >= 100) {
-							this.hero.misfortune -= 100;
-							if (reflect) this.enemy.def -= 12;
-							else this.hero.def -= 12;
+					if (core.hasSpecial(especial, 57) || core.hasSpecial(especial, 66) ||
+						core.hasSpecial(especial, 67)) { //血魔法
+						heal = Math.round(0.5 * damage);
+					}
+					if (core.hasSpecial(especial, 88)) {
+						if (reflect) {
+							this.hero.mana = core.clamp(this.hero.mana + 40, 0, this.hero.manamax);
+							this.enemy.mana = core.clamp(this.enemy.mana - 40, 0, this.enemy.manamax);
+
+						} else {
+							this.hero.mana = core.clamp(this.hero.mana - 40, 0, this.hero.manamax);
+							this.enemy.mana = core.clamp(this.enemy.mana + 40, 0, this.enemy.manamax);
 						}
-					} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
-						this.hero.misfortune += 60;
-						if (this.hero.misfortune >= 100) {
-							this.hero.misfortune -= 100;
-							if (reflect) {
-								this.enemy.atk -= 20;
-								this.enemy.def -= 5;
-							} else {
-								this.hero.atk -= 20;
-								this.hero.def -= 5;
+					}
+					if (core.hasSpecial(especial, 84)) { damage += 100; }
+					// 执行敌人带有的debuff技能
+					if (this.enemy.hasMisfortune) {
+						if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
+							this.hero.misfortune += 40;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) this.enemy.def -= 12;
+								else this.hero.def -= 12;
+							}
+						} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
+							this.hero.misfortune += 60;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) {
+									this.enemy.atk -= 20;
+									this.enemy.def -= 5;
+								} else {
+									this.hero.atk -= 20;
+									this.hero.def -= 5;
+								}
+							}
+						} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
+							core.hasSpecial(especial, 82)) { // 12-中毒
+							this.hero.misfortune += this.enemy.poisonPoss;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) isPoisoned = true;
+								else if (!core.getFlag('weak')) {
+									core.triggerDebuff('get', 'poison');
+								}
+							}
+						} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
+							this.hero.misfortune += this.enemy.weakPoss;
+							if (this.hero.misfortune >= 100) {
+								this.hero.misfortune -= 100;
+								if (reflect) {
+									this.enemy.atk -= this.enemy.weakPoint;
+									this.enemy.def -= this.enemy.weakPoint;
+								} else if (!core.getFlag('poison')) {
+									// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
+									core.setFlag('weakV', this.enemy.weakPoint);
+									core.triggerDebuff('get', 'weak');
+								}
 							}
 						}
-					} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
-						core.hasSpecial(especial, 82)) { // 12-中毒
-						this.hero.misfortune += this.enemy.poisonPoss;
-						if (this.hero.misfortune >= 100) {
-							this.hero.misfortune -= 100;
-							if (reflect) isPoisoned = true;
-							else if (!core.getFlag('weak')) {
-								core.triggerDebuff('get', 'poison');
-							}
-						}
-					} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
-						this.hero.misfortune += this.enemy.weakPoss;
-						if (this.hero.misfortune >= 100) {
-							this.hero.misfortune -= 100;
-							if (reflect) {
-								this.enemy.atk -= this.enemy.weakPoint;
-								this.enemy.def -= this.enemy.weakPoint;
-							} else if (!core.getFlag('poison')) {
-								// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
-								core.setFlag('weakV', this.enemy.weakPoint);
-								core.triggerDebuff('get', 'weak');
-							}
+
+					}
+					this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
+					if (this.hero.fairy > 0) {
+						atkStatus.fairy = true;
+						this.hero.fairy--;
+						if (this.hero.fairy === 0) {
+							this.hero.def -= Math.round(this.hero.def / 50) + (this.hero.orihp % this.hero.lv);
+							this.hero.fairyBuff = 0;
 						}
 					}
-
 				}
-				this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
-				if (this.hero.fairy > 0) {
-					atkStatus.fairy = true;
-					this.hero.fairy--;
-					if (this.hero.fairy === 0) {
-						this.hero.def -= Math.round(this.hero.def / 50) + (this.hero.orihp % this.hero.lv);
-						this.hero.fairyBuff = 0;
+				this.shieldSkill = '';
+				atkStatus.damage = damage;
+				atkStatus.princessDamage = princessDamage;
+				atkStatus.animate = enemyAni(this.enemy.id, atkStatus.crit);
+				this.enemy.atkStatus = atkStatus;
+				this.enemy.totalDamage += damage;
+				this.hero.hp -= damage;
+				this.hero.hpmax -= princessDamage;
+				if (core.hasSpecial(especial, 93)) { // 古顿
+					this.hero.hp -= atkStatus.bounceDamage[2];
+					this.hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
+				}
+				if (this.hero.hp <= 0 || this.hero.hpmax <= 0) this.battleEnd();
+				if (reflect) { //反射盾
+					let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
+					if (isPoisoned) reflectDamage += 25; // 反弹中毒会多弹25血
+					atkStatus.reflectDamage = reflectDamage;
+					this.enemy.hp -= reflectDamage;
+					if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
+					if (this.enemy.hp <= 0) this.enemy.hp = 0;
+				}
+				this.enemy.hp += heal; //吸血效果
+				if (this.enemy.hp <= 0) this.battleEnd();
+				if (this.turn % (this.enemy.combo + 1) === this.enemy.combo) { this.actor = 'hero'; }
+				this.turn++;
+
+				// 获取敌人攻击动画名称
+				function enemyAni(id, critical) {
+					switch (id) {
+						case 'bat':
+						case 'bigBat':
+						case 'redBat':
+						case 'poisonBat':
+							return critical ? 'g1-cri' : 'g1';
+						case 'bluePriest':
+							return critical ? 'g4-cri' : 'g4'; //初级法师攻击
+						case 'skeletonSoilder':
+						case 'yellowKnight':
+						case 'swordsman':
+							return critical ? 'g5-cri' : 'g5'; //骷髅兵，骑士，双手剑士攻击
+						case 'zombie':
+							return critical ? 'g6-cri' : 'g6'; //兽人攻击
+						case 'grayPriest':
+							return critical ? 'g7-cri' : 'g7'; //中级法师攻击
+						case 'E330':
+						case 'E334':
+							return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人攻击
+						case 'skeletonCaptain':
+						case 'blueKnight':
+						case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
+							return critical ? 'g9-cri' : 'g9';
+						case 'redKnight':
+						case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
+							return critical ? 'g10-cri' : 'g10';
+						case 'redWizard':
+							return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
+						case 'vampire':
+							return critical ? 'g13-cri' : 'g13'; //魔王格勒第攻击
+						case 'E377':
+						case 'E378':
+							return critical ? 'g14-cri' : 'g14'; //弓兵，精锐弓兵攻击
+						case 'magicDragon':
+							return critical ? 'g19-cri' : 'g19'; //恶龙攻击
+						case 'E432':
+							return critical ? 'g20-cri' : 'g20'; //毒龙攻击
+						case 'brownWizard':
+						case 'greenKing':
+							return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
+						case 'redWizard':
+							return critical ? 'g23-cri' : 'g23'; //高级法师攻击
+						case 'redSwordsman':
+							return critical ? 'g24-cri' : 'g24'; //剑王攻击
+						case 'whiteGhost':
+							return critical ? 'g25-cri' : 'g25'; //水银人攻击
+						case 'whiteKing':
+						case 'E413':
+							return critical ? 'g26-cri' : 'g26'; //蓝衣魔王，极地法师攻击
+						case 'skeletonPriest':
+						case 'E444':
+						case 'E442':
+							return critical ? 'g28-cri' : 'g28'; //混沌术士，血使者，血剑士攻击
+						case 'E446':
+							return critical ? 'g29-cri' : 'g29'; //史莱姆阿修罗攻击
+						case 'yellowKing':
+							return critical ? 'g30-cri' : 'g30'; //黄衣魔王攻击
+						case 'redKing':
+							return critical ? 'g31-cri' : 'g31'; //红衣魔王攻击
+						case 'E337':
+							return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆攻击
+						case 'skeletonKing':
+							return critical ? 'g34-cri' : 'g34'; //魔神·些多攻击
+						case 'goldSlime':
+							return critical ? 'g35-cri' : 'g35'; //剑神沙士攻击
+						case 'E380':
+							return critical ? 'g36-cri' : 'g36'; //斗神高巴攻击
+						case 'E379':
+							return critical ? 'g37-cri' : 'g37'; //箭神法比攻击
+						case 'yellowGuard':
+						case 'ghostSkeleton':
+							return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
+						case 'E382':
+							return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
+						case 'E436':
+							return critical ? 'g43-cri' : 'g43'; //冥界矮人战士攻击
+						case 'E435':
+							return critical ? 'g44-cri' : 'g44'; //生气灵攻击
+						case 'E447':
+							return critical ? 'g48-cri' : 'g48'; //最终BOSS
+						default:
+							return critical ? 'g2-cri' : 'g2';
 					}
-				}
-			}
-			this.shieldSkill = '';
-			atkStatus.damage = damage;
-			atkStatus.princessDamage = princessDamage;
-			atkStatus.animate = enemyAni(this.enemy.id, atkStatus.crit);
-			this.enemy.atkStatus = atkStatus;
-			this.enemy.totalDamage += damage;
-			this.hero.hp -= damage;
-			this.hero.hpmax -= princessDamage;
-			if (core.hasSpecial(especial, 93)) { // 古顿
-				this.hero.hp -= atkStatus.bounceDamage[2];
-				this.hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
-			}
-			if (this.hero.hp <= 0 || this.hero.hpmax <= 0) this.battleEnd();
-			if (reflect) { //反射盾
-				let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
-				if (isPoisoned) reflectDamage += 25; // 反弹中毒会多弹25血
-				atkStatus.reflectDamage = reflectDamage;
-				this.enemy.hp -= reflectDamage;
-				if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
-				if (this.enemy.hp <= 0) this.enemy.hp = 0;
-			}
-			this.enemy.hp += heal; //吸血效果
-			if (this.enemy.hp <= 0) this.battleEnd();
-			if (this.turn % (this.enemy.combo + 1) === this.enemy.combo) { this.actor = 'hero'; }
-			this.turn++;
-
-			// 获取敌人攻击动画名称
-			function enemyAni(id, critical) {
-				switch (id) {
-				case 'bat':
-				case 'bigBat':
-				case 'redBat':
-				case 'poisonBat':
-					return critical ? 'g1-cri' : 'g1';
-				case 'bluePriest':
-					return critical ? 'g4-cri' : 'g4'; //初级法师攻击
-				case 'skeletonSoilder':
-				case 'yellowKnight':
-				case 'swordsman':
-					return critical ? 'g5-cri' : 'g5'; //骷髅兵，骑士，双手剑士攻击
-				case 'zombie':
-					return critical ? 'g6-cri' : 'g6'; //兽人攻击
-				case 'grayPriest':
-					return critical ? 'g7-cri' : 'g7'; //中级法师攻击
-				case 'E330':
-				case 'E334':
-					return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人攻击
-				case 'skeletonCaptain':
-				case 'blueKnight':
-				case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
-					return critical ? 'g9-cri' : 'g9';
-				case 'redKnight':
-				case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
-					return critical ? 'g10-cri' : 'g10';
-				case 'redWizard':
-					return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
-				case 'vampire':
-					return critical ? 'g13-cri' : 'g13'; //魔王格勒第攻击
-				case 'E377':
-				case 'E378':
-					return critical ? 'g14-cri' : 'g14'; //弓兵，精锐弓兵攻击
-				case 'magicDragon':
-					return critical ? 'g19-cri' : 'g19'; //恶龙攻击
-				case 'E432':
-					return critical ? 'g20-cri' : 'g20'; //毒龙攻击
-				case 'brownWizard':
-				case 'greenKing':
-					return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
-				case 'redWizard':
-					return critical ? 'g23-cri' : 'g23'; //高级法师攻击
-				case 'redSwordsman':
-					return critical ? 'g24-cri' : 'g24'; //剑王攻击
-				case 'whiteGhost':
-					return critical ? 'g25-cri' : 'g25'; //水银人攻击
-				case 'whiteKing':
-				case 'E413':
-					return critical ? 'g26-cri' : 'g26'; //蓝衣魔王，极地法师攻击
-				case 'skeletonPriest':
-				case 'E444':
-				case 'E442':
-					return critical ? 'g28-cri' : 'g28'; //混沌术士，血使者，血剑士攻击
-				case 'E446':
-					return critical ? 'g29-cri' : 'g29'; //史莱姆阿修罗攻击
-				case 'yellowKing':
-					return critical ? 'g30-cri' : 'g30'; //黄衣魔王攻击
-				case 'redKing':
-					return critical ? 'g31-cri' : 'g31'; //红衣魔王攻击
-				case 'E337':
-					return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆攻击
-				case 'skeletonKing':
-					return critical ? 'g34-cri' : 'g34'; //魔神·些多攻击
-				case 'goldSlime':
-					return critical ? 'g35-cri' : 'g35'; //剑神沙士攻击
-				case 'E380':
-					return critical ? 'g36-cri' : 'g36'; //斗神高巴攻击
-				case 'E379':
-					return critical ? 'g37-cri' : 'g37'; //箭神法比攻击
-				case 'yellowGuard':
-				case 'ghostSkeleton':
-					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
-				case 'E382':
-					return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
-				case 'E436':
-					return critical ? 'g43-cri' : 'g43'; //冥界矮人战士攻击
-				case 'E435':
-					return critical ? 'g44-cri' : 'g44'; //生气灵攻击
-				case 'E447':
-					return critical ? 'g48-cri' : 'g48'; //最终BOSS
-				default:
-					return critical ? 'g2-cri' : 'g2';
 				}
 			}
 		}
-	}
 
-	//// 每回合的战斗过程
-	function battleByTurn(id, x, y) {
-		if (!core.isReplaying()) core.lockControl();
-		let delay = 400,
-			combodelay = 50;
-		if (core.getFlag('battleSpeed', 0) === 2) {
-			delay = 800;
-			combodelay = 100;
-		} else if (core.getFlag('battleSpeed', 0) === 0) {
-			delay = 20;
-			combodelay = 2;
-		}
-		const enemyInfo = core.enemys.getEnemyInfo(id, null, x, y, core.status.floorId),
-			ehp = enemyInfo.hp,
-			eatk = enemyInfo.atk,
-			edef = enemyInfo.def,
-			especial = enemyInfo.special;
-		let combo = 1;
-		if (core.hasSpecial(especial, 4) || core.hasSpecial(especial, 53)) combo = 2;
-		if (core.hasSpecial(especial, 5) || core.hasSpecial(especial, 83)) combo = 3;
-		if (core.hasSpecial(especial, 6)) combo = core.material.enemys[id].n || 1;
-		if (core.hasSpecial(especial, 87)) combo = 6;
-		let battle = new GameCore({
-			'id': id,
-			'name': core.material.enemys[id].name,
-			'hp': ehp,
-			'atk': core.hasSpecial(especial, 60) ? 3 * eatk : eatk,
-			'def': edef,
-			'type': 'enemys',
-			'x': x,
-			'y': y,
-			'money': enemyInfo.money,
-			'exp': enemyInfo.exp,
-			'manamax': core.material.enemys[id].value,
-			'special': especial,
-			'combo': combo,
-			'atkValue': core.material.enemys[id].atkValue,
-			'defValue': core.material.enemys[id].defValue,
-			'damage': core.material.enemys[id].damage,
-		});
+		//// 每回合的战斗过程
+		function battleByTurn(id, x, y) {
+			if (!core.isReplaying()) core.lockControl();
+			let delay = 400,
+				combodelay = 50;
+			if (core.getFlag('battleSpeed', 0) === 2) {
+				delay = 800;
+				combodelay = 100;
+			} else if (core.getFlag('battleSpeed', 0) === 0) {
+				delay = 20;
+				combodelay = 2;
+			}
+			const enemyInfo = core.enemys.getEnemyInfo(id, null, x, y, core.status.floorId),
+				ehp = enemyInfo.hp,
+				eatk = enemyInfo.atk,
+				edef = enemyInfo.def,
+				especial = enemyInfo.special;
+			let combo = 1;
+			if (core.hasSpecial(especial, 4) || core.hasSpecial(especial, 53)) combo = 2;
+			if (core.hasSpecial(especial, 5) || core.hasSpecial(especial, 83)) combo = 3;
+			if (core.hasSpecial(especial, 6)) combo = core.material.enemys[id].n || 1;
+			if (core.hasSpecial(especial, 87)) combo = 6;
+			let battle = new GameCore({
+				'id': id,
+				'name': core.material.enemys[id].name,
+				'hp': ehp,
+				'atk': core.hasSpecial(especial, 60) ? 3 * eatk : eatk,
+				'def': edef,
+				'type': 'enemys',
+				'x': x,
+				'y': y,
+				'money': enemyInfo.money,
+				'exp': enemyInfo.exp,
+				'manamax': core.material.enemys[id].value,
+				'special': especial,
+				'combo': combo,
+				'atkValue': core.material.enemys[id].atkValue,
+				'defValue': core.material.enemys[id].defValue,
+				'damage': core.material.enemys[id].damage,
+			});
 
-		function finish() {
-			core.unregisterAction('keyDown', 'battleSkill');
-			core.unregisterAction('keyDown', 'battleClick')
-			let currTime = 0,
-				h = 0;
-			if (!battle.isQuit) {
-				core.registerAnimationFrame('showBottomBar', true, function (timestamp) {
-					if (timestamp - currTime < 10) return;
-					currTime = timestamp;
-					if (h < 40) h += 4;
-					core.plugin.drawBattleBottomBar(battle, h);
+			function finish() {
+				core.unregisterAction('keyDown', 'battleSkill');
+				core.unregisterAction('keyDown', 'battleClick')
+				let currTime = 0,
+					h = 0;
+				if (!battle.isQuit) {
+					core.registerAnimationFrame('showBottomBar', true, function (timestamp) {
+						if (timestamp - currTime < 10) return;
+						currTime = timestamp;
+						if (h < 40) h += 4;
+						core.plugin.drawBattleBottomBar(battle, h);
+					})
+				}
+				new Promise(res => setTimeout(res, 500)).then(() => {
+					core.unregisterAnimationFrame('drawDamage');
+					core.unregisterAnimationFrame('showBottomBar');
+					core.unregisterAnimationFrame('battleIcon');
+					core.deleteCanvas('battleUI');
+					core.deleteCanvas('battleIcon');
+					core.deleteCanvas('battleBottomBar');
+					core.deleteCanvas("skillIcon");
+					core.updateStatusBar();
+					if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
+					core.unlockControl();
+					if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
+					return;
 				})
 			}
-			new Promise(res => setTimeout(res, 500)).then(() => {
-				core.unregisterAnimationFrame('drawDamage');
-				core.unregisterAnimationFrame('showBottomBar');
-				core.unregisterAnimationFrame('battleIcon');
-				core.deleteCanvas('battleUI');
-				core.deleteCanvas('battleIcon');
-				core.deleteCanvas('battleBottomBar');
-				core.deleteCanvas("skillIcon");
-				core.updateStatusBar();
-				if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-				core.unlockControl();
-				if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
-				return;
-			})
-		}
 
-		function takeTurn() {
-			let currDelay = delay;
-			if (combo >= 2 && this.turn % (combo + 1) <= combo - 1) currDelay = combodelay;
-			if (battle.isBattleEnd) return;
-			battle.nextTurn();
-			core.plugin.drawBattleUI(battle);
-			core.plugin.drawSkillIcon(battle);
-			core.plugin.drawBattleAnimate(battle, currDelay);
-
-			if (battle.isBattleEnd) finish();
-			else setTimeout(takeTurn, currDelay);
-		}
-
-		if (core.isReplaying()) {
-			let actionList = {};
-			if (core.status.replay.toReplay.length > 0) {
-				const next = core.status.replay.toReplay[0];
-				if (next.startsWith('bs:')) {
-					const nextList = next.split(':');
-					for (let i = 1, l = nextList.length; i < l; i++) {
-						const currTurn = parseInt(nextList[i]);
-						if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
-						actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
-					}
-				}
-			}
-			while (!battle.isBattleEnd) {
-				const currTurn = battle.turn;
-				if (actionList.hasOwnProperty(currTurn)) {
-					if (actionList[currTurn].includes('q')) {
-						battle.execInstantAction('q');
-						core.updateStatusBar();
-						if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-						break;
-					}
-					if (actionList[currTurn].includes('v'))
-						battle.execInstantAction('v');
-					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
-						battle.execUserAction(actionList[currTurn][i]);
-					}
-				}
+			function takeTurn() {
+				let currDelay = delay;
+				if (combo >= 2 && this.turn % (combo + 1) <= combo - 1) currDelay = combodelay;
+				if (battle.isBattleEnd) return;
 				battle.nextTurn();
-			}
-			core.updateStatusBar();
-			if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
-			if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-		} else {
-			const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
-			core.registerAction('keyDown', 'battleSkill', function (keyCode) {
-				if (battle.isQuit || battle.isBattleEnd) return;
-				switch (keyCode) {
-				case 49: //1
-					if (core.hasItem('I325')) battle.execUserAction('b');
-					else if (core.hasItem('I327')) battle.execUserAction('M');
-					break;
-				case 50: //2
-					if (core.hasItem('I325')) battle.execUserAction('s');
-					else if (core.hasItem('I327')) battle.execUserAction('C');
-					break;
-				case 51: //3
-					if (core.hasItem('I325')) battle.execUserAction('d');
-					else if (core.hasItem('I327')) battle.execUserAction('R');
-					break;
-				case 52: //4
-					if (core.hasItem('I325')) battle.execUserAction('h');
-					else if (core.hasItem('I327')) battle.execUserAction('F');
-					break;
-				case 53: //5
-					if (core.hasItem('I325')) battle.execUserAction('k');
-					else if (core.hasItem('I327')) battle.execUserAction('E');
-					break;
-				case 8: //backSpace
-				case 81: //Q
-					battle.execInstantAction('q');
-					finish();
-					break;
-				case 86: //V
-					battle.execInstantAction('v');
-					break;
-				case 67: //C
-					battle.execUserAction('c');
-					break;
-				case 90: //Z
-					if (!battle.hero.sword) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备剑技');
-					} else { battle.execUserAction(equipList[battle.hero.sword]); }
-					break;
-				case 88: //X
-					if (!battle.hero.shield) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备盾技');
-					} else { battle.execUserAction(equipList[battle.hero.shield]); }
-					break;
-				}
+				core.plugin.drawBattleUI(battle);
 				core.plugin.drawSkillIcon(battle);
-			}, 100);
+				core.plugin.drawBattleAnimate(battle, currDelay);
 
-			core.registerAction('ondown', 'battleClick', function (x, y, px, py) {
-				if (battle.isQuit || battle.isBattleEnd) return;
-				const sword = equipList[core.items.getEquip(0)],
-					shield = equipList[core.items.getEquip(1)];
-				if (60 < px && px <= 92 && 320 <= py && py <= 352) {
-					if (core.hasItem('I325')) battle.execUserAction('b');
-					else if (core.hasItem('I327')) battle.execUserAction('M');
-				}
-				if (92 < px && px <= 124 && 320 <= py && py <= 352) {
-					if (core.hasItem('I325')) battle.execUserAction('s');
-					else if (core.hasItem('I327')) battle.execUserAction('C');
-				}
-				if (124 < px && px <= 156 && 320 <= py && py <= 352) {
-					if (core.hasItem('I325')) battle.execUserAction('d');
-					else if (core.hasItem('I327')) battle.execUserAction('R');
-				}
-				if (156 < px && px <= 188 && 320 <= py && py <= 352) {
-					if (core.hasItem('I325')) battle.execUserAction('h');
-					else if (core.hasItem('I327')) battle.execUserAction('F');
-				}
-				if (188 < px && px <= 220 && 320 <= py && py <= 352) {
-					if (core.hasItem('I325')) battle.execUserAction('k');
-					else if (core.hasItem('I327')) battle.execUserAction('E');
-				}
-				if (220 < px && px <= 252 && 320 <= py && py <= 352) {
-					if (!battle.hero.sword) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备剑技');
-					} else { battle.execUserAction(equipList[battle.hero.sword]); }
-				}
+				if (battle.isBattleEnd) finish();
+				else setTimeout(takeTurn, currDelay);
+			}
 
-				if (252 < px && px <= 284 && 320 <= py && py <= 352) {
-					if (!battle.hero.shield) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备盾技');
-					} else { battle.execUserAction(equipList[battle.hero.shield]); }
+			if (core.isReplaying()) {
+				let actionList = {};
+				if (core.status.replay.toReplay.length > 0) {
+					const next = core.status.replay.toReplay[0];
+					if (next.startsWith('bs:')) {
+						const nextList = next.split(':');
+						for (let i = 1, l = nextList.length; i < l; i++) {
+							const currTurn = parseInt(nextList[i]);
+							if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
+							actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
+						}
+					}
 				}
-				if (284 < px && px <= 316 && 320 <= py && py <= 352) {
-					battle.execUserAction('c');
+				while (!battle.isBattleEnd) {
+					const currTurn = battle.turn;
+					if (actionList.hasOwnProperty(currTurn)) {
+						if (actionList[currTurn].includes('q')) {
+							battle.execInstantAction('q');
+							core.updateStatusBar();
+							if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
+							break;
+						}
+						if (actionList[currTurn].includes('v'))
+							battle.execInstantAction('v');
+						for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
+							battle.execUserAction(actionList[currTurn][i]);
+						}
+					}
+					battle.nextTurn();
 				}
-				if (316 < px && px <= 348 && 320 <= py && py <= 352) {
-					battle.execInstantAction('v');
-				}
-				if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
-					battle.execInstantAction('q');
-					finish();
-				}
-			}, 100);
+				core.updateStatusBar();
+				if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
+				if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
+			} else {
+				const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
+				core.registerAction('keyDown', 'battleSkill', function (keyCode) {
+					if (battle.isQuit || battle.isBattleEnd) return;
+					switch (keyCode) {
+						case 49: //1
+							if (core.hasItem('I325')) battle.execUserAction('b');
+							else if (core.hasItem('I327')) battle.execUserAction('M');
+							break;
+						case 50: //2
+							if (core.hasItem('I325')) battle.execUserAction('s');
+							else if (core.hasItem('I327')) battle.execUserAction('C');
+							break;
+						case 51: //3
+							if (core.hasItem('I325')) battle.execUserAction('d');
+							else if (core.hasItem('I327')) battle.execUserAction('R');
+							break;
+						case 52: //4
+							if (core.hasItem('I325')) battle.execUserAction('h');
+							else if (core.hasItem('I327')) battle.execUserAction('F');
+							break;
+						case 53: //5
+							if (core.hasItem('I325')) battle.execUserAction('k');
+							else if (core.hasItem('I327')) battle.execUserAction('E');
+							break;
+						case 8: //backSpace
+						case 81: //Q
+							battle.execInstantAction('q');
+							finish();
+							break;
+						case 86: //V
+							battle.execInstantAction('v');
+							break;
+						case 67: //C
+							battle.execUserAction('c');
+							break;
+						case 90: //Z
+							if (!battle.hero.sword) {
+								core.playSound('error.mp3');
+								core.drawTip('当前未装备剑技');
+							} else { battle.execUserAction(equipList[battle.hero.sword]); }
+							break;
+						case 88: //X
+							if (!battle.hero.shield) {
+								core.playSound('error.mp3');
+								core.drawTip('当前未装备盾技');
+							} else { battle.execUserAction(equipList[battle.hero.shield]); }
+							break;
+					}
+					core.plugin.drawSkillIcon(battle);
+				}, 100);
 
-			let drawIconCount = 0,
-				timeCount = 0;
-			core.registerAnimationFrame('battleIcon', true, function (timestamp) {
-				if (timestamp - timeCount < 200) return;
-				drawIconCount++;
-				timeCount = timestamp;
-				core.plugin.drawBattleIcon(battle, drawIconCount);
-			});
-			core.plugin.drawBattleUI(battle);
-			core.plugin.drawSkillIcon(battle);
-			setTimeout(takeTurn, delay); //第一回合留时间输入技能
-		}
-	}
+				core.registerAction('ondown', 'battleClick', function (x, y, px, py) {
+					if (battle.isQuit || battle.isBattleEnd) return;
+					const sword = equipList[core.items.getEquip(0)],
+						shield = equipList[core.items.getEquip(1)];
+					if (60 < px && px <= 92 && 320 <= py && py <= 352) {
+						if (core.hasItem('I325')) battle.execUserAction('b');
+						else if (core.hasItem('I327')) battle.execUserAction('M');
+					}
+					if (92 < px && px <= 124 && 320 <= py && py <= 352) {
+						if (core.hasItem('I325')) battle.execUserAction('s');
+						else if (core.hasItem('I327')) battle.execUserAction('C');
+					}
+					if (124 < px && px <= 156 && 320 <= py && py <= 352) {
+						if (core.hasItem('I325')) battle.execUserAction('d');
+						else if (core.hasItem('I327')) battle.execUserAction('R');
+					}
+					if (156 < px && px <= 188 && 320 <= py && py <= 352) {
+						if (core.hasItem('I325')) battle.execUserAction('h');
+						else if (core.hasItem('I327')) battle.execUserAction('F');
+					}
+					if (188 < px && px <= 220 && 320 <= py && py <= 352) {
+						if (core.hasItem('I325')) battle.execUserAction('k');
+						else if (core.hasItem('I327')) battle.execUserAction('E');
+					}
+					if (220 < px && px <= 252 && 320 <= py && py <= 352) {
+						if (!battle.hero.sword) {
+							core.playSound('error.mp3');
+							core.drawTip('当前未装备剑技');
+						} else { battle.execUserAction(equipList[battle.hero.sword]); }
+					}
 
-	// bs开头录像用于读取下一场战斗的操作
-	function _replayAction_bs(action) {
-		if (!action.startsWith('bs')) return false;
-		core.status.route.push(action);
-		core.replay();
-		return true;
-	}
-	core.registerReplayAction('bs', _replayAction_bs);
+					if (252 < px && px <= 284 && 320 <= py && py <= 352) {
+						if (!battle.hero.shield) {
+							core.playSound('error.mp3');
+							core.drawTip('当前未装备盾技');
+						} else { battle.execUserAction(equipList[battle.hero.shield]); }
+					}
+					if (284 < px && px <= 316 && 320 <= py && py <= 352) {
+						battle.execUserAction('c');
+					}
+					if (316 < px && px <= 348 && 320 <= py && py <= 352) {
+						battle.execInstantAction('v');
+					}
+					if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
+						battle.execInstantAction('q');
+						finish();
+					}
+				}, 100);
 
-	events.prototype.battle = function (id, x, y, force, callback) {
-		core.saveAndStopAutomaticRoute();
-		id = id || core.getBlockId(x, y);
-		if (!id) return core.clearContinueAutomaticRoute(callback);
-
-		// 是否采用战斗动画
-		let useBattleAnimate = true;
-		if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
-		// 非强制战斗
-		if (!useBattleAnimate) {
-			if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
-				core.stopSound();
-				core.playSound('操作失败');
-				core.drawTip("你打不过此怪物！", id);
-				return core.clearContinueAutomaticRoute(callback);
+				let drawIconCount = 0,
+					timeCount = 0;
+				core.registerAnimationFrame('battleIcon', true, function (timestamp) {
+					if (timestamp - timeCount < 200) return;
+					drawIconCount++;
+					timeCount = timestamp;
+					core.plugin.drawBattleIcon(battle, drawIconCount);
+				});
+				core.plugin.drawBattleUI(battle);
+				core.plugin.drawSkillIcon(battle);
+				setTimeout(takeTurn, delay); //第一回合留时间输入技能
 			}
 		}
-		// 自动存档
-		if (!core.status.event.id) core.autosave(true);
-		// 战前事件
-		if (!this.beforeBattle(id, x, y))
-			return core.clearContinueAutomaticRoute(callback);
-		// 战后事件
-		if (useBattleAnimate) {
-			battleByTurn(id, x, y);
-		} else {
-			this.afterBattle(id, x, y);
-		}
-		if (callback) callback();
-	}
 
-},
-    "回合制战斗": function () {
+		// bs开头录像用于读取下一场战斗的操作
+		function _replayAction_bs(action) {
+			if (!action.startsWith('bs')) return false;
+			core.status.route.push(action);
+			core.replay();
+			return true;
+		}
+		core.registerReplayAction('bs', _replayAction_bs);
+
+		events.prototype.battle = function (id, x, y, force, callback) {
+			core.saveAndStopAutomaticRoute();
+			id = id || core.getBlockId(x, y);
+			if (!id) return core.clearContinueAutomaticRoute(callback);
+
+			// 是否采用战斗动画
+			let useBattleAnimate = true;
+			if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
+			// 非强制战斗
+			if (!useBattleAnimate) {
+				if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
+					core.stopSound();
+					core.playSound('操作失败');
+					core.drawTip("你打不过此怪物！", id);
+					return core.clearContinueAutomaticRoute(callback);
+				}
+			}
+			// 自动存档
+			if (!core.status.event.id) core.autosave(true);
+			// 战前事件
+			if (!this.beforeBattle(id, x, y))
+				return core.clearContinueAutomaticRoute(callback);
+			// 战后事件
+			if (useBattleAnimate) {
+				battleByTurn(id, x, y);
+			} else {
+				this.afterBattle(id, x, y);
+			}
+			if (callback) callback();
+		}
+
+	},
+	"回合制战斗": function () {
 
 		// #region 回合制战斗的执行
 
-		async function battleByTurn(){
-			let battle = new Battle();
+		events.prototype.battle = function (id, x, y, force, callback) {
+			core.saveAndStopAutomaticRoute();
+			id = id || core.getBlockId(x, y);
+			if (!id) return core.clearContinueAutomaticRoute(callback);
 
-			while(true){
-				battle.nextTurn(); 
-				battle.checkEnd(); 
+			// 是否采用战斗动画
+			let useBattleAnimate = true;
+			if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
+			// 非强制战斗
+			if (!useBattleAnimate) {
+				if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
+					core.stopSound();
+					core.playSound('操作失败');
+					core.drawTip("你打不过此怪物！", id);
+					return core.clearContinueAutomaticRoute(callback);
+				}
+			}
+			// 自动存档
+			if (!core.status.event.id) core.autosave(true);
+			// 战前事件
+			if (!this.beforeBattle(id, x, y))
+				return core.clearContinueAutomaticRoute(callback);
+			// 战后事件
+			if (useBattleAnimate) {
+				if (!core.isReplaying()) battleByTurn(id, x, y);
+				else battleByTurn_Replaying(id, x, y);
+			} else {
+				this.afterBattle(id, x, y);
+			}
+			if (callback) callback();
+		}
+
+		/**
+		 * 执行回合制战斗
+		 * @param {string} enemyId 
+		 * @param {number} x 
+		 * @param {number} y 
+		 */
+		async function battleByTurn(enemyId,x,y) {
+			let battle = new Battle(enemyId,x,y);
+
+			if (!core.isReplaying()) core.lockControl();
+			while (true) {
+				battle.nextTurn();
+				battle.checkEnd();
 				if (battle.status !== 'pending') break;
 				await Promise.race([
-					new Promise((res) => {setTimeout(res, 1000);}),
+					new Promise((res) => { setTimeout(res, 1000); }),
 					new Promise((res) => {
 						core.unregisterAction('keyDown', 'quit');
 						core.registerAction('keyDown', 'quit', (keyCode) => {
@@ -6206,7 +6246,142 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				]);
 				if (battle.status === 'quit') break;
 			}
+			// 获胜时，绘制底边栏
+			let h = 0;
+			if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
+				if (h < 40) h += 4;
+				drawBattleBottomBar(battle, h);
+			});
+			//等待500ms后擦除画布
+			await new Promise((res) => { setTimeout(res, 500) });
+			clearCanvasAndEvent();
+			updateHeroStatus(battle);
+			afterBattleEvent(battle,x,y);
+			core.unlockControl();
 		}
+
+		/**
+		 * 录像模式下执行回合制战斗
+		 * @param {string} enemyId 
+		 * @param {number} x 
+		 * @param {number} y 
+		 */
+		function battleByTurn_Replaying(enemyId,x,y){
+			let battle = new Battle(enemyId,x,y);
+		}
+
+		/** 注销所有监听事件和画布 */
+		function clearCanvasAndEvent() {
+			core.unregisterAnimationFrame('drawDamage');
+			core.unregisterAnimationFrame('showBottomBar');
+			core.unregisterAnimationFrame('battleIcon');
+			core.deleteCanvas('battleUI');
+			core.deleteCanvas('battleIcon');
+			core.deleteCanvas('battleBottomBar');
+			core.deleteCanvas("skillIcon");
+		}
+
+		/**
+		 * 同步勇士的生命值，毒衰等状态
+		 * @param {Battle} battle 
+		 */
+		function updateHeroStatus(battle) {
+			const hero = battle.hero;
+			if (!core.isReplaying()) {
+				const route = hero.route;
+				if (route.length > 3) core.status.route.push(route);
+			}
+			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
+			switch (hero.status) {
+				case 'poisoned':
+					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
+					break;
+				case 'weak':
+					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
+					core.setFlag('weakV', hero.weakPoint);
+					break;
+			}
+			switch (battle.status) {
+				case 'win':
+					const info = battle.enemyInfo,
+						money = info.money,
+						exp = info.exp;
+
+					core.status.hero.hp = hero.hp;
+					core.status.hero.mana = hero.mana;
+					core.status.hero.hpmax = hero.hpmax;
+					core.status.hero.money += money;
+					core.status.hero.statistics.money += money;
+					core.status.hero.exp += exp;
+					core.status.hero.statistics.exp += exp;
+					core.status.hero.statistics.battle++;
+
+					break;
+				case 'lose':
+					core.lose();
+					break;
+				case 'quit':
+					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
+					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
+
+					break;
+			}
+		}
+
+		/**
+		 * 获得成就，执行战后事件
+		 * @param {Battle} battle
+		 * @param {number} x
+		 * @param {number} y 
+		 */
+		function afterBattleEvent(battle, x, y) {
+			const hero = battle.hero,
+				enemy = battle.enemy,
+				id = enemy.id;
+
+			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
+			if (hero.smartCast) core.plugin.getAchievement(17);
+			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
+
+			const blockList = {
+				swordEmperor: 398,
+				goldHornSlime: 400,
+				whiteHornSlime: 403,
+				silverSlime: 407, //白银怪，掉落钱币
+				E384: 385,
+				darkKnight: 225,
+				soldier: 212, // 重生怪
+				redWizard: 11, //炎之身体，变熔岩
+				E382: 374, //寒冰身体，变冰块
+			};
+
+			if (blockList.includes(id)) core.setBlock(blockList[id], x, y);
+			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
+			else core.removeBlock(x, y, core.status.floorId);
+
+			if (id === 'E335' || id === 'E413') { //烈焰身体，极寒身体
+				for (let x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
+					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
+						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
+							if (id === 'E335') core.setBlock(11, x0, y0);
+							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
+								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
+									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
+						}
+					}
+				}
+			}
+			let todo = [];
+			// 战后事件
+			if (core.status.floorId != null) {
+				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
+			}
+			core.push(todo, battle.enemyData.afterBattle);
+
+			// 如果事件不为空，将其插入
+			if (todo.length > 0) core.insertAction(todo, x, y);
+		}
+
 		// #endregion
 
 		// #region 回合制战斗的具体过程
@@ -6214,6 +6389,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_mana;
 			/** 将要被冻结的回合数*/
 			freeze = 0;
+			/** 状态，分为'normal''poisoned','weak'*/
+			status = 'normal';
 			get mana() {
 				return this._mana;
 			};
@@ -6266,6 +6443,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 公主的体力值 */
 			hpmax = core.status.hero.hpmax;
 
+			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 */
+			route = 'bs';
+
 			/** 即将发动的剑技*/
 			swordSkill = '';
 			/** 即将发动的盾技*/
@@ -6291,8 +6471,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			constructor() {
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
-					core.status.hero.manamax, core.status.hero.mana, 0);
+					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakV', 0));
 				this.permana = this.mana / 6;
+
+				if (core.hasFlag('weak')) this.status = 'weak';
 			}
 		}
 
@@ -6313,6 +6495,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					data.manamax, data.id === 'E437' ? 0 : 10, data.damage || 0);
 				/** 敌人的英文id */
 				this.id = id;
+
 				/** 敌人的特殊属性数组
 				 * @type {Array}
 				 */
@@ -6344,11 +6527,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {number} y 敌人所在y坐标
 			 */
 			constructor(enemyId, x, y) {
-				const enemyInfo = core.enemys.getEnemyInfo(enemyIdid, null, x, y, core.status.floorId),
-					enemyData = core.material.enemys[enemyId];
+
+				/** getEnemyInfo获得的敌人info */
+				this.enemyInfo = core.enemys.getEnemyInfo(enemyId, null, x, y, core.status.floorId);
+				/** core.material.enemys中的敌人数据 */
+				this.enemyData = core.material.enemys[enemyId];
 
 				this.hero = new Hero();
-				this.enemy = new Enemy(enemyInfo, enemyData);
+				this.enemy = new Enemy(this.enemyInfo, this.enemyData);
 
 				this.turn = 0;
 				this.order = ((combo) => {
@@ -6374,17 +6560,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.turn++;
 			}
 
-			checkEnd(){
-				if (this.hero.hp<=0 || this.hero.hpmax<=0) {
+			checkEnd() {
+				if (this.hero.hp <= 0 || this.hero.hpmax <= 0) {
 					this.status = 'lose';
 				}
-				else if (this.enemy.hp<=0) {
+				else if (this.enemy.hp <= 0) {
 					this.status = 'win';
 				}
 			}
 
-			updateHeroStatus(){
-				
+			updateHeroStatus() {
+
 			}
 		}
 		// #endregion
@@ -6409,6 +6595,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 			}
 			return false;
+		}
+
+		/**
+		 * 注册一个每interval帧执行一次的动画
+		 * @param {string} name 
+		 * @param {number} interval 
+		 * @param {Function} event 
+		 */
+		function registerAnimationInterval(name, interval, event) {
+			let currTime = 0;
+			core.registerAnimationFrame(name, true, (timestamp) => {
+				if (timestamp - currTime < interval) return;
+				currTime = timestamp;
+				event();
+			});
 		}
 
 		// #endregion
