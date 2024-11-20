@@ -1,3 +1,4 @@
+///<reference path="../types/core.d.ts" />
 var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
 	"init": function () {
