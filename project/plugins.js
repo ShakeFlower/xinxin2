@@ -6186,44 +6186,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #region 回合制战斗的执行
 
-		events.prototype.battle = function (id, x, y, force, callback) {
-			core.saveAndStopAutomaticRoute();
-			id = id || core.getBlockId(x, y);
-			if (!id) return core.clearContinueAutomaticRoute(callback);
-
-			// 是否采用战斗动画
-			let useBattleAnimate = true;
-			if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
-			// 非强制战斗
-			if (!useBattleAnimate) {
-				if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
-					core.stopSound();
-					core.playSound('操作失败');
-					core.drawTip("你打不过此怪物！", id);
-					return core.clearContinueAutomaticRoute(callback);
-				}
-			}
-			// 自动存档
-			if (!core.status.event.id) core.autosave(true);
-			// 战前事件
-			if (!this.beforeBattle(id, x, y))
-				return core.clearContinueAutomaticRoute(callback);
-			// 战后事件
-			if (useBattleAnimate) {
-				if (!core.isReplaying()) battleByTurn(id, x, y);
-				else battleByTurn_replaying(id, x, y);
-			} else {
-				this.afterBattle(id, x, y);
-			}
-			if (callback) callback();
-		}
-
-		/**
-		 * 执行回合制战斗
-		 * @param {string} enemyId 
-		 * @param {number} x 
-		 * @param {number} y 
-		 */
 		async function battleByTurn(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 
@@ -6301,7 +6263,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function updateHeroStatus(battle) {
 			const hero = battle.hero;
 			if (!core.isReplaying()) {
-				const route = hero.route;
+				const route = battle.route;
 				if (route.length > 3) core.status.route.push(route);
 			}
 			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
@@ -6370,7 +6332,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				E382: 374, //寒冰身体，变冰块
 			};
 
-			if (blockList.includes(id)) core.setBlock(blockList[id], x, y);
+			if (blockList.hasOwnProperty(id)) core.setBlock(blockList[id], x, y);
 			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
 			else core.removeBlock(x, y, core.status.floorId);
 
@@ -6414,6 +6376,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return this._mana;
 			};
 			set mana(value) {
+				if (Number.isNaN(value)) debugger;
 				if (value < 0) this._mana = 0;
 				else if (value > this.manamax) this._mana = this.manamax;
 				else this._mana = value;
@@ -6583,8 +6546,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
 					this.hp += atkStatus.heal; //深红
 					this.addMana(enemy);
-					atkStatus.damage = hdamage;
-					enemy.hp -= hdamage;
+					enemy.hp -= atkStatus.damage;
 				}
 
 				this.swordSkill = '';
@@ -6604,7 +6566,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					atkStatus.skill = this.swordSkill;
 					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
 					this.fatigue += getSkill(this.swordSkill, 'fatigue');
-				}else return;
+				}
 				switch (this.swordSkill) {
 					case 'c':
 						hdamage = 2 * Math.max(this.atk - enemy.def, 1);
@@ -6666,7 +6628,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if ((this.swordEquiped === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
 					// 装备流石用C,怪物不加防增气
-				} else enemy.mana += Math.round(damage / 3); // 怪物防增气			
+				} else enemy.mana += Math.round(this.atkStatus.damage / 3); // 怪物防增气			
 			}
 
 			/** 添加精灵罩buff效果 */
@@ -6712,7 +6674,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
-		class Enemy extends ActorBase() {
+		class Enemy extends ActorBase {
 			/** 敌人本场战斗累计造成的伤害 */
 			totalDamage = 0;
 			/** 剑大师，盾大师当前的行动阶段 */
@@ -6726,13 +6688,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			constructor(info, data) {
 				super(info.hp, info.atk, info.def,
-					data.manamax, data.id === 'E437' ? 0 : 10, data.damage || 0);
+					data.value, (data.id === 'E437') ? 0 : 10, data.damage || 0);
 				/** getEnemyInfo获得的敌人info */
 				this.info = info;
 				/** core.material.enemys中的敌人数据 */
 				this.data = data;
 				/** 敌人的英文id */
-				this.id = id;
+				this.id = data.id;
 
 				/** 敌人的特殊属性数组
 				 * @type {Array}
@@ -6757,8 +6719,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.poisonPoss = data.atkValue || 0;
 				/** 敌人释放衰弱的几率 */
 				this.weakPoss = data.defValue || 0;
-				/** 敌人释放一次衰弱降低属性的效果 */
-				this.weakPoint = data.damage || 0;
 				/** 敌人本次攻击的状态
 				 * @type {EnemyAtkStatus}
 				 */
@@ -6802,9 +6762,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (this.checkMiss()) atkStatus.miss = true;
 				else {
 					const { oriDamage, reflect } = this.checkHeroShield(hero, atkStatus);
-					this.execAtkEffect(hero,atkStatus,reflect);
+					this.execAtkEffect(hero,reflect);
 
-					this.addMana(hero, atkStatus.crit,atkStatus.aim); //本回合敌人未暴击，则它会回复气息
+					this.addMana(hero); //本回合敌人未暴击，则它会回复气息
 				
 					hero.hp -= atkStatus.damage;
 					hero.hpmax -= atkStatus.princessDamage;
@@ -6814,17 +6774,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
 						this.totalDamage += atkStatus.bounceDamage[2];
 					}
+					//// 结算反射盾效果
+					if (reflect) { //反射盾
+						let reflectDamage = Math.round(oriDamage / 2.6 + hero.atk / 10);
+						if (this.status === 'poisoned') reflectDamage += 25; // 反弹中毒会多弹25血
+						atkStatus.reflectDamage = reflectDamage;
+						this.hp -= reflectDamage;
+						if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
+					}
 				}
 
-				//// 结算反射盾和吸血效果
-				if (reflect) { //反射盾
-					let reflectDamage = Math.round(oriDamage / 2.6 + hero.atk / 10);
-					if (this.status === 'poisoned') reflectDamage += 25; // 反弹中毒会多弹25血
-					atkStatus.reflectDamage = reflectDamage;
-					this.hp -= reflectDamage;
-					if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
-					if (this.hp <= 0) this.hp = 0;
-				}
+				if (this.hp <= 0) this.hp = 0;
 				this.hp += atkStatus.heal; //吸血效果
 				atkStatus.animate = enemyAni(this.id, atkStatus.crit);
 			}
@@ -6905,7 +6865,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (hero.shieldSkill.length > 0) {
 					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
 					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
-				} else return;
+				} else return reflectInfo;
 				switch (hero.shieldSkill) { //盾技
 					case 'M': //镜膜盾
 						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
@@ -7024,7 +6984,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const atkStatus = this.atkStatus;
 				if (hasSpecial(this.special, [60,64])) {
 					//暗魔法无防增气，魔神些多的死寂光环角色不加气
-				} else hero.mana += Math.round(0.1 * damage); // 角色防增气
+				} else hero.mana += Math.round(0.1 * atkStatus.damage); // 角色防增气
 				if (!atkStatus.crit && !hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
 					switch (atkStatus.aim) {
 						case 'princess':
@@ -7084,10 +7044,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			nextTurn() {
 				switch (this.actor) {
 					case 'hero':
-						this.hero.act();
+						this.hero.act(this.enemy);
 						break;
 					case 'enemy':
-						this.enemy.act();
+						this.enemy.act(this.hero);
 						break;
 				}
 				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
@@ -7095,9 +7055,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.turn++;
 				console.log("turn "+this.turn);
 				console.log("hero:");
-				console.log(hero);
+				console.log(this.hero);
 				console.log("enemy:");
-				console.log(enemy);
+				console.log(this.enemy);
 			}
 
 			checkEnd() {
@@ -7183,6 +7143,44 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		// #endregion
+
+		/**
+		 * 执行回合制战斗
+		 * @param {string} enemyId 
+		 * @param {number} x 
+		 * @param {number} y 
+		 */
+		events.prototype.battle = function (id, x, y, force, callback) {
+			core.saveAndStopAutomaticRoute();
+			id = id || core.getBlockId(x, y);
+			if (!id) return core.clearContinueAutomaticRoute(callback);
+
+			// 是否采用战斗动画
+			let useBattleAnimate = true;
+			if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
+			// 非强制战斗
+			if (!useBattleAnimate) {
+				if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
+					core.stopSound();
+					core.playSound('操作失败');
+					core.drawTip("你打不过此怪物！", id);
+					return core.clearContinueAutomaticRoute(callback);
+				}
+			}
+			// 自动存档
+			if (!core.status.event.id) core.autosave(true);
+			// 战前事件
+			if (!this.beforeBattle(id, x, y))
+				return core.clearContinueAutomaticRoute(callback);
+			// 战后事件
+			if (useBattleAnimate) {
+				if (!core.isReplaying()) battleByTurn(id, x, y);
+				else battleByTurn_replaying(id, x, y);
+			} else {
+				this.afterBattle(id, x, y);
+			}
+			if (callback) callback();
+		}
 
 		// #region 动画
 
