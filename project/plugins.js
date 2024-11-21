@@ -6211,7 +6211,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 战后事件
 			if (useBattleAnimate) {
 				if (!core.isReplaying()) battleByTurn(id, x, y);
-				else battleByTurn_Replaying(id, x, y);
+				else battleByTurn_replaying(id, x, y);
 			} else {
 				this.afterBattle(id, x, y);
 			}
@@ -6248,10 +6248,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			// 获胜时，绘制底边栏
 			let h = 0;
-			if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
-				if (h < 40) h += 4;
-				drawBattleBottomBar(battle, h);
-			});
+			// if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
+			// 	if (h < 40) h += 4;
+			// 	drawBattleBottomBar(battle, h);
+			// });
 			//等待500ms后擦除画布
 			await new Promise((res) => { setTimeout(res, 500) });
 			clearCanvasAndEvent();
@@ -6410,8 +6410,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			freeze = 0;
 			/** 状态，分为'normal''poisoned','weak'*/
 			status = 'normal';
-			/** 每回合的动画信息*/
-			animateInfo;
 			get mana() {
 				return this._mana;
 			};
@@ -6456,6 +6454,43 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return false;
 			}
 
+			/**
+			 * 执行debuff效果
+			 * @param {string} action
+			 */
+			execDebuff(action) {
+				switch (action) {
+					case 'destroyArmor': //81-破甲刃
+						this.def -= 12;
+						break;
+					case 'suppress': //89-压制
+						this.atk -= 20;
+						this.def -= 5;
+						break;
+					case 'poison':
+						this.status = 'poisoned';
+						break;
+					case 'weak':
+						this.status = 'weak';
+						break;
+				}
+			}
+
+		}
+
+		class HeroAtkStatus {
+			/**本次攻击造成的伤害 */
+			damage = 0;
+			/**本次攻击的动画 */
+			animate = 'g3';
+			/**勇士是否被冻结 */
+			frozen = false;
+			/**勇士是否miss */
+			miss = false;
+			/**本次攻击发动的技能 */
+			skill = '';
+			/** 本次生命回复 */
+			heal = 0;
 		}
 
 		class Hero extends ActorBase {
@@ -6470,7 +6505,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 一次深呼吸减少的疲劳值*/
 			deepBreath = core.getFlag('deepBreath', 5);
 
-			/** 即将发动的剑技*
+			/** 即将发动的剑技
 			 * @type {string}
 			 */
 			swordSkill = '';
@@ -6502,7 +6537,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakV', 0));
 				/** 一管气息的容量 */
 				this.permana = this.mana / 6;
-
+				/** 本次攻击的状态 
+				 * @type {HeroAtkStatus}
+				 */
+				this.atkStatus;
 				if (core.hasFlag('weak')) this.status = 'weak';
 			}
 
@@ -6511,37 +6549,62 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {Enemy} enemy 
 			 */
 			act(enemy) {
+				this.atkStatus = new HeroAtkStatus();
 				/** 本次攻击的状态 */
-				let atkStatus = {
-					/**本次攻击造成的伤害 */
-					'damage': 0,
-					/**本次攻击的动画 */
-					'animate': 'g3',
-					/**勇士是否被冻结 */
-					'frozen': false,
-					/**勇士是否miss */
-					'miss': false,
-					/**本次攻击发动的技能 */
-					'skill': '',
-				};
-				let hdamage = 0;
+				let atkStatus = this.atkStatus;
 
 				// 检查勇士是否被冰冻
 				if (this.checkFrozen()) {
 					atkStatus.frozen = true;
-					this.animateInfo = atkStatus;
 					if (hasSpecial(enemy.special, 92)) { //盾大师
 						if (enemy.phase++ > 2) enemy.phase = 0;
 					}
 					return;
 				}
+		
+				// 检查勇士是否miss
+				if (this.checkMiss()) atkStatus.miss = true;		
+				else {
+					atkStatus.damage = this.checkSword(enemy);
+					if (hasSpecial(enemy.special, 92)) { // 盾大师
+						switch (enemy.phase) {
+							case 0:
+								atkStatus.damage = Math.round(atkStatus.damage / 2);
+								break;
+							case 1:
+								this.freeze++;
+								break;
+							case 2:
+								hero.hp -= Math.round(atkStatus.damage / 4);
+								break;
+						}
+						if (enemy.phase++ > 2) enemy.phase = 0;
+					}
+					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
+					this.hp += atkStatus.heal; //深红
+					this.addMana(enemy);
+					atkStatus.damage = hdamage;
+					enemy.hp -= hdamage;
+				}
 
-				// 发动技能
+				this.swordSkill = '';
+				this.animateInfo = atkStatus;
+			}
+
+
+			/**
+			 * 根据勇士发动的剑技返回伤害值
+			 * @param {Enemy} enemy 
+			 * @returns {number}
+			 */
+			checkSword(enemy){
+				let hdamage = 0;
+				const atkStatus = this.atkStatus;
 				if (this.swordSkill.length > 0) {
 					atkStatus.skill = this.swordSkill;
 					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
 					this.fatigue += getSkill(this.swordSkill, 'fatigue');
-				}
+				}else return;
 				switch (this.swordSkill) {
 					case 'c':
 						hdamage = 2 * Math.max(this.atk - enemy.def, 1);
@@ -6568,15 +6631,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					case 'd': //深红
 						hdamage = Math.round(0.8 * Math.max(this.atk - enemy.def, 1));
 						if (hdamage >= enemy.hp) hdamage = enemy.hp - 1;
-						this.hp += Math.round(0.3 * hdamage);
+						atkStatus.heal = Math.round(0.3 * hdamage);
 						atkStatus.animate = "gsw3";
 						break;
 					case 'h': //天灵
 						hdamage = Math.round(1.8 * Math.max(this.atk - enemy.def, 1));
+						enemy.fatigue += 15;
 						atkStatus.animate = "gsw4";
 						break;
 					case 'k': // 皇者
-						hdamage = Math.round(5 * Math.max(this.atk - this.enemy.def, 1));
+						hdamage = Math.round(5 * Math.max(this.atk - enemy.def, 1));
 						if (hdamage >= enemy.hp) {
 							hdamage = enemy.hp - 1;
 							this.smartCast = true;
@@ -6588,42 +6652,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						hdamage = Math.max(this.atk - enemy.def, 1);
 						break;
 				}
-				if (enemy.def - this.atk > this.atkm) hdamage = 0; //攻临界
-
-				if (hasSpecial(enemy.special, 92)) { // 盾大师
-					switch (enemy.phase) {
-						case 0:
-							hdamage = Math.round(hdamage / 2);
-							break;
-						case 1:
-							this.freeze++;
-							break;
-						case 2:
-							hero.hp -= Math.round(hdamage / 4);
-							break;
-					}
-					if (enemy.phase++ > 2) enemy.phase = 0;
-				}
-
-				// 检查勇士是否miss
-				if (this.checkMiss()) {
-					atkStatus.miss = true;
-				}
-				else {
-					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
-					if (this.swordSkill === 'h') enemy.fatigue += 15; //天灵
-					this.addMana(enemy);
-					atkStatus.damage = hdamage;
-					enemy.hp -= hdamage;
-				}
-
-				this.swordSkill = '';
-				this.animateInfo = atkStatus;
+				return hdamage;
 			}
 
 			/** 双方回复气息 
 			 * @param {Enemy} enemy 
-			*/
+			 */
 			addMana(enemy) {
 				if (this.swordSkill.length > 0 || hasSpecial(enemy.special, 64) ||
 					enemy.def >= this.atk) {
@@ -6634,7 +6668,49 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					// 装备流石用C,怪物不加防增气
 				} else enemy.mana += Math.round(damage / 3); // 怪物防增气			
 			}
+
+			/** 添加精灵罩buff效果 */
+			addFairy() {
+				this.fairy = 3;
+				this.fairyBuff = (this.orihp + this.def) % this.lv;
+				this.def += this.fairyBuff;
+			}
+
+			/** 移除精灵罩buff效果 */
+			removeFairy() {
+				this.def -= Math.round(this.def / 50) + (this.orihp % this.lv);
+				this.fairyBuff = 0;
+			}
 		};
+
+		class EnemyAtkStatus {
+			constructor() {
+				/** 敌人本次攻击对勇士造成的伤害 */
+				this.damage = 0;
+				/** 敌人本次攻击对公主造成的伤害 */
+				this.princessDamage = 0;
+				/** 最终BOSS造成的弹跳伤害 */
+				this.bounceDamage = [0, 0, 0];
+				/** 勇士反射盾反弹的伤害*/
+				this.reflectDamage = 0;
+				/** 敌人本次攻击的范围，有'hero''princess''all''bounce'四种 */
+				this.aim = 'hero';
+				/** 敌人生命回复 */
+				this.heal = 0;
+				/** 敌人是否被冰冻 */
+				this.frozen = false;
+				/** 敌人本次攻击是否miss */
+				this.miss = false;
+				/** 敌人本次攻击是否暴击 */
+				this.crit = false;
+				/** 敌人是否是魔眼 */
+				this.evilEye = false;
+				/** 敌人本次攻击的动画*/
+				this.animate = '';
+				/** 勇士盾牌的动画*/
+				this.heroAnimate = '';
+			}
+		}
 
 		class Enemy extends ActorBase() {
 			/** 敌人本场战斗累计造成的伤害 */
@@ -6674,238 +6750,66 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					else if (hasSpecial(special, 87)) return 6;
 					else return 1;
 				})(this.special);
+				/** 敌人已经连续行动了几次 */
+				this.actIndex = 0;
+
+				/** 敌人释放中毒的几率 */
+				this.poisonPoss = data.atkValue || 0;
+				/** 敌人释放衰弱的几率 */
+				this.weakPoss = data.defValue || 0;
+				/** 敌人释放一次衰弱降低属性的效果 */
+				this.weakPoint = data.damage || 0;
+				/** 敌人本次攻击的状态
+				 * @type {EnemyAtkStatus}
+				 */
+				this.atkStatus;
 			}
 
 			/** 敌人行动
 			 * @param {Hero} hero 
 			 */
 			act(hero) {
-				/** 敌人本次攻击对勇士造成的伤害 */
-				let damage = 0,
-					/** 基础伤害，用于反射盾的计算 */
-					oriDamage = 0;
 				/** 敌人的特殊属性数组 */
 				const especial = this.special;
-				/** 敌人的攻击状态 */
-				let atkStatus = {
-					/** 敌人本次攻击对勇士造成的伤害 */
-					damage: 0,
-					/** 敌人本次攻击对公主造成的伤害 */
-					princessDamage: 0,
-					/** 最终BOSS造成的弹跳伤害 */
-					bounceDamage: [0, 0, 0],
-					/** 勇士反射盾反弹的伤害*/
-					reflectDamage: 0,
-					/** 敌人生命回复 */
-					heal: 0,
-					/** 敌人是否被冰冻 */
-					frozen: false,
-					/** 敌人本次攻击是否miss */
-					miss: false,
-					/** 敌人本次攻击是否暴击 */
-					crit: false,
-					/** 敌人是否是魔眼 */
-					evilEye: false,
-					/** 敌人本次攻击的动画*/
-					animate: '',
-					/** 勇士盾牌的动画*/
-					heroAnimate: '',
-				};
-				this.enemy.totalFatigue += this.enemy.fatigue;
-				if (this.checkFrozen()) {
+
+				this.atkStatus = new EnemyAtkStatus();
+				const atkStatus = this.atkStatus;
+
+				if (this.actIndex++ > this.combo) this.actIndex = 1;
+
+				if (core.hasSpecial(especial, 91)) { //剑大师切换行动列表
+					this.phase++;
+					if (this.phase > 2) this.phase = 0;
+				}
+				if (this.checkFrozen()) { //敌人是否被冰冻
 					atkStatus.frozen = true;
-					return
+					return;
 				}
 				if (core.hasSpecial(especial, 80)) { // 魔眼
 					atkStatus.evilEye = true;
-					if (hero.def - hero.atk > hero.atkm) damage = 0;
-					else damage = Math.max(this.hero.atk - this.hero.def, 1);
-					if (hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
-						damage = 0;
+					if (hero.def - hero.atk > hero.atkm) atkStatus.damage = 0;
+					else atkStatus.damage = Math.max(hero.atk - hero.def, 1);
+					if (hero.checkMiss()) { // 魔眼miss取决于勇士的疲劳
 						atkStatus.miss = true;
-						hero.totalFatigue -= 100;
 					}
+					return;
 				}
 
-				//// 判断敌人攻击范围atkStatus.aim////
-				if (core.hasSpecial(especial, [61, 62, 63, 64, 65])) {
-					atkStatus.aim = 'all';
-					atkStatus.princessDamage = Math.max(this.enemy.atk - this.hero.mdef, 0);
-				} else if (core.hasSpecial(especial, 55)) {
-					atkStatus.aim = 'princess';
-					atkStatus.princessDamage = this.enemy.atk;
-				} else { atkStatus.aim = 'hero'; }
-				if (hasSpecial(especial, 93)) // 魔界之王古顿
-				{
-					atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
-						Math.round(0.64 * damage), Math.round(0.512 * damage)
-					];
-					atkStatus.aim = 'lastBoss';
-				}
-
-				if (hasSpecial(especial, [2, 61, 62, 63, 64, 65, 66])) damage = this.atk; // 魔攻
-
-				else {
-					if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
-					else damage = Math.max(this.enemy.atk - this.hero.def, 1);
-				}
-
-				// 判断敌人是否暴击atkStatus.crit
-				if (this.mana >= this.manamax && hero.def - this.atk < hero.defm) {
-					//满气息时怪物释放必杀，但若不能破防主角则永远不会释放
-					if (core.hasSpecial(especial, 91)) {
-						// 剑大师不会释放必杀
-					} else {
-						let critRatio = 2;
-						if (hasSpecial(especial, 51)) critRatio = 2.5;
-						if (hasSpecial(especial, 59)) critRatio = 4;
-						if (hasSpecial(especial, 67)) critRatio = 3;
-						damage = Math.round(critRatio * damage);
-						princessDamage = Math.round(critRatio * princessDamage);
-						this.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
-						atkStatus.crit = true; //暴击
-					}
-					this.mana = 0;
-				}
-
-				if (this.shieldSkill.length > 0) {
-					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
-					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
-				}
-				/** 本回合是否成功开启反射盾 */
-				let reflect = false;
-				switch (this.shieldSkill) { //盾技
-					case 'M': //镜膜盾
-						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
-						atkStatus.heroAnimate = "gsh1";
-						break;
-					case 'C': //结晶盾
-						damage = Math.ceil(damage / 1.5);
-						if (this.id === 'bluePriest') this.magicIce = true; //制取魔法冰块
-						// this.enemy.freeze = 2 * combo - this.turn % (combo + 1); ???
-						atkStatus.heroAnimate = "gsh2";
-						break;
-					case 'R': //反射
-						oriDamage = damage;
-						damage = Math.ceil(damage / 1.3);
-						reflect = true;
-						atkStatus.heroAnimate = "gsh3";
-						break;
-					case 'F': //精灵罩
-						hero.fairy = 3;
-						hero.fairyBuff = (hero.orihp + hero.def) % hero.lv;
-						hero.def += hero.fairyBuff;
-						if (isMagician()) hero.smartCast = true;
-						atkStatus.heroAnimate = "gsh4";
-						break;
-					case 'E': //贤者结界
-						this.hero.hpmax += Math.round(1.5 * damage);
-						atkStatus.heroAnimate = "gsh5";
-						break;
-					default:
-						break;
-				}
-				hero.shieldSkill = '';
-
+				this.setDamage(hero); // 获取敌人的伤害
+				this.setAtkAim(hero); // 获取敌人的攻击范围和对公主造成的伤害
+				this.checkCrit(hero); // 获取敌人是否暴击
+ 
 				if (this.checkMiss()) atkStatus.miss = true;
 				else {
-					if (core.hasSpecial(especial, 91)) { // 剑大师
-						switch (this.enemy.sword) {
-							case 0:
-								this.hero.fatigue += 8;
-								this.enemy.sword = 1;
-								break;
-							case 1:
-								this.hero.mana -= this.hero.permana;
-								if (this.hero.mana < 0) this.hero.mana = 0;
-								this.enemy.sword = 2;
-								break;
-							case 2:
-								heal = Math.round(damage / 5);
-								this.enemy.sword = 0;
-								break;
-						}
-					}
+					const { oriDamage, reflect } = this.checkHeroShield(hero, atkStatus);
+					this.execAtkEffect(hero,atkStatus,reflect);
 
-					if (hasSpecial(especial, [52,53])) hero.fatigue ++;
-					if (hasSpecial(especial, 54)) hero.fatigue += 3;
-					if (hasSpecial(especial, 56)) hero.fatigue += 4;
-					if (core.hasSpecial(especial, 62)) {
-						this.fatigue -= 1;
-						if (this.fatigue <= 0) this.fatigue = 0;
-					}
-					if (hasSpecial(especial, 58) && atkStatus.crit) hero.mana -= hero.permana;		
-					if (hasSpecial(especial, 65)) { //血秘术
-						heal = Math.round(0.5 * (damage + princessDamage));
-					}
-					if (hasSpecial(especial, [57,66,67])) { //血魔法
-						heal = Math.round(0.5 * damage);
-					}
-					if (hasSpecial(especial, 88)) {
-							hero.mana -= 40;
-							this.mana += 40;					
-					}
-					if (core.hasSpecial(especial, 84)) damage += 100; 
-					// 执行敌人带有的debuff技能
-						if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
-							this.hero.misfortune += 40;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) this.enemy.def -= 12;
-								else this.hero.def -= 12;
-							}
-						} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
-							this.hero.misfortune += 60;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) {
-									this.enemy.atk -= 20;
-									this.enemy.def -= 5;
-								} else {
-									this.hero.atk -= 20;
-									this.hero.def -= 5;
-								}
-							}
-						} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
-							core.hasSpecial(especial, 82)) { // 12-中毒
-							this.hero.misfortune += this.enemy.poisonPoss;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) isPoisoned = true;
-								else if (!core.getFlag('weak')) {
-									core.triggerDebuff('get', 'poison');
-								}
-							}
-						} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
-							this.hero.misfortune += this.enemy.weakPoss;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) {
-									this.enemy.atk -= this.enemy.weakPoint;
-									this.enemy.def -= this.enemy.weakPoint;
-								} else if (!core.getFlag('poison')) {
-									// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
-									core.setFlag('weakV', this.enemy.weakPoint);
-									core.triggerDebuff('get', 'weak');
-								}
-							}
-						}
-
-					
-					this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
-					if (this.hero.fairy > 0) {
-						atkStatus.fairy = true;
-						this.hero.fairy--;
-						if (this.hero.fairy === 0) {
-							this.hero.def -= Math.round(this.hero.def / 50) + (this.hero.orihp % this.hero.lv);
-							this.hero.fairyBuff = 0;
-						}
-					}
-
-					this.totalDamage += damage;
-					hero.hp -= damage;
-					hero.hpmax -= princessDamage;
-					if (core.hasSpecial(especial, 93)) { // 古顿
+					this.addMana(hero, atkStatus.crit,atkStatus.aim); //本回合敌人未暴击，则它会回复气息
+				
+					hero.hp -= atkStatus.damage;
+					hero.hpmax -= atkStatus.princessDamage;
+					this.totalDamage += atkStatus.damage;
+					if (core.hasSpecial(especial, 93)) { // 古顿的弹跳攻击效果
 						hero.hp -= atkStatus.bounceDamage[2];
 						hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
 						this.totalDamage += atkStatus.bounceDamage[2];
@@ -6922,24 +6826,207 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (this.hp <= 0) this.hp = 0;
 				}
 				this.hp += atkStatus.heal; //吸血效果
-
-				atkStatus.damage = damage;
 				atkStatus.animate = enemyAni(this.id, atkStatus.crit);
-				this.animateInfo = atkStatus;
 			}
 
-			/** 双方回复气息 
-			 * 
+			/** 判断敌人的基础伤害atkStatus.damage 
 			 * @param {Hero} hero 
-			 * @param {boolean} enemyCrit 敌人是否暴击
-			 * @param {string} enemyAim 敌人的目标
 			 */
-			addMana(hero, enemyCrit, enemyAim) {
-				if (hasSpecial(this.special, 60) || hasSpecial(this.special, 64)) {
+			setDamage(hero) {
+				const atkStatus = this.atkStatus;
+				if (hasSpecial(this.special, [2, 61, 62, 63, 64, 65, 66])) atkStatus.damage = this.atk; // 魔攻
+				else {
+					if (hero.def - this.atk >= hero.defm) atkStatus.damage = 0; // 防临界
+					else atkStatus.damage = Math.max(this.atk - hero.def, 1);
+				}
+			}
+
+			/**
+			 * 判断敌人攻击范围atkStatus.aim和对公主的伤害atkStatus.princessDamage
+			 * @param {Hero} hero			 
+			 */
+			setAtkAim(hero) {
+				const atkStatus = this.atkStatus;
+				const especial = this.special;
+				if (hasSpecial(especial, [61, 62, 63, 64, 65])) {
+					atkStatus.aim = 'all';
+					atkStatus.princessDamage = Math.max(this.atk - hero.mdef, 0);
+				} else if (hasSpecial(especial, 55)) {
+					atkStatus.aim = 'princess';
+					atkStatus.princessDamage = this.atk;
+				} else { atkStatus.aim = 'hero'; }
+				if (hasSpecial(especial, 93)) // 魔界之王古顿
+				{
+					const damage = atkStatus.damage;
+					atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
+						Math.round(0.64 * damage), Math.round(0.512 * damage)
+					];
+					atkStatus.aim = 'bounce';
+				}
+			}
+
+			/**
+			 * 判断敌人是否暴击atkStatus.crit
+			 * @param {Hero} hero 
+			 */
+			checkCrit(hero) {
+				const atkStatus = this.atkStatus;
+				const especial = this.special;
+				// 判断敌人是否暴击atkStatus.crit
+				if (this.mana >= this.manamax && hero.def - this.atk < hero.defm) {
+					//满气息时怪物释放必杀，但若不能破防主角则永远不会释放
+					if (core.hasSpecial(especial, 91)) {
+						// 剑大师不会释放必杀
+						return;
+					}
+					let critRatio = 2;
+					if (hasSpecial(especial, 51)) critRatio = 2.5;
+					if (hasSpecial(especial, 59)) critRatio = 4;
+					if (hasSpecial(especial, 67)) critRatio = 3;
+					atkStatus.damage = Math.round(critRatio * atkStatus.damage);
+					atkStatus.princessDamage = Math.round(critRatio * atkStatus.princessDamage);
+					this.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
+					atkStatus.crit = true; //暴击
+					this.mana = 0;
+				}
+			}	
+
+			/**
+			 * 勇士的盾技效果
+			 * @param {Hero} hero 
+			 * @returns {{oriDamage:number,reflect:boolean}}
+			 */
+			checkHeroShield(hero) {
+				const atkStatus = this.atkStatus;
+				const reflectInfo = {
+					oriDamage: 0,
+					reflect: false,
+				}
+				if (hero.shieldSkill.length > 0) {
+					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
+					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
+				} else return;
+				switch (hero.shieldSkill) { //盾技
+					case 'M': //镜膜盾
+						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
+						atkStatus.heroAnimate = "gsh1";
+						break;
+					case 'C': //结晶盾
+						damage = Math.ceil(damage / 1.5);
+						if (this.id === 'bluePriest') this.magicIce = true; //制取魔法冰块
+						this.freeze += 2 * this.combo - this.actIndex; // 敌人被跳过的回合数
+						atkStatus.heroAnimate = "gsh2";
+						break;
+					case 'R': //反射
+						reflectInfo.oriDamage = damage;
+						damage = Math.ceil(damage / 1.3);
+						reflectInfo.reflect = true;
+						atkStatus.heroAnimate = "gsh3";
+						break;
+					case 'F': //精灵罩
+						if (hero.fairy-- <= 0) hero.removeFairy();
+						if (isMagician()) hero.smartCast = true;
+						atkStatus.heroAnimate = "gsh4";
+						break;
+					case 'E': //贤者结界
+						this.hero.hpmax += Math.round(1.5 * damage);
+						atkStatus.heroAnimate = "gsh5";
+						break;
+					default:
+						break;
+				}
+				hero.shieldSkill = '';
+				return reflectInfo;
+			}
+
+			/**
+			 * 执行敌人的各种攻击特效
+			 * @param {Hero} hero 
+			 * @param {boolean} reflect 反射盾是否生效
+			 */
+			execAtkEffect(hero,reflect){
+				const atkStatus = this.atkStatus;
+				const especial = this.special;
+				if (hasSpecial(especial, 91)) { // 剑大师
+					switch (this.phase) {
+						case 1:
+							hero.fatigue += 8;
+							break;
+						case 2:
+							hero.mana -= hero.permana;
+							break;
+						case 0:
+							atkStatus.heal = Math.round(atkStatus.damage / 5);
+							break;
+					}
+				}
+
+				if (hasSpecial(especial, [52, 53])) hero.fatigue++;
+				if (hasSpecial(especial, 54)) hero.fatigue += 3;
+				if (hasSpecial(especial, 56)) hero.fatigue += 4;
+				if (core.hasSpecial(especial, 62)) {
+					this.fatigue -= 1;
+					if (this.fatigue < 0) this.fatigue = 0;
+				}
+				if (hasSpecial(especial, 58) && atkStatus.crit) hero.mana -= hero.permana;
+				if (hasSpecial(especial, 65)) { //血秘术
+					atkStatus.heal = Math.round(0.5 * (atkStatus.damage + atkStatus.princessDamage));
+				}
+				if (hasSpecial(especial, [57, 66, 67])) { //血魔法
+					atkStatus.heal = Math.round(0.5 * atkStatus.damage);
+				}
+				if (hasSpecial(especial, 88)) {
+					hero.mana -= 40;
+					this.mana += 40;
+				}
+				if (hasSpecial(especial, 84)) atkStatus.damage += 100;
+
+				if (hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
+					this.checkDebuff(hero, 'destroyArmor', reflect, 40);
+				} else if (hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
+					this.checkDebuff(hero, 'suppress', reflect, 60);
+				} else if (hasSpecial(especial, [12, 61, 82])) { // 12-中毒
+					this.checkDebuff(hero, 'poison', reflect, this.poisonPoss);
+				} else if (core.hasSpecial(especial, [13, 87])) { // 13-衰弱
+					this.checkDebuff(hero, 'weak', reflect, this.weakPoss);
+				}
+			}
+
+			/**
+			 * 触发敌人施加的debuff效果
+			 * @param {Hero} hero 
+			 * @param {string} action debuff效果的名称
+			 * @param {boolean} reflect 反射盾是否生效
+			 * @param {number} possibility 该debuff的触发几率
+			 */
+			checkDebuff(hero,action,reflect,possibility){
+				hero.misfortune += possibility;
+				if (hero.misfortune >= 100) {
+					hero.misfortune -= 100;
+					if (reflect) {
+						if (action === 'weak') {
+							this.atk -= this.weakPoint;
+							this.def -= this.weakPoint;
+						}
+						super.execDebuff(action);
+					} else {
+						if (action === 'weak') hero.weakPoint+= this.weakPoint;
+						hero.execDebuff(action);
+					}
+				}
+			}
+			
+			/** 
+			 * 双方回复气息
+			 * @param {Hero} hero 
+			 */
+			addMana(hero) {
+				const atkStatus = this.atkStatus;
+				if (hasSpecial(this.special, [60,64])) {
 					//暗魔法无防增气，魔神些多的死寂光环角色不加气
 				} else hero.mana += Math.round(0.1 * damage); // 角色防增气
-				if (!enemyCrit && !hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
-					switch (enemyAim) {
+				if (!atkStatus.crit && !hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
+					switch (atkStatus.aim) {
 						case 'princess':
 							this.mana += Math.round((10 * hero.mdef) / (this.atk));
 							break;
@@ -6951,21 +7038,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							this.mana += Math.round((10 * hero.def) / (this.atk));
 							break;
 					}
-				}
-			}
-
-			/** 执行概率性的负面事件
-			 * 
-			 * @param {Hero} hero 
-			 * @param {Enemy} enemy
-			 * @param {number} probability 敌人触发负面事件的概率
-			 * @param {boolean} reflect 反射盾是否生效
-			 * @param {function} event 敌人触发的负面事件
-			 */
-			execDebuff(hero,enemy,probability,reflect,event){
-				hero.misfortune+=probability;
-				if (hero.misfortune>100){
-					hero.misfortune -= 100;
 				}
 			}
 		}
@@ -7021,6 +7093,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
 				this.actor = this.order[this.actIndex];
 				this.turn++;
+				console.log("turn "+this.turn);
+				console.log("hero:");
+				console.log(hero);
+				console.log("enemy:");
+				console.log(enemy);
 			}
 
 			checkEnd() {
@@ -7055,16 +7132,20 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				else if (['b', 's', 'd', 'h', 'k'].includes(action)) {
 					const aimSword = abbreviateList[action];
-					this.hero.sword = aimSword;
+					this.hero.swordEquiped = aimSword;
 					this.hero.swordSkill = action;
 				} else if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
 					const aimShield = abbreviateList[action];
-					this.hero.shield = aimShield;
+					this.hero.shieldEquiped = aimShield;
 					this.hero.shieldSkill = action;
+					if (action === 'F') this.hero.addFairy();
 				}
 				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
 			}
 
+			/** 检查用户输入的行为能否执行
+			 * @param {string} action
+			 */
 			canExecAction(action) {
 				if (this.status !== 'pending') return { success: false, reason: '战斗已结束' };
 				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
@@ -7111,7 +7192,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/** 判断敌人是否具有列表中的某项特殊属性
 		 * @param {Array} enemySpecial 
-		 * @param {Array | number} specialList 
+		 * @param {Array<number> | number} specialList 
 		 * @returns {boolean}
 		 */
 		function hasSpecial(enemySpecial, specialList) {
