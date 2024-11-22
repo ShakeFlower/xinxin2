@@ -4334,8 +4334,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			)
 		}
 
-		this.f2 = function () { console.log(sTextList) };
-
 		class ScrollingText {
 			constructor(text, args) {
 				this.text = text;
@@ -4360,18 +4358,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.getFlag('popDamage')) return;
 			let sText = new ScrollingText(text, args);
 			sTextList.add(sText);
-		}
-
-		this.f1 = function () {
-			core.plugin.addScrollingText('100', {
-				'x': 48,
-				'y': 180,
-				'vy': 1,
-				'style': 'red',
-				'font': 'Bold 18px Arial',
-				'tmax': 50,
-				'type': 'down'
-			})
 		}
 
 		function updateScrollingText() {
@@ -4406,22 +4392,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// 每次切换楼层后执行
 		this.clearScrollingText = function () {
-			sTextList = new Set([]);
+			sTextList.clear();
 		}
 
-		let currTime = 0;
-
-		core.registerAnimationFrame('scrollText', true, function (timestamp) {
+		core.plugin.registerAnimationInterval('scrollText',10,()=>{
 			if (core.isReplaying()) return;
 			if (!core.getFlag('popDamage')) return;
-			if (timestamp - currTime < 10) return;
-			currTime = timestamp;
 			if (!core.dymCanvas[canvas]) {
 				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
 			}
 			updateScrollingText();
 			drawScrollingText();
-		})
+		});
 
 	},
 	"切装事件": function () {
@@ -4607,8 +4589,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 
-		function showSetting(goDirction) {
-
+		function showSetting() {
 			settingIndex = 0;
 			const ctx = 'setting',
 				name = 'settingChange';
@@ -4983,27 +4964,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			finish[index] = 1;
 			core.setLocalStorage("finish", finish);
 
-			function effect() {
-				const canvas = "achievementEffect";
-				core.playSound('achievement.mp3');
-				core.createCanvas(canvas, 0, 0, PX, PY, 200);
-				core.setTextAlign(canvas, "center");
-				core.drawWindowSkin("winskin.png", canvas,
-					140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-				core.drawIcon(canvas, 'N454', 126, 80)
-				core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
-					"cyan", "24px " + core.status.globalAttribute.font);
-				core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
-					"#FFFFFF", "20px " + core.status.globalAttribute.font);
-				let fade = setTimeout(function () {
-					delete core.animateFrame.asyncId[fade];
-					clearInterval(fade);
-					core.deleteCanvas(canvas);
-				}, 1000);
-				core.animateFrame.asyncId[fade] = true;
-
-			}
-			effect();
+			const canvas = "achievementEffect";
+			core.playSound('achievement.mp3');
+			core.createCanvas(canvas, 0, 0, PX, PY, 200);
+			core.setTextAlign(canvas, "center");
+			core.drawWindowSkin("winskin.png", canvas,
+				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+			core.drawIcon(canvas, 'N454', 126, 80) // to be fixed 换成各自的图标
+			core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
+				"cyan", "24px " + core.status.globalAttribute.font);
+			core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+				"#FFFFFF", "20px " + core.status.globalAttribute.font);
+			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
+				delete core.animateFrame.asyncId[fade];
+				clearInterval(fade);
+				core.deleteCanvas(canvas);
+			}, 1000);
+			core.animateFrame.asyncId[fade] = true; 
 		};
 
 		// 绘制成就页面
@@ -5087,47 +5064,101 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			drawDetail(list);
 		};
-		// 键盘操作
-		this.achKeyboardAction = function (keycode) {
-			switch (keycode) {
-				case 38: // Up
-					if (first !== 0) {
-						first--;
-					} else { }
-					break;
-				case 40: // Down
-					if (first <= list.length - 7) first++;
-					break;
-				case 27: // Esc
-					core.insertAction({ "type": "break" });
-					break;
-				case 88: // X
-					core.insertAction({ "type": "break" });
-					break;
-				case 13: // Enter
-					core.insertAction({ "type": "break" });
-					break;
-			}
-		};
+		// // 键盘操作
+		// this.achKeyboardAction = function (keycode) {
+		// 	switch (keycode) {
+		// 		case 38: // Up
+		// 			if (first !== 0) {
+		// 				first--;
+		// 			} 
+		// 			break;
+		// 		case 40: // Down
+		// 			if (first <= list.length - 7) first++;
+		// 			break;
+		// 		case 27: // Esc
+		// 			core.insertAction({ "type": "break" });
+		// 			break;
+		// 		case 88: // X
+		// 			core.insertAction({ "type": "break" });
+		// 			break;
+		// 		case 13: // Enter
+		// 			core.insertAction({ "type": "break" });
+		// 			break;
+		// 	}
+		// };
 		// 点击操作
-		this.achClickAction = function (px, py) {
-			if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-				if (first <= list.length - 7) first++;
-			} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
-				if (first != 0) {
-					first--;
-				}
-			} else {
-				if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
-					core.insertAction({ "type": "break" });
-				}
-			}
-		};
+		// this.achClickAction = function (px, py) {
+		// 	if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
+		// 		if (first <= list.length - 7) first++;
+		// 	} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
+		// 		if (first != 0) {
+		// 			first--;
+		// 		}
+		// 	} else {
+		// 		if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
+		// 			core.insertAction({ "type": "break" });
+		// 		}
+		// 	}
+		// };
 		// 玩家操作
-		this.achievementAction = function () {
-			if (flags.type == 0) return this.achKeyboardAction(flags.keycode);
-			else return this.achClickAction(flags.px, flags.py);
-		};
+		// this.achievementAction = function () {
+		// 	if (flags.type == 0) return this.achKeyboardAction(flags.keycode);
+		// 	else return this.achClickAction(flags.px, flags.py);
+		// };
+
+
+		function drawAchievementMenu() {
+			return new Promise((res) => {
+				function finish(){
+					core.deleteCanvas('achievement');
+					core.unregisterAction('ondown', 'achievementMenuClick');
+					core.unregisterAction('keyDown', 'achievementMenuKey');
+					res();
+				};
+
+				core.registerAction('ondown', 'achievementMenuClick', (px, py) => {
+					if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
+						if (first <= list.length - 7) first++;
+					} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
+						if (first != 0) {
+							first--;
+						}
+					} else {
+						if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
+							finish();
+						}
+					}
+				}, 100);
+
+				core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
+					switch (keyCode) {
+						case 38: // Up
+							if (first !== 0) first--;
+							break;
+						case 40: // Down
+							if (first <= list.length - 7) first++;
+							break;
+						case 27: // Esc
+						case 88: // X
+						case 13: // Enter
+							finish();
+							break;
+					}
+				}, 100);
+
+				core.plugin.drawAchievement();
+			}
+			)
+		}
+
+		this.openAchievementMenu = async function(){
+			if (core.isReplaying()) return;
+			core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
+			core.lockControl();
+			await drawAchievementMenu();
+			core.setFlag('noOpenMenu', false);
+			core.unlockControl();
+		}
 		// 打开成就页面
 		this.achievement = function () {
 			core.insertAction([{
@@ -6196,10 +6227,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			core.lockControl();
 
-			// beginListen(battle);
+			beginListen(battle);
 			// drawBattleUI(battle);
 			// let frame = 0;
-			// registerAnimationInterval('battleIcon',200,()=>{
+			// core.plugin.registerAnimationInterval('battleIcon',200,()=>{
 			// 	drawBattleIcon(battle,frame++);
 			// });
 
@@ -6237,7 +6268,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (battle.speed !== 'quick') {
 				// 获胜时，绘制底边栏
 				let h = 0;
-				// if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
+				// if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
 				// 	if (h < 40) h += 4;
 				// 	drawBattleBottomBar(battle, h);
 				// });
@@ -7759,11 +7790,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (core.hasItem('I325')) battle.execUserAction('k');
 					else if (core.hasItem('I327')) battle.execUserAction('E');
 					break;
-				case 86: //V
-					battle.execUserAction('v');
-					break;
 				case 67: //C
 					battle.execUserAction('c');
+					break;
+				case 86: //V
+					battle.execUserAction('v');
 					break;
 				case 90: //Z
 					if (!battle.hero.swordEquiped) {
@@ -7863,7 +7894,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/** 注销所有事件和画布 */
 		function clearCanvasAndEvent() {
 			core.unregisterAction('keyDown', 'battleSkill');
-			core.unregisterAction('keyDown', 'battleClick');
+			core.unregisterAction('onDown', 'battleClick');
+			core.unregisterAction('keyDown', 'quit');
+			core.unregisterAction('onDown', 'quit');
+
 			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
 				core.unregisterAnimationFrame(x);
 			});
@@ -7897,7 +7931,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} interval 
 		 * @param {Function} event 
 		 */
-		function registerAnimationInterval(name, interval, event) {
+		this.registerAnimationInterval = function(name, interval, event) {
 			let currTime = 0;
 			core.registerAnimationFrame(name, true, (timestamp) => {
 				if (timestamp - currTime < interval) return;
