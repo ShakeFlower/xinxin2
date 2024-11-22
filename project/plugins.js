@@ -6193,6 +6193,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			let battle = new Battle(enemyId, x, y);
 
 			core.lockControl();
+			drawBattleUI();
 			while (true) {
 				if (battle.status !== 'pending') break;
 				await Promise.race([
@@ -6210,6 +6211,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.nextTurn();
 				battle.checkEnd();
 				// 此处更新动画
+				// drawBattleUI();
 				battle.updateActor();
 				if (battle.status === 'quit') break;
 			}
@@ -7206,8 +7208,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battleInfo 
 		 */ 
 		function drawBattleUI(battleInfo) {
-			if (!battleInfo) battleInfo = {};
-			if (core.isReplaying()) return;
 
 			const hero = battleInfo.hero,
 				enemy = battleInfo.enemy;
@@ -7647,27 +7647,52 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (!battle.hero.swordEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备剑技');
-					} else { battle.execUserAction(equipList[battle.hero.sword]); }
+					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
 					break;
 				case 88: //X
 					if (!battle.hero.shieldEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备盾技');
-					} else { battle.execUserAction(equipList[battle.hero.shield]); }
+					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
 					break;
 			}
-			core.plugin.drawSkillIcon(battle);
 		}
 
-		/** 注销所有监听事件和画布 */
+		/**
+		 * 监听用户点击事件
+		 * @param {number} x 
+		 * @param {number} y 
+		 * @param {number} px 
+		 * @param {number} py 
+		 * @param {Battle} battle 
+		 */
+		function listenClick(x,y,px,py,battle){
+			const x = {btn1:{x:1,y:1,px:1,py:1}}
+		}
+
+		/**
+		 * 注册按键监听事件
+		 * @param {Battle} battle 
+		 */
+		function beginListen(battle) {
+			core.registerAction('keyDown', 'battleSkill', (keyCode) => {
+				listenKey(keyCode, battle);
+			});
+			core.registerAction('ondown', 'battleClick',(x,y,px,py)=>{
+				listenClick(x,y,px,py,battle);
+			});
+		}
+
+		/** 注销所有事件和画布 */
 		function clearCanvasAndEvent() {
-			core.unregisterAnimationFrame('drawDamage');
-			core.unregisterAnimationFrame('showBottomBar');
-			core.unregisterAnimationFrame('battleIcon');
-			core.deleteCanvas('battleUI');
-			core.deleteCanvas('battleIcon');
-			core.deleteCanvas('battleBottomBar');
-			core.deleteCanvas("skillIcon");
+			core.unregisterAction('keyDown', 'battleSkill');
+			core.unregisterAction('keyDown', 'battleClick');
+			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
+				core.unregisterAnimationFrame(x);
+			});
+			['battleUI', 'battleIcon','battleBottomBar','skillIcon','quit'].forEach((x)=>{
+				core.deleteCanvas(x);
+			});
 		}
 		// #endregion
 
