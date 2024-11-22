@@ -7500,7 +7500,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					});
 					if (atkStatusH.heal > 0) { //治疗效果
 						core.plugin.addScrollingText('+' + atkStatusH.heal, {
-							'x': 54, 'y': 180, 'vy': 1, 'style': 'Lime',
+							'x': hx-6, 'y': hy+14, 'vy': 1, 'style': 'Lime',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 						});
 					}
@@ -7509,10 +7509,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusE.frozen) break;
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
-							drawAnimateByPixel('miss', 355, 152); 
+							drawAnimateByPixel('miss', hx, hy); 
 						}
-						if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-							drawAnimateByPixel('miss', 245, 225); 
+						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
+							drawAnimateByPixel('miss', px, py); 
 						}
 						break;
 					}
@@ -7523,17 +7523,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						princessDamageE += 'crit';
 					}
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-						core.plugin.drawAnimateByPixel(atkStatusE.animate, 355, 152);
-						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, 355, 152);
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx, hy);
+						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
 						core.plugin.addScrollingText(damageE, {
-							'x': 350,'y': 180,'vy': 1,'style': 'Tomato ',
+							'x': hx-6,'y': hy+28,'vy': 1,'style': 'Tomato ',
 							'font': 'Bold 18px Arial','tmax': 50,'type': 'down',
 						});
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-						core.plugin.drawAnimateByPixel(atkStatusE.animate, 245, 225);
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, px, py);
 						core.plugin.addScrollingText(princessDamageE, {
-							'x': 220,'y': 250,'vy': 1,'style': 'Tomato ',
+							'x': px-15,'y': py+25,'vy': 1,'style': 'Tomato ',
 							'font': 'Bold 18px Arial','tmax': 50,'type': 'down'
 						});
 					}
@@ -7546,13 +7546,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							if (atkStatusE.crit) currstr += 'crit';
 
 							core.plugin.addScrollingText(currstr, {
-								'x': (count % 2 === 0) ? 350 : 220, 'y': (count % 2 === 0) ? 180 : 250,
+								'x': (count % 2 === 0) ? hx-6 : px-15, 'y': (count % 2 === 0) ? hy+28 : py+25,
 								'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
 								'tmax': 100, 'type': 'down'
 							});
 							count++;
 							if (count >= 4) clearInterval(bounce);
 						}, 50);
+					}
+					if (atkStatusE.heal>0){ //治疗效果
+						core.plugin.addScrollingText('+' + atkStatusE.heal, {
+							'x': ex-6, 'y': ey+14, 'vy': 1, 'style': 'Lime',
+							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+						});
 					}
 					break;
 			}
@@ -7838,6 +7844,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				default:
 					return critical ? 'g2-cri' : 'g2';
 			}
+		}
+
+		/**
+		 * 获取播放动画时像素坐标的偏移量
+		 */
+		function getAniOffset(){
+
 		}
 
 		// #endregion
