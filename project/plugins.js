@@ -6209,6 +6209,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				]);
 				battle.nextTurn();
 				battle.checkEnd();
+				// 此处更新动画
+				battle.updateActor();
 				if (battle.status === 'quit') break;
 			}
 			// 获胜时，绘制底边栏
@@ -6242,10 +6244,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 				}
 				if (battle.status === 'quit') break;
-				else battle.nextTurn();
-				if (battle.checkEnd()) break;
+				battle.nextTurn();
+				battle.checkEnd();
+				battle.updateActor();
 			}
 			updateHeroStatus(battle);
+			afterBattleEvent(battle, x, y);
 		}
 
 		/**
@@ -7033,6 +7037,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.actor = this.order[this.actIndex];
 			}
 
+			/** 本回合的行动者行动*/
 			nextTurn() {
 				switch (this.actor) {
 					case 'hero':
@@ -7042,9 +7047,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.enemy.act(this.hero);
 						break;
 				}
-				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
-				this.actor = this.order[this.actIndex];
-				this.turn++;
+
 				console.log("turn "+this.turn);
 				console.log("hero:");
 				console.log(this.hero);
@@ -7052,6 +7055,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				console.log(this.enemy);
 			}
 
+			/** 更新下回合的行动者*/
+			updateActor(){
+				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
+				this.actor = this.order[this.actIndex];
+				this.turn++;
+			}
+
+			/** 检查战斗是否满足结束条件*/
 			checkEnd() {
 				if (this.hero.hp <= 0 || this.hero.hpmax <= 0) {
 					this.status = 'lose';
@@ -7136,7 +7147,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		// 
+		// #region
+		/** 复写events.prototype.battle */
 		events.prototype.battle = function (id, x, y, force, callback) {
 			core.saveAndStopAutomaticRoute();
 			id = id || core.getBlockId(x, y);
@@ -7177,6 +7189,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return true;
 		}
 		core.registerReplayAction('bs', _replayAction_bs);
+
+		// #endregion
 
 		// #region 动画
 
@@ -7459,101 +7473,91 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * 解析当前
+		 * 解析当前atkStatus信息，播放动画
 		 * @param {Battle} battle 
 		 */
 		function drawBattleAnimate(battle, currDelay) {
 			const atkStatusH = battle.hero.atkStatus,
 				atkStatusE = battle.enemy.atkStatus,
 				combo = battle.enemy.combo;
-
-			if (battle.turn % (combo + 1) === 1) {
-				let damageH = atkStatusH.damage.toString();
-				if (atkStatusH.freeze) { } else {
-					if (atkStatusH.skill === 'c') damageH += 'crit';
-					if (atkStatusH.miss) damageH = 'miss';
-					core.plugin.drawBattleUI(battle);
-					if (currDelay > 100) {
-						core.plugin.drawAnimateByPixel(atkStatusH.animate, 60, 166);
-						core.plugin.addScrollingText(damageH, {
-							'x': 54,
-							'y': 180,
-							'vy': 1,
-							'style': 'Tomato',
-							'font': 'Bold 18px Arial',
-							'tmax': 50,
-							'type': 'down'
-						})
+			const hx = 355,
+			hy = 152,
+			ex = 60,
+			ey = 166,
+			px = 245,
+			py = 225;
+			switch(battle.actor){
+				case 'hero':
+					if (atkStatusH.frozen) break;
+					if (atkStatusH.miss) {
+						drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
+						break;
 					}
-				}
-
-			} else {
-				if (atkStatusE.freeze) { } else {
-					let damageE = atkStatusE.damage.toString(),
-						princessDamageE = atkStatusE.princessDamage.toString();
+					drawAnimateByPixel(atkStatusH.animate, ex, ey);
+					core.plugin.addScrollingText(atkStatusH.damage, {
+						'x': ex-6, 'y': ey+14, 'vy': 1, 'style': 'Tomato',
+						'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+					});
+					if (atkStatusH.heal > 0) { //治疗效果
+						core.plugin.addScrollingText('+' + atkStatusH.heal, {
+							'x': 54, 'y': 180, 'vy': 1, 'style': 'Lime',
+							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+						});
+					}
+					break;
+				case 'enemy':
+					if (atkStatusE.frozen) break;
+					if (atkStatusE.miss) {  // 这里播放miss的动画
+						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
+							drawAnimateByPixel('miss', 355, 152); 
+						}
+						if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
+							drawAnimateByPixel('miss', 245, 225); 
+						}
+						break;
+					}
+					const damageE = atkStatusE.damage.toString(),
+					princessDamageE = atkStatusE.princessDamage.toString();
 					if (atkStatusE.crit) {
 						damageE += 'crit';
 						princessDamageE += 'crit';
 					}
-					if (atkStatusE.miss) {
-						damageE = 'miss';
-						princessDamageE = 'miss';
+					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, 355, 152);
+						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, 355, 152);
+						core.plugin.addScrollingText(damageE, {
+							'x': 350,'y': 180,'vy': 1,'style': 'Tomato ',
+							'font': 'Bold 18px Arial','tmax': 50,'type': 'down',
+						});
 					}
-					core.plugin.drawBattleUI(battle);
-					if (currDelay > 100) {
-						if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel(atkStatusE.animate, 355, 152);
-							core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, 355, 152);
-							core.plugin.addScrollingText(damageE, {
-								'x': 350,
-								'y': 180,
-								'vy': 1,
-								'style': 'Tomato ',
-								'font': 'Bold 18px Arial',
-								'tmax': 50,
-								'type': 'down'
-							})
-						}
-						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel(atkStatusE.animate, 245, 225);
-							core.plugin.addScrollingText(princessDamageE, {
-								'x': 220,
-								'y': 250,
-								'vy': 1,
-								'style': 'Tomato ',
-								'font': 'Bold 18px Arial',
-								'tmax': 50,
-								'type': 'down'
-							})
-						}
-						if (atkStatusE.aim === 'lastBoss') { // 古顿的伤害动画单独处理
-							let bounceDamage = atkStatusE.bounceDamage,
-								currstr = '',
-								count = 0;
-							let bounce = setInterval(function () {
-								currstr = bounceDamage[count].toString();
-								if (atkStatusE.crit) {
-									currstr += 'crit';
-								}
-								if (atkStatusE.miss) {
-									currstr = 'miss';
-								}
-								core.plugin.addScrollingText(currstr, {
-									'x': (count % 2 === 0) ? 350 : 220,
-									'y': (count % 2 === 0) ? 180 : 250,
-									'vy': 1,
-									'style': 'Tomato ',
-									'font': 'Bold 18px Arial',
-									'tmax': 100,
-									'type': 'down'
-								});
-								count++;
-								if (count >= 4) clearInterval(bounce);
-							}, 50)
-						}
+					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, 245, 225);
+						core.plugin.addScrollingText(princessDamageE, {
+							'x': 220,'y': 250,'vy': 1,'style': 'Tomato ',
+							'font': 'Bold 18px Arial','tmax': 50,'type': 'down'
+						});
 					}
-				}
+					if (atkStatusE.aim === 'bounce') { // 古顿的伤害动画单独处理
+						let bounceDamage = atkStatusE.bounceDamage,
+							currstr = '',
+							count = 0;
+						let bounce = setInterval(function () {
+							currstr = bounceDamage[count].toString();
+							if (atkStatusE.crit) currstr += 'crit';
+
+							core.plugin.addScrollingText(currstr, {
+								'x': (count % 2 === 0) ? 350 : 220, 'y': (count % 2 === 0) ? 180 : 250,
+								'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
+								'tmax': 100, 'type': 'down'
+							});
+							count++;
+							if (count >= 4) clearInterval(bounce);
+						}, 50);
+					}
+					break;
 			}
+
+			
 		}
 
 		/**
@@ -7564,7 +7568,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {boolean} alignWindow 
 		 * @param {Function} callback 
 		 */
-		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
+		function drawAnimateByPixel(name, x, y, alignWindow, callback) {
 			name = core.getMappedName(name);
 
 			// 正在播放录像：不显示动画
