@@ -6186,6 +6186,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #region 回合制战斗的执行
 
+		const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 
+			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
+
 		async function battleByTurn(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 
@@ -6197,7 +6200,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					new Promise((res) => {
 						core.unregisterAction('keyDown', 'quit');
 						core.registerAction('keyDown', 'quit', (keyCode) => {
-							if (keyCode === 81) {
+							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
 								battle.execUserAction('q');
 								res();
 							}
@@ -6243,17 +6246,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (battle.checkEnd()) break;
 			}
 			updateHeroStatus(battle);
-		}
-
-		/** 注销所有监听事件和画布 */
-		function clearCanvasAndEvent() {
-			core.unregisterAnimationFrame('drawDamage');
-			core.unregisterAnimationFrame('showBottomBar');
-			core.unregisterAnimationFrame('battleIcon');
-			core.deleteCanvas('battleUI');
-			core.deleteCanvas('battleIcon');
-			core.deleteCanvas('battleBottomBar');
-			core.deleteCanvas("skillIcon");
 		}
 
 		/**
@@ -7144,12 +7136,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		/**
-		 * 执行回合制战斗
-		 * @param {string} enemyId 
-		 * @param {number} x 
-		 * @param {number} y 
-		 */
+		// 
 		events.prototype.battle = function (id, x, y, force, callback) {
 			core.saveAndStopAutomaticRoute();
 			id = id || core.getBlockId(x, y);
@@ -7182,8 +7169,496 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (callback) callback();
 		}
 
+		/** 注册录像行为*/
+		function _replayAction_bs(action) {
+			if (!action.startsWith('bs')) return false;
+			core.status.route.push(action);
+			core.replay();
+			return true;
+		}
+		core.registerReplayAction('bs', _replayAction_bs);
+
 		// #region 动画
 
+		const fontSize = 18; // 战斗角色名字的字体大小
+		const bx = 36,
+			by = 30 + fontSize * 3 / 4,
+			size = 32;
+
+		const strokeStyle = "#CC0099";
+
+		/**
+		 * 绘制战斗界面
+		 * @param {Battle} battleInfo 
+		 */ 
+		function drawBattleUI(battleInfo) {
+			if (!battleInfo) battleInfo = {};
+			if (core.isReplaying()) return;
+
+			const hero = battleInfo.hero,
+				enemy = battleInfo.enemy;
+			const width = core.__PIXELS__ - 16,
+				height = 192,
+				x = 8,
+				y = 96,
+				lineWidth = 4, // 背景框的线宽
+				strokeStyle = "#CC0099"; // 背景框的颜色-紫色
+			const ctx = core.createCanvas("battleUI", x, y, width, height, 66);
+			core.setAlpha(ctx, 1);
+			ctx.canvas.style.backgroundColor = "gray";
+			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
+
+			// 绘制背景框
+			core.strokeRect(ctx, lineWidth / 2, lineWidth / 2, width - lineWidth, height - lineWidth, strokeStyle, lineWidth);
+
+			const font = fontSize.toString() + "px hkbdt";
+			const textFontSize = 14, // 属性名称小字的字体大小
+				tx = bx + size + 8,
+				ty = by + 10 + textFontSize * 3 / 4,
+				textFont = textFontSize.toString() + "px hkbdt",
+				numFont = '14px Verdana',
+				lineHeight = 10;
+			const bx2 = width - bx - size;
+
+			core.setTextAlign(ctx, "center");
+			// 绘制敌人名字，勇者名字，VS标志
+			core.fillText(ctx, "勇者", bx2 + size / 2, by - fontSize * 3 / 4, "white", font);
+			core.fillText(ctx, enemy.name, bx + size / 2, by - fontSize * 3 / 4, "white", font);
+			core.fillText(ctx, "VS", width / 2, by - fontSize * 3 / 4, "white", "Bold Italic 24px Verdana");
+			core.setTextAlign(ctx, "left");
+
+			// 绘制属性
+			core.fillText(ctx, '体力：', tx, ty, "white", textFont);
+			core.fillText(ctx, '攻击力：', tx, ty + textFontSize + lineHeight, "white", textFont);
+			core.fillText(ctx, '防御力：', tx, ty + 2 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '疲劳：', tx, ty + 3 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '气息：', tx - 50, ty + 4 * (textFontSize + lineHeight), "white", textFont);
+
+			core.setTextAlign(ctx, "left");
+			core.fillText(ctx, enemy.totalFatigue, tx - 30, ty + 3 * (textFontSize + lineHeight),
+				"orange", 'Bold 12px Arial');
+			core.setTextAlign(ctx, "right");
+			if (enemy.hasMisfortune) {
+				core.fillText(ctx, hero.misfortune, width - tx + 20, ty + 2 * (textFontSize + lineHeight),
+					"cyan", 'Bold12px Arial');
+			}
+			core.fillText(ctx, hero.totalFatigue, width - tx + 20, ty + 3 * (textFontSize + lineHeight),
+				"orange", 'Bold12px Arial');
+
+			let atkColor = 'white',
+				defColor = 'white',
+				atkBuff = 0,
+				defBuff = 0;
+
+			if (hero.bone > 0) {
+				atkColor = 'cyan';
+				defColor = 'red';
+				atkBuff += Math.round(1.5 * hero.bone);
+				defBuff -= Math.round(hero.bone);
+			}
+			if (hero.fairy > 0) {
+				defColor = 'red';
+				defBuff += Math.round(hero.fairyBuff);
+			}
+
+			core.setTextAlign(ctx, "left");
+			core.fillText(ctx, ':体力', width - tx - 50, ty, "white", textFont);
+			core.fillText(ctx, ':攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
+			core.fillText(ctx, ':防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
+			core.fillText(ctx, ':疲劳', width - tx - 50, ty + 3 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '气息:', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
+			if (atkBuff > 0) core.fillText(ctx, '+' + atkBuff.toString(), 260, 78, "cyan", '8px Verdana');
+			if (defBuff > 0) core.fillText(ctx, '+' + defBuff.toString(), 260, 100, "red", '8px Verdana');
+			else if (defBuff < 0) core.fillText(ctx, '-' + -defBuff.toString(), 260, 100, "red", '8px Verdana');
+
+			core.setTextAlign(ctx, "left");
+			core.fillText(ctx, enemy.hp, tx + 50, ty + 2, "white", numFont);
+			core.fillText(ctx, enemy.atk, tx + 50, ty + textFontSize + lineHeight + 2, "white", numFont);
+			core.fillText(ctx, enemy.def, tx + 50, ty + 2 * (textFontSize + lineHeight) + 2, "white", numFont);
+			core.fillText(ctx, enemy.fatigue, tx + 50, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
+
+			core.setTextAlign(ctx, "right");
+			core.fillText(ctx, hero.hp, width - tx - 54, ty + 2,
+				hero.hp <= 600 ? hero.hp <= 200 ? "OrangeRed" : "Yellow " : "white", numFont);
+			core.fillText(ctx, hero.atk, width - tx - 54, ty + textFontSize + lineHeight + 2, atkColor, numFont);
+			core.fillText(ctx, hero.def, width - tx - 54, ty + 2 * (textFontSize + lineHeight) + 2, defColor, numFont);
+			core.fillText(ctx, hero.fatigue, width - tx - 54, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
+
+			core.fillText(ctx, '-撤退(Q)-', 100, 180, "yellow", '16px hkbdt');
+
+			drawMana();
+
+			// 绘制气息条
+			const enemyManaRatio = (enemy.manamax === 0) ? 0 : enemy.mana / enemy.manamax,
+				heroManaRemainder = (hero.mana) % (hero.permana);
+			let heroManaRatio = heroManaRemainder / hero.permana;
+			if (hero.mana >= hero.manamax) heroManaRatio = 1;
+			core.strokeRoundRect(ctx, tx, ty + 4 * (textFontSize + lineHeight) - 8, 60, 8, 2, 'yellow', 1);
+			core.fillRoundRect(ctx, tx + 1, ty + 4 * (textFontSize + lineHeight) - 7,
+				enemyManaRatio * 58, 6, 2, 'LightGreen ')
+			core.strokeRoundRect(ctx, width - tx, ty + 4 * (textFontSize + lineHeight), 60, 8, 2, 'yellow', 1);
+			core.fillRoundRect(ctx, width - tx + 1, ty + 4 * (textFontSize + lineHeight) + 1,
+				heroManaRatio * 58, 6, 2, 'LightGreen ')
+		}
+
+		/** 
+		 * 绘制敌人动态图像和动态的火焰图标
+		 * @param {Battle} battleInfo 
+		 * @param {number} frame // 敌人图像一共2帧，火焰一共3帧
+		 */ 
+		function drawBattleIcon(battleInfo, frame) {
+			if (!battleInfo) return;
+			const width = core.__PIXELS__ - 16,
+				height = 192,
+				x = 8,
+				y = 96,
+				lineWidth = 4, // 背景框的线宽
+				strokeStyle = "#CC0099"; // 背景框的颜色-紫色
+
+			const ctx = core.createCanvas("battleIcon", x, y, width, height, 68);
+			const bx2 = width - bx - size;
+			const heroImage = core.material.images.hero;
+			const h_width = core.material.icons.hero.width || 32,
+				h_height = core.material.icons.hero.height;
+
+			core.drawImage(ctx, heroImage, 0, 0, h_width, h_height, bx2, by, size, size); // 绘制勇者图像
+			core.strokeRect(ctx, bx2, by, size, size, strokeStyle, 2); // 绘制右侧勇者图像的边框
+
+			const hero = battleInfo.hero,
+				enemy = battleInfo.enemy;
+			const textFontSize = 14,
+				tx = bx + size + 8,
+				ty = by + 10 + textFontSize * 3 / 4,
+				lineHeight = 10;
+			const block = core.getBlockInfo(enemy.id || "greenSlime");
+			const b_width = 32,
+				b_height = block.height;
+			let animate = block.animate;
+			let enemyType = "enemys";
+			const b_pos = block.posY;
+			const enemyImage = core.material.images[enemyType];
+
+			// 绘制敌人
+			core.drawImage(ctx, enemyImage, (frame % 2) * b_width, b_pos * b_height, b_width, b_height, bx, by, size, size);
+			core.strokeRect(ctx, bx, by, size, size, strokeStyle, 2);
+
+			const fireCount = (hero.mana - (hero.mana) % (hero.permana)) / hero.permana,
+				image = 'tinyFire' + (frame % 3 + 1).toString() + '.png'
+			if (fireCount >= 1)
+				core.drawImage(ctx, image, width - tx, ty + 3 * (textFontSize + lineHeight) + 5);
+			if (fireCount >= 2)
+				core.drawImage(ctx, image, width - tx + 12, ty + 3 * (textFontSize + lineHeight) + 5);
+			if (fireCount >= 3)
+				core.drawImage(ctx, image, width - tx + 24, ty + 3 * (textFontSize + lineHeight) + 5);
+			if (fireCount >= 4)
+				core.drawImage(ctx, image, width - tx + 36, ty + 3 * (textFontSize + lineHeight) + 5);
+			if (fireCount >= 5)
+				core.drawImage(ctx, image, width - tx + 48, ty + 3 * (textFontSize + lineHeight) + 5);
+
+			// 绘制公主
+			if (core.status.hero.mdef > 0) {
+				core.drawIcon(ctx, 'princess', 220, 125, 32, 32);
+				core.strokeRect(ctx, 220, 125, size, size, strokeStyle, 2);
+				core.fillText(ctx, '公主', 220, 175, 'gold', '18px hkbdt')
+				core.fillText(ctx, ':体力', 185, 150, 'pink', '12px hkbdt')
+				core.fillText(ctx, ':魔防', 185, 170, 'pink', '12px hkbdt')
+				core.setTextAlign(ctx, 'right');
+				core.fillText(ctx, hero.hpmax, 185, 150, 'pink', '14px Arial');
+				core.fillText(ctx, hero.mdef, 185, 170, 'pink', '14px Arial')
+			}
+		}
+
+		/**
+		 * @param {Battle} battleInfo 
+		 * 绘制技能图标
+		 */
+		function drawSkillIcon(battleInfo) {
+			const swordSkill = battleInfo.swordSkill,
+				shieldSkill = battleInfo.shieldSkill,
+				crit = (swordSkill === 'c');
+			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
+			ctx.canvas.style.backgroundColor = "gray";
+			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
+			core.setTextAlign(ctx, "center");
+			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
+			const start = 20,
+				interval = 32;
+			core.drawImage(ctx, 'yellowBall.png', start, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
+			if (core.hasItem('I325')) {
+				core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I318', start + 2 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I317', start + 3 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I316', start + 4 * interval + 5, 6, 20, 20);
+			} else if (core.hasItem('I327')) {
+				core.drawIcon(ctx, 'I339', start + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I321', start + interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I375', start + 2 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I322', start + 3 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I320', start + 4 * interval + 5, 6, 20, 20);
+			}
+			core.drawImage(ctx, 'pong.png', start + 7 * interval + 3, 2, 28, 28);
+			core.drawImage(ctx, 'iconBreathe.png', start + 8 * interval + 4, 4, 24, 24);
+			if (swordSkill && swordSkill !== 'c')
+				core.fillText(ctx, 'OK', start + 5 * interval + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconSword.png', start + 5 * interval + 6, 6, 20, 20);
+			if (shieldSkill)
+				core.fillText(ctx, 'OK', start + 6 * interval + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconShield.png', start + 6 * interval + 6, 6, 20, 20);
+			if (crit) core.fillText(ctx, 'OK', start + 7 * interval + 14, 21, 'green', 'Bold 14px Arial');
+			else core.fillText(ctx, 'C', start + 7 * interval + 16, 21, 'red', 'Bold 14px Arial');
+			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), start + 8 * interval + 16, 19, 'blue', 'Bold 10px Arial');
+		}
+
+		/**
+		 * 绘制底边栏
+		 * @param {Battle} battleInfo 
+		 * @param {number} h 底边栏的宽度
+		 */  
+		 function drawBattleBottomBar(battleInfo, h) {
+			const width = core.__PIXELS__ - 16,
+				height = h || 40,
+				x = 8,
+				y = 284,
+				lineWidth = 4, // 背景框的线宽
+				strokeStyle = "#CC0099", // 背景框的颜色-紫色
+				ctx = core.createCanvas("battleBottomBar", x, y, width, height, 66);
+			ctx.canvas.style.backgroundColor = "gray";
+			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
+
+			core.strokeRect(ctx, lineWidth / 2, lineWidth / 2, width - lineWidth, height - lineWidth, strokeStyle, lineWidth);
+			if (h >= 40) {
+				core.fillText(ctx, "胜利!!", 10, 26, "white", " 20px hkbdt");
+				core.fillText(ctx, "金币：", 100, 26, "white", "20px hkbdt");
+				core.fillText(ctx, "经验值：", 200, 26, "white", "20px hkbdt");
+				core.setTextAlign(ctx, "left");
+				core.fillText(ctx, battleInfo.enemy.money.toString(), 150, 26, "gold", "20px Verdana");
+				core.fillText(ctx, battleInfo.enemy.exp.toString(), 270, 26, "cyan", "20px Verdana");
+			}
+		}
+
+		function drawBattleHint() {
+			const ctx = "battleHint";
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, 100, 66);
+			let hintList = ['向脸书求援可以回复血量', '设置里可以调整战斗速度', '复刻版中，疲劳值每回合都会增加你的疲劳计数（显示为橙色数字），每达到100就miss一次', '复刻版中，敌人施加的毒衰debuff会根据释放概率增加你的负面计数（显示为浅蓝数字），每达到100就触发一次'],
+				l = hintList.length,
+				k = Math.floor(l * Math.random());
+			core.setAlpha(ctx, 0.7);
+			core.fillRect(ctx, 64, 58, core.__PIXELS__ - 128, 32, 'gray');
+			core.setAlpha(ctx, 1);
+			core.setTextAlign(ctx, 'center');
+			core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
+		}
+
+		/**
+		 * 解析当前
+		 * @param {Battle} battle 
+		 */
+		function drawBattleAnimate(battle, currDelay) {
+			const atkStatusH = battle.hero.atkStatus,
+				atkStatusE = battle.enemy.atkStatus,
+				combo = battle.enemy.combo;
+
+			if (battle.turn % (combo + 1) === 1) {
+				let damageH = atkStatusH.damage.toString();
+				if (atkStatusH.freeze) { } else {
+					if (atkStatusH.skill === 'c') damageH += 'crit';
+					if (atkStatusH.miss) damageH = 'miss';
+					core.plugin.drawBattleUI(battle);
+					if (currDelay > 100) {
+						core.plugin.drawAnimateByPixel(atkStatusH.animate, 60, 166);
+						core.plugin.addScrollingText(damageH, {
+							'x': 54,
+							'y': 180,
+							'vy': 1,
+							'style': 'Tomato',
+							'font': 'Bold 18px Arial',
+							'tmax': 50,
+							'type': 'down'
+						})
+					}
+				}
+
+			} else {
+				if (atkStatusE.freeze) { } else {
+					let damageE = atkStatusE.damage.toString(),
+						princessDamageE = atkStatusE.princessDamage.toString();
+					if (atkStatusE.crit) {
+						damageE += 'crit';
+						princessDamageE += 'crit';
+					}
+					if (atkStatusE.miss) {
+						damageE = 'miss';
+						princessDamageE = 'miss';
+					}
+					core.plugin.drawBattleUI(battle);
+					if (currDelay > 100) {
+						if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
+							core.plugin.drawAnimateByPixel(atkStatusE.animate, 355, 152);
+							core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, 355, 152);
+							core.plugin.addScrollingText(damageE, {
+								'x': 350,
+								'y': 180,
+								'vy': 1,
+								'style': 'Tomato ',
+								'font': 'Bold 18px Arial',
+								'tmax': 50,
+								'type': 'down'
+							})
+						}
+						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
+							core.plugin.drawAnimateByPixel(atkStatusE.animate, 245, 225);
+							core.plugin.addScrollingText(princessDamageE, {
+								'x': 220,
+								'y': 250,
+								'vy': 1,
+								'style': 'Tomato ',
+								'font': 'Bold 18px Arial',
+								'tmax': 50,
+								'type': 'down'
+							})
+						}
+						if (atkStatusE.aim === 'lastBoss') { // 古顿的伤害动画单独处理
+							let bounceDamage = atkStatusE.bounceDamage,
+								currstr = '',
+								count = 0;
+							let bounce = setInterval(function () {
+								currstr = bounceDamage[count].toString();
+								if (atkStatusE.crit) {
+									currstr += 'crit';
+								}
+								if (atkStatusE.miss) {
+									currstr = 'miss';
+								}
+								core.plugin.addScrollingText(currstr, {
+									'x': (count % 2 === 0) ? 350 : 220,
+									'y': (count % 2 === 0) ? 180 : 250,
+									'vy': 1,
+									'style': 'Tomato ',
+									'font': 'Bold 18px Arial',
+									'tmax': 100,
+									'type': 'down'
+								});
+								count++;
+								if (count >= 4) clearInterval(bounce);
+							}, 50)
+						}
+					}
+				}
+			}
+		}
+
+		/**
+		 * 按照像素坐标绘制动画
+		 * @param {string} name 动画名称
+		 * @param {number} x 像素x坐标
+		 * @param {number} y 像素y坐标
+		 * @param {boolean} alignWindow 
+		 * @param {Function} callback 
+		 */
+		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
+			name = core.getMappedName(name);
+
+			// 正在播放录像：不显示动画
+			if (core.isReplaying() || !core.material.animates[name] || x == null || y == null) {
+				if (callback) callback();
+				return -1;
+			}
+
+			// 开始绘制
+			let animate = core.material.animates[name];
+			if (alignWindow) {
+				centerX += core.bigmap.offsetX;
+				centerY += core.bigmap.offsetY;
+			}
+			animate.se = animate.se || {};
+			if (typeof animate.se == 'string') animate.se = { 1: animate.se };
+
+			let id = setTimeout(null);
+			core.status.animateObjs.push({
+				"name": name,
+				"id": id,
+				"animate": animate,
+				"centerX": x,
+				"centerY": y,
+				"index": 0,
+				"callback": callback
+			});
+			return id;
+		}
+		// #endregion
+
+		// #region 监听事件及注销
+
+		/**
+		 * 监听按键，执行相应的用户行为
+		 * @param {number} keyCode 
+		 * @param {Battle} battle 
+		 * @returns 
+		 */
+		function listenKey(keyCode,battle) {
+			if (battle.status !== 'pending') return;
+			switch (keyCode) {
+				case 49: //1
+					if (core.hasItem('I325')) battle.execUserAction('b');
+					else if (core.hasItem('I327')) battle.execUserAction('M');
+					break;
+				case 50: //2
+					if (core.hasItem('I325')) battle.execUserAction('s');
+					else if (core.hasItem('I327')) battle.execUserAction('C');
+					break;
+				case 51: //3
+					if (core.hasItem('I325')) battle.execUserAction('d');
+					else if (core.hasItem('I327')) battle.execUserAction('R');
+					break;
+				case 52: //4
+					if (core.hasItem('I325')) battle.execUserAction('h');
+					else if (core.hasItem('I327')) battle.execUserAction('F');
+					break;
+				case 53: //5
+					if (core.hasItem('I325')) battle.execUserAction('k');
+					else if (core.hasItem('I327')) battle.execUserAction('E');
+					break;
+				case 86: //V
+					battle.execUserAction('v');
+					break;
+				case 67: //C
+					battle.execUserAction('c');
+					break;
+				case 90: //Z
+					if (!battle.hero.swordEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备剑技');
+					} else { battle.execUserAction(equipList[battle.hero.sword]); }
+					break;
+				case 88: //X
+					if (!battle.hero.shieldEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备盾技');
+					} else { battle.execUserAction(equipList[battle.hero.shield]); }
+					break;
+			}
+			core.plugin.drawSkillIcon(battle);
+		}
+
+		/** 注销所有监听事件和画布 */
+		function clearCanvasAndEvent() {
+			core.unregisterAnimationFrame('drawDamage');
+			core.unregisterAnimationFrame('showBottomBar');
+			core.unregisterAnimationFrame('battleIcon');
+			core.deleteCanvas('battleUI');
+			core.deleteCanvas('battleIcon');
+			core.deleteCanvas('battleBottomBar');
+			core.deleteCanvas("skillIcon");
+		}
 		// #endregion
 
 		// #region 工具函数
