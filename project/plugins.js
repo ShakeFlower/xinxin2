@@ -6186,43 +6186,65 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #region 回合制战斗的执行
 
-		const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 
-			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
+		const equipList = {
+			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
+			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
+		};
 
 		async function battleByTurn(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 
 			core.lockControl();
-			drawBattleUI();
+
+			// beginListen(battle);
+			// drawBattleUI(battle);
+			// let frame = 0;
+			// registerAnimationInterval('battleIcon',200,()=>{
+			// 	drawBattleIcon(battle,frame++);
+			// });
+
 			while (true) {
 				if (battle.status !== 'pending') break;
 				await Promise.race([
 					new Promise((res) => { setTimeout(res, battle.waitTime); }),
 					new Promise((res) => {
 						core.unregisterAction('keyDown', 'quit');
+						core.unregisterAction('ondown', 'quit');
 						core.registerAction('keyDown', 'quit', (keyCode) => {
 							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
 								battle.execUserAction('q');
 								res();
 							}
-						})
+						});
+						core.registerAction('onDown', 'quit', (x, y, px, py) => {
+							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
+								battle.execUserAction('q');
+								res();
+							} //撤退键的坐标
+						});
 					})
 				]);
 				battle.nextTurn();
 				battle.checkEnd();
 				// 此处更新动画
 				// drawBattleUI();
+				// if (battle.speed !== 'quick') drawBattleAnimate(battle);
+				// drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
+
 				battle.updateActor();
 				if (battle.status === 'quit') break;
 			}
-			// 获胜时，绘制底边栏
-			let h = 0;
-			// if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
-			// 	if (h < 40) h += 4;
-			// 	drawBattleBottomBar(battle, h);
-			// });
-			//等待500ms后擦除画布
-			await new Promise((res) => { setTimeout(res, 500) });
+			if (battle.speed !== 'quick') {
+				// 获胜时，绘制底边栏
+				let h = 0;
+				// if (battle.status === 'win') registerAnimationInterval('showBottomBar', 10, () => {
+				// 	if (h < 40) h += 4;
+				// 	drawBattleBottomBar(battle, h);
+				// });
+				//等待500ms后擦除画布
+				await new Promise((res) => { setTimeout(res, 500) });
+			}
+
 			clearCanvasAndEvent();
 			updateHeroStatus(battle);
 			afterBattleEvent(battle, x, y);
@@ -6274,6 +6296,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.setFlag('weakV', hero.weakPoint);
 					break;
 			}
+			core.setFlag('battleSpeed', (() => {
+				if (battle.speed === 'quick') return 0;
+				else if (battle.speed === 'normal') return 1;
+				else return 2;
+			})());
 			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquipedd);
 			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
 			switch (battle.status) {
@@ -6522,9 +6549,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					return;
 				}
-		
+
 				// 检查勇士是否miss
-				if (this.checkMiss()) atkStatus.miss = true;		
+				if (this.checkMiss()) atkStatus.miss = true;
 				else {
 					atkStatus.damage = this.checkSword(enemy);
 					if (hasSpecial(enemy.special, 92)) { // 盾大师
@@ -6557,7 +6584,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {Enemy} enemy 
 			 * @returns {number}
 			 */
-			checkSword(enemy){
+			checkSword(enemy) {
 				let hdamage = 0;
 				const atkStatus = this.atkStatus;
 				if (this.swordSkill.length > 0) {
@@ -6756,14 +6783,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.setDamage(hero); // 获取敌人的伤害
 				this.setAtkAim(hero); // 获取敌人的攻击范围和对公主造成的伤害
 				this.checkCrit(hero); // 获取敌人是否暴击
- 
+
 				if (this.checkMiss()) atkStatus.miss = true;
 				else {
 					const { oriDamage, reflect } = this.checkHeroShield(hero, atkStatus);
-					this.execAtkEffect(hero,reflect);
+					this.execAtkEffect(hero, reflect);
 
 					this.addMana(hero); //本回合敌人未暴击，则它会回复气息
-				
+
 					hero.hp -= atkStatus.damage;
 					hero.hpmax -= atkStatus.princessDamage;
 					this.totalDamage += atkStatus.damage;
@@ -6847,7 +6874,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					atkStatus.crit = true; //暴击
 					this.mana = 0;
 				}
-			}	
+			}
 
 			/**
 			 * 勇士的盾技效果
@@ -6902,7 +6929,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {Hero} hero 
 			 * @param {boolean} reflect 反射盾是否生效
 			 */
-			execAtkEffect(hero,reflect){
+			execAtkEffect(hero, reflect) {
 				const atkStatus = this.atkStatus;
 				const especial = this.special;
 				if (hasSpecial(especial, 91)) { // 剑大师
@@ -6957,7 +6984,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {boolean} reflect 反射盾是否生效
 			 * @param {number} possibility 该debuff的触发几率
 			 */
-			checkDebuff(hero,action,reflect,possibility){
+			checkDebuff(hero, action, reflect, possibility) {
 				hero.misfortune += possibility;
 				if (hero.misfortune >= 100) {
 					hero.misfortune -= 100;
@@ -6968,19 +6995,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						}
 						super.execDebuff(action);
 					} else {
-						if (action === 'weak') hero.weakPoint+= this.weakPoint;
+						if (action === 'weak') hero.weakPoint += this.weakPoint;
 						hero.execDebuff(action);
 					}
 				}
 			}
-			
+
 			/** 
 			 * 双方回复气息
 			 * @param {Hero} hero 
 			 */
 			addMana(hero) {
 				const atkStatus = this.atkStatus;
-				if (hasSpecial(this.special, [60,64])) {
+				if (hasSpecial(this.special, [60, 64])) {
 					//暗魔法无防增气，魔神些多的死寂光环角色不加气
 				} else hero.mana += Math.round(0.1 * atkStatus.damage); // 角色防增气
 				if (!atkStatus.crit && !hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
@@ -7000,15 +7027,48 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		/**
+		 * 按钮对象
+		 */
+		class Button {
+			/**
+			 * @param {Function} event 
+			 */
+			constructor(x, y, w, h, hitX, hitY, hitW, hitH, event) {
+				this.x = x;
+				this.y = y;
+				this.width = w;
+				this.height = h;
+				this.hitboxX = hitX;
+				this.hitboxY = hitY;
+				this.hitboxW = hitW;
+				this.hitboxH = hitH;
+				this.event = event;
+			}
+		}
+
 		class Battle {
 			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 'quit'临阵脱逃*/
 			status = 'pending';
+			/** 战斗的默认行进速度 */
+			speed = (() => {
+				switch (core.getFlag('battleSpeed', 1)) {
+					case 0: return 'quick';
+					case 1: return 'normal';
+					case 2: return 'slow';
+				}
+			})();
 			/** 执行下一回合前等待的时间*/
 			waitTime = 500;
 			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 
 			 * @type {string}
 			*/
 			route = 'bs';
+
+			/** 按钮列表 
+			 * @type {Map<string,Button>}
+			*/
+			btnList = generateBtnList(this);
 			/**
 			 * Battle构造函数
 			 * @param {string} enemyId 敌人ID
@@ -7050,15 +7110,28 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 				}
 
-				console.log("turn "+this.turn);
+				console.log("turn " + this.turn);
 				console.log("hero:");
 				console.log(this.hero);
 				console.log("enemy:");
 				console.log(this.enemy);
 			}
 
-			/** 更新下回合的行动者*/
-			updateActor(){
+			/** 更新下回合的行动者，更新等待时间*/
+			updateActor() {
+				/** 是否是敌人在连击中的回合 */
+				const isEnemyCombo = this.actIndex > 0 && this.actIndex < this.order.length - 1;
+				switch (this.speed) {
+					case 'quick':
+						this.waitTime = isEnemyCombo ? 2 : 20;
+						break;
+					case 'normal':
+						this.waitTime = isEnemyCombo ? 50 : 400;
+						break;
+					case 'slow':
+						this.waitTime = isEnemyCombo ? 100 : 800;
+						break;
+				}
 				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
 				this.actor = this.order[this.actIndex];
 				this.turn++;
@@ -7206,7 +7279,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * 绘制战斗界面
 		 * @param {Battle} battleInfo 
-		 */ 
+		 */
 		function drawBattleUI(battleInfo) {
 
 			const hero = battleInfo.hero,
@@ -7319,7 +7392,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 绘制敌人动态图像和动态的火焰图标
 		 * @param {Battle} battleInfo 
 		 * @param {number} frame // 敌人图像一共2帧，火焰一共3帧
-		 */ 
+		 */
 		function drawBattleIcon(battleInfo, frame) {
 			if (!battleInfo) return;
 			const width = core.__PIXELS__ - 16,
@@ -7436,8 +7509,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 绘制底边栏
 		 * @param {Battle} battleInfo 
 		 * @param {number} h 底边栏的宽度
-		 */  
-		 function drawBattleBottomBar(battleInfo, h) {
+		 */
+		function drawBattleBottomBar(battleInfo, h) {
 			const width = core.__PIXELS__ - 16,
 				height = h || 40,
 				x = 8,
@@ -7476,17 +7549,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 解析当前atkStatus信息，播放动画
 		 * @param {Battle} battle 
 		 */
-		function drawBattleAnimate(battle, currDelay) {
+		function drawBattleAnimate(battle) {
 			const atkStatusH = battle.hero.atkStatus,
-				atkStatusE = battle.enemy.atkStatus,
-				combo = battle.enemy.combo;
+				atkStatusE = battle.enemy.atkStatuso;
 			const hx = 355,
-			hy = 152,
-			ex = 60,
-			ey = 166,
-			px = 245,
-			py = 225;
-			switch(battle.actor){
+				hy = 152,
+				ex = 60,
+				ey = 166,
+				px = 245,
+				py = 225;
+			switch (battle.actor) {
 				case 'hero':
 					if (atkStatusH.frozen) break;
 					if (atkStatusH.miss) {
@@ -7495,12 +7567,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					drawAnimateByPixel(atkStatusH.animate, ex, ey);
 					core.plugin.addScrollingText(atkStatusH.damage, {
-						'x': ex-6, 'y': ey+14, 'vy': 1, 'style': 'Tomato',
+						'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
 						'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 					});
 					if (atkStatusH.heal > 0) { //治疗效果
 						core.plugin.addScrollingText('+' + atkStatusH.heal, {
-							'x': hx-6, 'y': hy+14, 'vy': 1, 'style': 'Lime',
+							'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 						});
 					}
@@ -7509,15 +7581,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusE.frozen) break;
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
-							drawAnimateByPixel('miss', hx, hy); 
+							drawAnimateByPixel('miss', hx, hy);
 						}
 						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-							drawAnimateByPixel('miss', px, py); 
+							drawAnimateByPixel('miss', px, py);
 						}
 						break;
 					}
 					const damageE = atkStatusE.damage.toString(),
-					princessDamageE = atkStatusE.princessDamage.toString();
+						princessDamageE = atkStatusE.princessDamage.toString();
 					if (atkStatusE.crit) {
 						damageE += 'crit';
 						princessDamageE += 'crit';
@@ -7526,15 +7598,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx, hy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
 						core.plugin.addScrollingText(damageE, {
-							'x': hx-6,'y': hy+28,'vy': 1,'style': 'Tomato ',
-							'font': 'Bold 18px Arial','tmax': 50,'type': 'down',
+							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
+							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 						});
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px, py);
 						core.plugin.addScrollingText(princessDamageE, {
-							'x': px-15,'y': py+25,'vy': 1,'style': 'Tomato ',
-							'font': 'Bold 18px Arial','tmax': 50,'type': 'down'
+							'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
+							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
 						});
 					}
 					if (atkStatusE.aim === 'bounce') { // 古顿的伤害动画单独处理
@@ -7546,7 +7618,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							if (atkStatusE.crit) currstr += 'crit';
 
 							core.plugin.addScrollingText(currstr, {
-								'x': (count % 2 === 0) ? hx-6 : px-15, 'y': (count % 2 === 0) ? hy+28 : py+25,
+								'x': (count % 2 === 0) ? hx - 6 : px - 15, 'y': (count % 2 === 0) ? hy + 28 : py + 25,
 								'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
 								'tmax': 100, 'type': 'down'
 							});
@@ -7554,16 +7626,66 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							if (count >= 4) clearInterval(bounce);
 						}, 50);
 					}
-					if (atkStatusE.heal>0){ //治疗效果
+					if (atkStatusE.heal > 0) { //治疗效果
 						core.plugin.addScrollingText('+' + atkStatusE.heal, {
-							'x': ex-6, 'y': ey+14, 'vy': 1, 'style': 'Lime',
+							'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Lime',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 						});
 					}
 					break;
 			}
 
-			
+
+		}
+
+		/**
+		 * 绘制技能图标
+		 * @param {Battle} battleInfo 
+		 */
+		function drawSkillIcon(battleInfo) {
+			const swordSkill = battleInfo.swordSkill,
+				shieldSkill = battleInfo.shieldSkill,
+				crit = (swordSkill === 'c');
+			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
+			ctx.canvas.style.backgroundColor = "gray";
+			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
+			core.setTextAlign(ctx, "center");
+			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
+			const start = 20,
+				interval = 32;
+			core.drawImage(ctx, 'yellowBall.png', start, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
+			core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
+			if (core.hasItem('I325')) {
+				core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I318', start + 2 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I317', start + 3 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I316', start + 4 * interval + 5, 6, 20, 20);
+			} else if (core.hasItem('I327')) {
+				core.drawIcon(ctx, 'I339', start + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I321', start + interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I375', start + 2 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I322', start + 3 * interval + 5, 6, 20, 20);
+				core.drawIcon(ctx, 'I320', start + 4 * interval + 5, 6, 20, 20);
+			}
+			core.drawImage(ctx, 'pong.png', start + 7 * interval + 3, 2, 28, 28);
+			core.drawImage(ctx, 'iconBreathe.png', start + 8 * interval + 4, 4, 24, 24);
+			if (swordSkill && swordSkill !== 'c')
+				core.fillText(ctx, 'OK', start + 5 * interval + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconSword.png', start + 5 * interval + 6, 6, 20, 20);
+			if (shieldSkill)
+				core.fillText(ctx, 'OK', start + 6 * interval + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconShield.png', start + 6 * interval + 6, 6, 20, 20);
+			if (crit) core.fillText(ctx, 'OK', start + 7 * interval + 14, 21, 'green', 'Bold 14px Arial');
+			else core.fillText(ctx, 'C', start + 7 * interval + 16, 21, 'red', 'Bold 14px Arial');
+			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), start + 8 * interval + 16, 19, 'blue', 'Bold 10px Arial');
 		}
 
 		/**
@@ -7614,7 +7736,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battle 
 		 * @returns 
 		 */
-		function listenKey(keyCode,battle) {
+		function listenKey(keyCode, battle) {
 			if (battle.status !== 'pending') return;
 			switch (keyCode) {
 				case 49: //1
@@ -7658,6 +7780,53 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		/** 生成按钮对象 
+		 * @param {Battle} battle
+		 * @returns {Map}
+		*/
+		function generateBtnList(battle) {
+			return new Map([
+				['btn1', new Button(60, 320, 32, 32, 60, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('b');
+					else if (core.hasItem('I327')) battle.execUserAction('M');
+				})],
+				['btn2', new Button(92, 320, 32, 32, 92, 322, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('s');
+					else if (core.hasItem('I327')) battle.execUserAction('C');
+				}),],
+				['btn3', new Button(124, 320, 32, 32, 124, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('d');
+					else if (core.hasItem('I327')) battle.execUserAction('R');
+				}),],
+				['btn4', new Button(156, 320, 32, 32, 156, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('h');
+					else if (core.hasItem('I327')) battle.execUserAction('F');
+				}),],
+				['btn5', new Button(188, 320, 32, 32, 188, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('k');
+					else if (core.hasItem('I327')) battle.execUserAction('E');
+				}),],
+				['sword', new Button(220, 320, 32, 32, 220, 320, 32, 32, () => {
+					if (!battle.hero.swordEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备剑技');
+					} else { battle.execUserAction(equipList[battle.hero.sword]); }
+				}),],
+				['shield', new Button(252, 320, 32, 32, 252, 320, 32, 32, () => {
+					if (!battle.hero.shieldEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备盾技');
+					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
+				}),],
+				['crit', new Button(284, 320, 32, 32, 284, 320, 32, 32, () => {
+					battle.execUserAction('c');
+				}),],
+				['breathe', new Button(316, 320, 32, 32, 316, 320, 32, 32, () => {
+					battle.execUserAction('v');
+				}),],
+			]);
+		}
+
 		/**
 		 * 监听用户点击事件
 		 * @param {number} x 
@@ -7666,8 +7835,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} py 
 		 * @param {Battle} battle 
 		 */
-		function listenClick(x,y,px,py,battle){
-			const x = {btn1:{x:1,y:1,px:1,py:1}}
+		function listenClick(x, y, px, py, battle) {
+			const list = battle.btnList;
+			list.forEach((ele) => {
+				if (x >= ele.hitboxX && x <= ele.hitboxX + ele.hitboxW &&
+					y >= ele.hitboxY && y <= ele.hitboxY + ele.hitboxH
+				) {
+					ele.event(x, y, px, py);
+				}
+			});
+			drawSkillIcon(battle); //每次点击重绘所有按钮
 		}
 
 		/**
@@ -7678,8 +7855,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.registerAction('keyDown', 'battleSkill', (keyCode) => {
 				listenKey(keyCode, battle);
 			});
-			core.registerAction('ondown', 'battleClick',(x,y,px,py)=>{
-				listenClick(x,y,px,py,battle);
+			core.registerAction('ondown', 'battleClick', (x, y, px, py) => {
+				listenClick(x, y, px, py, battle);
 			});
 		}
 
@@ -7690,7 +7867,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
 				core.unregisterAnimationFrame(x);
 			});
-			['battleUI', 'battleIcon','battleBottomBar','skillIcon','quit'].forEach((x)=>{
+			['battleUI', 'battleIcon', 'battleBottomBar', 'skillIcon', 'quit'].forEach((x) => {
 				core.deleteCanvas(x);
 			});
 		}
@@ -7874,7 +8051,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * 获取播放动画时像素坐标的偏移量
 		 */
-		function getAniOffset(){
+		function getAniOffset() {
 
 		}
 
