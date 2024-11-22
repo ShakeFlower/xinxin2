@@ -1245,6 +1245,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	if (altKey) xinxin = !xinxin;
 	if (flags.xinHotkey) xinxin = !xinxin;
 
+	if (core.getFlag('noOpenMenu', true)) return; //特定情况下不可打开菜单
+
 	if ((keyCode >= 49 && keyCode <= 56) || (keyCode >= 97 && keyCode <= 104)) {
 		var i = keyCode - 48;
 		if (i > 10) i -= 48;
@@ -1404,18 +1406,18 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		}
 		break;
 	case 52: // 快捷键4：破冰/冰冻/地震/上下楼器/... 其他道具依次判断
-		{
-			var list = ["icePickaxe", "freezeBadge", "earthquake", "upFly", "downFly", "jumpShoes", "lifeWand", "poisonWine", "weakWine", "curseWine", "superWine"];
-			for (var i = 0; i < list.length; i++) {
-				var itemId = list[i];
-				if (core.canUseItem(itemId)) {
-					core.status.route.push("key:52");
-					core.useItem(itemId, true);
-					break;
-				}
+	{
+		var list = ["icePickaxe", "freezeBadge", "earthquake", "upFly", "downFly", "jumpShoes", "lifeWand", "poisonWine", "weakWine", "curseWine", "superWine"];
+		for (var i = 0; i < list.length; i++) {
+			var itemId = list[i];
+			if (core.canUseItem(itemId)) {
+				core.status.route.push("key:52");
+				core.useItem(itemId, true);
+				break;
 			}
 		}
-		break;
+	}
+	break;
 	case 53: // 5：读取自动存档（回退），方便手机版操作
 		core.doSL("autoSave", "load");
 		break;

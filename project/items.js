@@ -2628,7 +2628,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"name": "查看成就",
 		"canUseItemEffect": "true",
 		"text": "你的当前成就点数为 ${flags.achieveScore}",
-		"useItemEffect": "// var score = flags.achieveScore,\n// \ta = flags.achieves,\n// \ttitle = '\\t[当前成就点数：' + score + ']',\n// \ts = [title, title, title],\n// \tj = 0;\n// for (var i = 1; i <= a.length; i++) {\n// \tvar x = a[i - 1];\n// \ts[j] += (x[4] ? '\\r[white]' : '\\r[grey]') + '\\\\i[N' + (453 + i) + ']' + x[0] + '(' + x[3] + ')：' + x[1];\n// \tif (i % 12 == 0) j++;\n// \telse s[j] += '\\n';\n// }\n// if (!a[16][4]) s.push('完成智能施法成就所需的4种特定情况：\\n1. 战斗中对魔法师系怪物使用凡骨；\\n2. 战斗中当使用皇者的给予伤害大于或等于怪物当前血量时使用皇者；\\n3. 战斗中当怪物给予伤害大于0时对石头怪、铁怪或鬼邪石使用反射盾；\\n4. 战斗中对魔法师系怪物使用贤者结界。');\n// core.insertAction(s);\ncore.plugin.achievement();"
+		"useItemEffect": "core.plugin.openAchievementMenu();"
 	},
 	"I490": {
 		"cls": "constants",

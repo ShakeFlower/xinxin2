@@ -1,7 +1,6 @@
-///<reference path="../types/core.d.ts" />
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 
 		console.log("插件编写测试");
 
@@ -1304,7 +1303,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"drawLight": function () {
+    "drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1365,7 +1364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-	"shop": function () {
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1550,7 +1549,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1637,7 +1636,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1792,7 +1791,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2098,7 +2097,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"enemyLevel": function () {
+    "enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2186,7 +2185,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-	"dynamicHp": function () {
+    "dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2218,7 +2217,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-	"multiHeros": function () {
+    "multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2363,7 +2362,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-	"itemCategory": function () {
+    "itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2501,7 +2500,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2556,7 +2555,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"startCanvas": function () {
+    "startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2642,7 +2641,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-	"自动拾取": function () {
+    "自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2796,7 +2795,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-	"修复装备Bug": function () {
+    "修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -2929,403 +2928,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"战斗画面": function () {
-		// 在此增加新插件
-
-		const fontSize = 18; // 战斗角色名字的字体大小
-		const bx = 36,
-			by = 30 + fontSize * 3 / 4,
-			size = 32;
-
-		const strokeStyle = "#CC0099";
-
-		//// 绘制战斗界面
-		this.drawBattleUI = function (battleInfo) {
-			if (!battleInfo) battleInfo = {};
-			if (core.isReplaying()) return;
-
-			const hero = battleInfo.hero,
-				enemy = battleInfo.enemy;
-			const width = core.__PIXELS__ - 16,
-				height = 192,
-				x = 8,
-				y = 96,
-				lineWidth = 4, // 背景框的线宽
-				strokeStyle = "#CC0099"; // 背景框的颜色-紫色
-			const ctx = core.createCanvas("battleUI", x, y, width, height, 66);
-			core.setAlpha(ctx, 1);
-			ctx.canvas.style.backgroundColor = "gray";
-			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
-
-			// 绘制背景框
-			core.strokeRect(ctx, lineWidth / 2, lineWidth / 2, width - lineWidth, height - lineWidth, strokeStyle, lineWidth);
-
-			const font = fontSize.toString() + "px hkbdt";
-			const textFontSize = 14, // 属性名称小字的字体大小
-				tx = bx + size + 8,
-				ty = by + 10 + textFontSize * 3 / 4,
-				textFont = textFontSize.toString() + "px hkbdt",
-				numFont = '14px Verdana',
-				lineHeight = 10;
-			const bx2 = width - bx - size;
-
-			core.setTextAlign(ctx, "center");
-			// 绘制敌人名字，勇者名字，VS标志
-			core.fillText(ctx, "勇者", bx2 + size / 2, by - fontSize * 3 / 4, "white", font);
-			core.fillText(ctx, enemy.name, bx + size / 2, by - fontSize * 3 / 4, "white", font);
-			core.fillText(ctx, "VS", width / 2, by - fontSize * 3 / 4, "white", "Bold Italic 24px Verdana");
-			core.setTextAlign(ctx, "left");
-
-			// 绘制属性
-			core.fillText(ctx, '体力：', tx, ty, "white", textFont);
-			core.fillText(ctx, '攻击力：', tx, ty + textFontSize + lineHeight, "white", textFont);
-			core.fillText(ctx, '防御力：', tx, ty + 2 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '疲劳：', tx, ty + 3 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '气息：', tx - 50, ty + 4 * (textFontSize + lineHeight), "white", textFont);
-
-			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, enemy.totalFatigue, tx - 30, ty + 3 * (textFontSize + lineHeight),
-				"orange", 'Bold 12px Arial');
-			core.setTextAlign(ctx, "right");
-			if (enemy.hasMisfortune) {
-				core.fillText(ctx, hero.misfortune, width - tx + 20, ty + 2 * (textFontSize + lineHeight),
-					"cyan", 'Bold12px Arial');
-			}
-			core.fillText(ctx, hero.totalFatigue, width - tx + 20, ty + 3 * (textFontSize + lineHeight),
-				"orange", 'Bold12px Arial');
-
-			let atkColor = 'white',
-				defColor = 'white',
-				atkBuff = 0,
-				defBuff = 0;
-
-			if (hero.bone > 0) {
-				atkColor = 'cyan';
-				defColor = 'red';
-				atkBuff += Math.round(1.5 * hero.bone);
-				defBuff -= Math.round(hero.bone);
-			}
-			if (hero.fairy > 0) {
-				defColor = 'red';
-				defBuff += Math.round(hero.fairyBuff);
-			}
-
-			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, ':体力', width - tx - 50, ty, "white", textFont);
-			core.fillText(ctx, ':攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
-			core.fillText(ctx, ':防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
-			core.fillText(ctx, ':疲劳', width - tx - 50, ty + 3 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '气息:', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
-			if (atkBuff > 0) core.fillText(ctx, '+' + atkBuff.toString(), 260, 78, "cyan", '8px Verdana');
-			if (defBuff > 0) core.fillText(ctx, '+' + defBuff.toString(), 260, 100, "red", '8px Verdana');
-			else if (defBuff < 0) core.fillText(ctx, '-' + -defBuff.toString(), 260, 100, "red", '8px Verdana');
-
-			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, enemy.hp, tx + 50, ty + 2, "white", numFont);
-			core.fillText(ctx, enemy.atk, tx + 50, ty + textFontSize + lineHeight + 2, "white", numFont);
-			core.fillText(ctx, enemy.def, tx + 50, ty + 2 * (textFontSize + lineHeight) + 2, "white", numFont);
-			core.fillText(ctx, enemy.fatigue, tx + 50, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
-
-			core.setTextAlign(ctx, "right");
-			core.fillText(ctx, hero.hp, width - tx - 54, ty + 2,
-				hero.hp <= 600 ? hero.hp <= 200 ? "OrangeRed" : "Yellow " : "white", numFont);
-			core.fillText(ctx, hero.atk, width - tx - 54, ty + textFontSize + lineHeight + 2, atkColor, numFont);
-			core.fillText(ctx, hero.def, width - tx - 54, ty + 2 * (textFontSize + lineHeight) + 2, defColor, numFont);
-			core.fillText(ctx, hero.fatigue, width - tx - 54, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
-
-			core.fillText(ctx, '-撤退(Q)-', 100, 180, "yellow", '16px hkbdt');
-
-			drawMana();
-
-			// 绘制气息条
-			function drawMana() {
-				const enemyManaRatio = (enemy.manamax === 0) ? 0 : enemy.mana / enemy.manamax,
-					heroManaRemainder = (hero.mana) % (hero.permana);
-				let heroManaRatio = heroManaRemainder / hero.permana;
-				if (hero.mana >= hero.manamax) heroManaRatio = 1;
-				core.strokeRoundRect(ctx, tx, ty + 4 * (textFontSize + lineHeight) - 8, 60, 8, 2, 'yellow', 1);
-				core.fillRoundRect(ctx, tx + 1, ty + 4 * (textFontSize + lineHeight) - 7,
-					enemyManaRatio * 58, 6, 2, 'LightGreen ')
-				core.strokeRoundRect(ctx, width - tx, ty + 4 * (textFontSize + lineHeight), 60, 8, 2, 'yellow', 1);
-				core.fillRoundRect(ctx, width - tx + 1, ty + 4 * (textFontSize + lineHeight) + 1,
-					heroManaRatio * 58, 6, 2, 'LightGreen ')
-			}
-		}
-
-		//// 绘制敌人动态图像和动态的火焰图标
-		this.drawBattleIcon = function (battleInfo, count) {
-			if (!battleInfo) return;
-			const width = core.__PIXELS__ - 16,
-				height = 192,
-				x = 8,
-				y = 96,
-				lineWidth = 4, // 背景框的线宽
-				strokeStyle = "#CC0099"; // 背景框的颜色-紫色
-
-			const ctx = core.createCanvas("battleIcon", x, y, width, height, 68);
-			const bx2 = width - bx - size;
-			const heroImage = core.material.images.hero;
-			const h_width = core.material.icons.hero.width || 32,
-				h_height = core.material.icons.hero.height;
-
-			core.drawImage(ctx, heroImage, 0, 0, h_width, h_height, bx2, by, size, size); // 绘制勇者图像
-			core.strokeRect(ctx, bx2, by, size, size, strokeStyle, 2); // 绘制右侧勇者图像的边框
-
-			const hero = battleInfo.hero,
-				enemy = battleInfo.enemy;
-			const textFontSize = 14,
-				tx = bx + size + 8,
-				ty = by + 10 + textFontSize * 3 / 4,
-				lineHeight = 10;
-			const block = core.getBlockInfo(enemy.id || "greenSlime");
-			const b_width = 32,
-				b_height = block.height;
-			let animate = block.animate;
-			let enemyType = "enemys";
-			const b_pos = block.posY;
-			const enemyImage = core.material.images[enemyType];
-
-			// 绘制敌人
-			core.drawImage(ctx, enemyImage, (count % 2) * b_width, b_pos * b_height, b_width, b_height, bx, by, size, size);
-			core.strokeRect(ctx, bx, by, size, size, strokeStyle, 2);
-
-			const fireCount = (hero.mana - (hero.mana) % (hero.permana)) / hero.permana,
-				image = 'tinyFire' + (count % 3 + 1).toString() + '.png'
-			if (fireCount >= 1)
-				core.drawImage(ctx, image, width - tx, ty + 3 * (textFontSize + lineHeight) + 5);
-			if (fireCount >= 2)
-				core.drawImage(ctx, image, width - tx + 12, ty + 3 * (textFontSize + lineHeight) + 5);
-			if (fireCount >= 3)
-				core.drawImage(ctx, image, width - tx + 24, ty + 3 * (textFontSize + lineHeight) + 5);
-			if (fireCount >= 4)
-				core.drawImage(ctx, image, width - tx + 36, ty + 3 * (textFontSize + lineHeight) + 5);
-			if (fireCount >= 5)
-				core.drawImage(ctx, image, width - tx + 48, ty + 3 * (textFontSize + lineHeight) + 5);
-
-			// 绘制公主
-			if (core.status.hero.mdef > 0) {
-				core.drawIcon(ctx, 'princess', 220, 125, 32, 32);
-				core.strokeRect(ctx, 220, 125, size, size, strokeStyle, 2);
-				core.fillText(ctx, '公主', 220, 175, 'gold', '18px hkbdt')
-				core.fillText(ctx, ':体力', 185, 150, 'pink', '12px hkbdt')
-				core.fillText(ctx, ':魔防', 185, 170, 'pink', '12px hkbdt')
-				core.setTextAlign(ctx, 'right');
-				core.fillText(ctx, hero.hpmax, 185, 150, 'pink', '14px Arial');
-				core.fillText(ctx, hero.mdef, 185, 170, 'pink', '14px Arial')
-			}
-		}
-
-		//// 绘制技能图标
-		this.drawSkillIcon = function (battleInfo) {
-			if (!battleInfo) return;
-			const swordSkill = battleInfo.swordSkill,
-				shieldSkill = battleInfo.shieldSkill,
-				crit = (swordSkill === 'c');
-			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
-			ctx.canvas.style.backgroundColor = "gray";
-			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
-			core.setTextAlign(ctx, "center");
-			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
-			const start = 20,
-				interval = 32;
-			core.drawImage(ctx, 'yellowBall.png', start, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
-			if (core.hasItem('I325')) {
-				core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I318', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I317', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I316', start + 4 * interval + 5, 6, 20, 20);
-			} else if (core.hasItem('I327')) {
-				core.drawIcon(ctx, 'I339', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I321', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I375', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I322', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I320', start + 4 * interval + 5, 6, 20, 20);
-			}
-			core.drawImage(ctx, 'pong.png', start + 7 * interval + 3, 2, 28, 28);
-			core.drawImage(ctx, 'iconBreathe.png', start + 8 * interval + 4, 4, 24, 24);
-			if (swordSkill && swordSkill !== 'c')
-				core.fillText(ctx, 'OK', start + 5 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconSword.png', start + 5 * interval + 6, 6, 20, 20);
-			if (shieldSkill)
-				core.fillText(ctx, 'OK', start + 6 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconShield.png', start + 6 * interval + 6, 6, 20, 20);
-			if (crit) core.fillText(ctx, 'OK', start + 7 * interval + 14, 21, 'green', 'Bold 14px Arial');
-			else core.fillText(ctx, 'C', start + 7 * interval + 16, 21, 'red', 'Bold 14px Arial');
-			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), start + 8 * interval + 16, 19, 'blue', 'Bold 10px Arial');
-		}
-
-		//// 绘制底边栏
-		this.drawBattleBottomBar = function (battleInfo, h) {
-			const width = core.__PIXELS__ - 16,
-				height = h || 40,
-				x = 8,
-				y = 284,
-				lineWidth = 4, // 背景框的线宽
-				strokeStyle = "#CC0099", // 背景框的颜色-紫色
-				ctx = core.createCanvas("battleBottomBar", x, y, width, height, 66);
-			ctx.canvas.style.backgroundColor = "gray";
-			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
-
-			core.strokeRect(ctx, lineWidth / 2, lineWidth / 2, width - lineWidth, height - lineWidth, strokeStyle, lineWidth);
-			if (h >= 40) {
-				core.fillText(ctx, "胜利!!", 10, 26, "white", " 20px hkbdt");
-				core.fillText(ctx, "金币：", 100, 26, "white", "20px hkbdt");
-				core.fillText(ctx, "经验值：", 200, 26, "white", "20px hkbdt");
-				core.setTextAlign(ctx, "left");
-				core.fillText(ctx, battleInfo.enemy.money.toString(), 150, 26, "gold", "20px Verdana");
-				core.fillText(ctx, battleInfo.enemy.exp.toString(), 270, 26, "cyan", "20px Verdana");
-			}
-		}
-
-		this.drawBattleHint = function () {
-			if (core.isReplaying()) return;
-			const ctx = "battleHint";
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, 100, 66);
-			let hintList = ['向脸书求援可以回复血量', '设置里可以调整战斗速度', '复刻版中，疲劳值每回合都会增加你的疲劳计数（显示为橙色数字），每达到100就miss一次', '复刻版中，敌人施加的毒衰debuff会根据释放概率增加你的负面计数（显示为浅蓝数字），每达到100就触发一次'],
-				l = hintList.length,
-				k = Math.floor(l * Math.random());
-			core.setAlpha(ctx, 0.7);
-			core.fillRect(ctx, 64, 58, core.__PIXELS__ - 128, 32, 'gray');
-			core.setAlpha(ctx, 1);
-			core.setTextAlign(ctx, 'center');
-			core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
-		}
-
-		this.drawBattleAnimate = function (battle, currDelay) {
-			const atkStatusH = battle.hero.atkStatus,
-				atkStatusE = battle.enemy.atkStatus,
-				combo = battle.enemy.combo;
-
-			if (battle.turn % (combo + 1) === 1) {
-				let damageH = atkStatusH.damage.toString();
-				if (atkStatusH.freeze) { } else {
-					if (atkStatusH.skill === 'c') damageH += 'crit';
-					if (atkStatusH.miss) damageH = 'miss';
-					core.plugin.drawBattleUI(battle);
-					if (currDelay > 100) {
-						core.plugin.drawAnimateByPixel(atkStatusH.animate, 60, 166);
-						core.plugin.addScrollingText(damageH, {
-							'x': 54,
-							'y': 180,
-							'vy': 1,
-							'style': 'Tomato',
-							'font': 'Bold 18px Arial',
-							'tmax': 50,
-							'type': 'down'
-						})
-					}
-				}
-
-			} else {
-				if (atkStatusE.freeze) { } else {
-					let damageE = atkStatusE.damage.toString(),
-						princessDamageE = atkStatusE.princessDamage.toString();
-					if (atkStatusE.crit) {
-						damageE += 'crit';
-						princessDamageE += 'crit';
-					}
-					if (atkStatusE.miss) {
-						damageE = 'miss';
-						princessDamageE = 'miss';
-					}
-					core.plugin.drawBattleUI(battle);
-					if (currDelay > 100) {
-						if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel(atkStatusE.animate, 355, 152);
-							core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, 355, 152);
-							core.plugin.addScrollingText(damageE, {
-								'x': 350,
-								'y': 180,
-								'vy': 1,
-								'style': 'Tomato ',
-								'font': 'Bold 18px Arial',
-								'tmax': 50,
-								'type': 'down'
-							})
-						}
-						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel(atkStatusE.animate, 245, 225);
-							core.plugin.addScrollingText(princessDamageE, {
-								'x': 220,
-								'y': 250,
-								'vy': 1,
-								'style': 'Tomato ',
-								'font': 'Bold 18px Arial',
-								'tmax': 50,
-								'type': 'down'
-							})
-						}
-						if (atkStatusE.aim === 'lastBoss') { // 古顿的伤害动画单独处理
-							let bounceDamage = atkStatusE.bounceDamage,
-								currstr = '',
-								count = 0;
-							let bounce = setInterval(function () {
-								currstr = bounceDamage[count].toString();
-								if (atkStatusE.crit) {
-									currstr += 'crit';
-								}
-								if (atkStatusE.miss) {
-									currstr = 'miss';
-								}
-								core.plugin.addScrollingText(currstr, {
-									'x': (count % 2 === 0) ? 350 : 220,
-									'y': (count % 2 === 0) ? 180 : 250,
-									'vy': 1,
-									'style': 'Tomato ',
-									'font': 'Bold 18px Arial',
-									'tmax': 100,
-									'type': 'down'
-								});
-								count++;
-								if (count >= 4) clearInterval(bounce);
-							}, 50)
-						}
-					}
-				}
-			}
-		}
-
-		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
-			name = core.getMappedName(name);
-
-			// 正在播放录像：不显示动画
-			if (core.isReplaying() || !core.material.animates[name] || x == null || y == null) {
-				if (callback) callback();
-				return -1;
-			}
-
-			// 开始绘制
-			let animate = core.material.animates[name];
-			if (alignWindow) {
-				centerX += core.bigmap.offsetX;
-				centerY += core.bigmap.offsetY;
-			}
-			animate.se = animate.se || {};
-			if (typeof animate.se == 'string') animate.se = { 1: animate.se };
-
-			let id = setTimeout(null);
-			core.status.animateObjs.push({
-				"name": name,
-				"id": id,
-				"animate": animate,
-				"centerX": x,
-				"centerY": y,
-				"index": 0,
-				"callback": callback
-			});
-			return id;
-		}
-	},
-	"新版道具栏": function () {
+    "新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -4316,97 +3919,114 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"跳字插件": function () {
-		// 在此增加新插件
+    "跳字插件": function () {
+	// 在此增加新插件
 
-		let sTextList = new Set([]);
-		const canvas = 'scroll';
-		const gravity = 0.2;
+	let sTextList = new Set([]);
+	const canvas = 'scroll';
+	const gravity = 0.2;
 
-		function drawScrollingText() {
-			core.ui.clearMap(canvas);
-			sTextList.forEach(
-				function (currText) {
-					core.setAlpha(canvas, currText.alpha);
-					core.fillText(canvas, currText.text, currText.x, currText.y,
-						currText.style, currText.font, currText.maxWidth)
-				}
-			)
-		}
 
-		class ScrollingText {
-			constructor(text, args) {
-				this.text = text;
-				this.x = args.x || 0;
-				this.y = args.y || 0;
-				this.x0 = args.x || 0;
-				this.y0 = args.y || 0;
-				this.style = args.style;
-				this.font = args.font;
-				this.maxWidth = args.maxWidth;
-				this.type = args.type || 'line';
-				this.vx = args.vx || 0;
-				this.vy = args.vy || 0;
-				this.t = 0;
-				this.tmax = args.tmax || 1000;
-				this.alpha = args.alpha || 1;
-			}
-		}
-
-		this.addScrollingText = function (text, args) {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			let sText = new ScrollingText(text, args);
-			sTextList.add(sText);
-		}
-
-		function updateScrollingText() {
-			sTextList.forEach(function (currText) {
-				switch (currText.type) {
-					case 'line':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						break;
-					case 'projectile':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						currText.vy += gravity;
-						break;
-					case 'down':
-						if (currText.t < currText.tmax / 2) {
-							currText.x += currText.vx;
-							currText.y += currText.vy;
-						} else {
-							if (currText.alpha > 0.05)
-								currText.alpha -= 0.05;
-						}
-				}
-				currText.t++;
-				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-					currText.t > currText.tmax) {
-					sTextList.delete(currText);
-				}
-			})
-		}
-
-		// 每次切换楼层后执行
-		this.clearScrollingText = function () {
-			sTextList.clear();
-		}
-
-		core.plugin.registerAnimationInterval('scrollText',10,()=>{
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			if (!core.dymCanvas[canvas]) {
-				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
-			}
-			updateScrollingText();
-			drawScrollingText();
+	// 声明必须在调用之前
+	/**
+	 * 注册一个每interval帧执行一次的动画
+	 * @param {string} name 
+	 * @param {number} interval 
+	 * @param {Function} event 
+	 */
+	this.registerAnimationInterval = function (name, interval, event) {
+		let currTime = 0;
+		core.registerAnimationFrame(name, true, (timestamp) => {
+			if (timestamp - currTime < interval) return;
+			currTime = timestamp;
+			event();
 		});
+	}
 
-	},
-	"切装事件": function () {
+	function drawScrollingText() {
+		core.ui.clearMap(canvas);
+		sTextList.forEach(
+			function (currText) {
+				core.setAlpha(canvas, currText.alpha);
+				core.fillText(canvas, currText.text, currText.x, currText.y,
+					currText.style, currText.font, currText.maxWidth)
+			}
+		)
+	}
+
+	class ScrollingText {
+		constructor(text, args) {
+			this.text = text;
+			this.x = args.x || 0;
+			this.y = args.y || 0;
+			this.x0 = args.x || 0;
+			this.y0 = args.y || 0;
+			this.style = args.style;
+			this.font = args.font;
+			this.maxWidth = args.maxWidth;
+			this.type = args.type || 'line';
+			this.vx = args.vx || 0;
+			this.vy = args.vy || 0;
+			this.t = 0;
+			this.tmax = args.tmax || 1000;
+			this.alpha = args.alpha || 1;
+		}
+	}
+
+	this.addScrollingText = function (text, args) {
+		if (core.isReplaying()) return;
+		if (!core.getFlag('popDamage')) return;
+		let sText = new ScrollingText(text, args);
+		sTextList.add(sText);
+	}
+
+	function updateScrollingText() {
+		sTextList.forEach(function (currText) {
+			switch (currText.type) {
+			case 'line':
+				currText.x += currText.vx;
+				currText.y += currText.vy;
+				break;
+			case 'projectile':
+				currText.x += currText.vx;
+				currText.y += currText.vy;
+				currText.vy += gravity;
+				break;
+			case 'down':
+				if (currText.t < currText.tmax / 2) {
+					currText.x += currText.vx;
+					currText.y += currText.vy;
+				} else {
+					if (currText.alpha > 0.05)
+						currText.alpha -= 0.05;
+				}
+			}
+			currText.t++;
+			if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
+				currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
+				currText.t > currText.tmax) {
+				sTextList.delete(currText);
+			}
+		})
+	}
+
+	// 每次切换楼层后执行
+	this.clearScrollingText = function () {
+		sTextList.clear();
+	}
+
+	core.plugin.registerAnimationInterval('scrollText', 10, () => {
+		if (core.isReplaying()) return;
+		if (!core.getFlag('popDamage')) return;
+		if (!core.dymCanvas[canvas]) {
+			core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+		}
+		updateScrollingText();
+		drawScrollingText();
+	});
+
+},
+    "切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4464,7 +4084,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"自定义设置": function () {
+    "自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4703,7 +4323,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"血瓶宝石显示数据": function () {
+    "血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4870,1350 +4490,260 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"成就": function () {
-		// 在此增加新插件
+    "成就": function () {
+	// 在此增加新插件
 
-		const PX = core.__PIXELS__,
-			PY = core.__PIXELS__;
+	const PX = core.__PIXELS__,
+		PY = core.__PIXELS__;
 
-		//， 成就界面
-		let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
-			type = 1, // 当前类型
-			first = 0, // 成就栏中显示的第一个成就的数组索引
-			point = 0; //完成的成就数
-		// 定义成就
-		const list = [
-			[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福..."],
-			[1, "白银狙击手", "白银怪物？在我面前不值一提！"],
-			[2, "大难不死", "哇...不怕不怕..."],
-			[3, "肉盾", "一打十根本不成问题的呢"],
-			[4, "起死回生", "我感觉死去活来！！"],
-			[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的"],
-			[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰..."],
-			[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？"],
-			[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！"],
-			[9, "防守姿态", "有人能打破我的防守吗？"],
-			[10, "熔炉", "有了这东西打白银怪物就很有效率了"],
-			[11, "冰冷的手", "呼...手很冰..."],
-			[12, "三相之力", "白银怪物？杀个稀巴烂！"],
-			[13, "剑大师", "我的剑技很华丽吧"],
-			[14, "盾大师", "你有什么方法攻击我都有方法防守！"],
-			[15, "捐血站", "卖血！卖血！有人买吗？"],
-			[16, "持匙人", "这些锁匙是开哪些门的？"],
-			[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事..."],
-			[18, "一代宗师", "我要开班授徒的话有人会来加入吗？"],
-			[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～"],
-			[20, "国家大事", "什么事都不比国家大事重要吧！"],
-			[21, "职业冒险家", "去冒险就是要做足准备！"],
-			[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的"],
-			[23, "心灵相通", "我知道你在想什么！"],
-			[24, "天上之住民", "传说以前的人都是能在空中飞翔的"],
-			[25, "透视", "嘻嘻...什么都看到了..."],
-			[26, "小叮当", "你其实是小叮当吧？！"],
-			[27, "异常状态", "初尝异常状态...感觉不错(嗯)"],
-			[28, "攻略本", "你一定是看着攻略玩的！"],
-			[29, "神之防护", "我的防御像神一般！直到我中了一箭..."],
-			[30, "出门靠朋友", "在家靠父母，出门靠朋友！"],
-			[31, "投入战斗", "热身差不多完毕了！！"],
-			[32, "见习剑士", "真想快点试试学到的剑术！"],
-			[33, "防守入门", "防守？是这样这样的吗？"],
-			[34, "圣水加护", "感谢圣水的帮助！"],
-			[35, "圣神的加护", "我简直像受到圣神般的帮助"],
-			[36, "弑神者", "遇神杀神！！谁也阻不到我！"],
-			[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了"],
-			[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？"],
-			[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！"],
-			[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药..."],
-			[41, "凝神储息", "......暂先时不要影响我......"],
-			[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈"],
-			[43, "学有所成", "只学不实践的话还是不太足够吧？"],
-			[44, "守财奴", "钱要用才是钱！钱！"],
-		];
-		const defaultList = Array(list.length).fill(0);
+	//， 成就界面
+	let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
+		type = 1, // 当前类型
+		first = 0, // 成就栏中显示的第一个成就的数组索引
+		point = 0; //完成的成就数
+	// 定义成就
+	const list = [
+		[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福..."],
+		[1, "白银狙击手", "白银怪物？在我面前不值一提！"],
+		[2, "大难不死", "哇...不怕不怕..."],
+		[3, "肉盾", "一打十根本不成问题的呢"],
+		[4, "起死回生", "我感觉死去活来！！"],
+		[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的"],
+		[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰..."],
+		[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？"],
+		[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！"],
+		[9, "防守姿态", "有人能打破我的防守吗？"],
+		[10, "熔炉", "有了这东西打白银怪物就很有效率了"],
+		[11, "冰冷的手", "呼...手很冰..."],
+		[12, "三相之力", "白银怪物？杀个稀巴烂！"],
+		[13, "剑大师", "我的剑技很华丽吧"],
+		[14, "盾大师", "你有什么方法攻击我都有方法防守！"],
+		[15, "捐血站", "卖血！卖血！有人买吗？"],
+		[16, "持匙人", "这些锁匙是开哪些门的？"],
+		[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事..."],
+		[18, "一代宗师", "我要开班授徒的话有人会来加入吗？"],
+		[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～"],
+		[20, "国家大事", "什么事都不比国家大事重要吧！"],
+		[21, "职业冒险家", "去冒险就是要做足准备！"],
+		[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的"],
+		[23, "心灵相通", "我知道你在想什么！"],
+		[24, "天上之住民", "传说以前的人都是能在空中飞翔的"],
+		[25, "透视", "嘻嘻...什么都看到了..."],
+		[26, "小叮当", "你其实是小叮当吧？！"],
+		[27, "异常状态", "初尝异常状态...感觉不错(嗯)"],
+		[28, "攻略本", "你一定是看着攻略玩的！"],
+		[29, "神之防护", "我的防御像神一般！直到我中了一箭..."],
+		[30, "出门靠朋友", "在家靠父母，出门靠朋友！"],
+		[31, "投入战斗", "热身差不多完毕了！！"],
+		[32, "见习剑士", "真想快点试试学到的剑术！"],
+		[33, "防守入门", "防守？是这样这样的吗？"],
+		[34, "圣水加护", "感谢圣水的帮助！"],
+		[35, "圣神的加护", "我简直像受到圣神般的帮助"],
+		[36, "弑神者", "遇神杀神！！谁也阻不到我！"],
+		[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了"],
+		[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？"],
+		[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！"],
+		[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药..."],
+		[41, "凝神储息", "......暂先时不要影响我......"],
+		[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈"],
+		[43, "学有所成", "只学不实践的话还是不太足够吧？"],
+		[44, "守财奴", "钱要用才是钱！钱！"],
+	];
+	const defaultList = Array(list.length).fill(0);
 
-		// 统计已完成成就数量
-		function getAchPoint(finish) {
-			let point = 0;
-			for (let i = 0; i < list.length; i++) {
-				// 获得完成情况
-				if (finish[i] > 0) { point++; }
-			}
-			return point;
+	// 统计已完成成就数量
+	function getAchPoint(finish) {
+		let point = 0;
+		for (let i = 0; i < list.length; i++) {
+			// 获得完成情况
+			if (finish[i] > 0) { point++; }
 		}
+		return point;
+	}
 
-		// 重置成就获得情况
-		this.resetFinish = function () {
-			if (core.isReplaying()) return;
-			core.setLocalStorage("finish", defaultList);
-			core.playSound('achievement.mp3');
-			core.drawTip('成就已清空！');
+	// 重置成就获得情况
+	this.resetFinish = function () {
+		if (core.isReplaying()) return;
+		core.setLocalStorage("finish", defaultList);
+		core.playSound('achievement.mp3');
+		core.drawTip('成就已清空！');
 
-		}
+	}
 
-		this.hasAchievement = function (index) {
-			if (core.isReplaying()) return false;
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-			return finish[index] > 0;
-		}
+	this.hasAchievement = function (index) {
+		if (core.isReplaying()) return false;
+		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+		return finish[index] > 0;
+	}
 
-		// 获得成就
-		this.getAchievement = function (index, test) {
-			if (core.hasFlag("debug") || core.isReplaying()) return;
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-			if (finish[index] > 0 && !test) return; // 成就已完成
-			finish[index] = 1;
-			core.setLocalStorage("finish", finish);
+	// 获得成就
+	this.getAchievement = function (index, test) {
+		if (core.hasFlag("debug") || core.isReplaying()) return;
+		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+		if (finish[index] > 0 && !test) return; // 成就已完成
+		finish[index] = 1;
+		core.setLocalStorage("finish", finish);
 
-			const canvas = "achievementEffect";
-			core.playSound('achievement.mp3');
-			core.createCanvas(canvas, 0, 0, PX, PY, 200);
-			core.setTextAlign(canvas, "center");
-			core.drawWindowSkin("winskin.png", canvas,
-				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-			core.drawIcon(canvas, 'N454', 126, 80) // to be fixed 换成各自的图标
-			core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
-				"cyan", "24px " + core.status.globalAttribute.font);
-			core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
-				"#FFFFFF", "20px " + core.status.globalAttribute.font);
-			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
-				delete core.animateFrame.asyncId[fade];
-				clearInterval(fade);
-				core.deleteCanvas(canvas);
-			}, 1000);
-			core.animateFrame.asyncId[fade] = true; 
-		};
+		const canvas = "achievementEffect";
+		core.playSound('achievement.mp3');
+		core.createCanvas(canvas, 0, 0, PX, PY, 200);
+		core.setTextAlign(canvas, "center");
+		core.drawWindowSkin("winskin.png", canvas,
+			140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+		core.drawIcon(canvas, 'N454', 126, 80) // to be fixed 换成各自的图标
+		core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
+			"cyan", "24px " + core.status.globalAttribute.font);
+		core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+			"#FFFFFF", "20px " + core.status.globalAttribute.font);
+		let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
+			delete core.animateFrame.asyncId[fade];
+			clearInterval(fade);
+			core.deleteCanvas(canvas);
+		}, 1000);
+		core.animateFrame.asyncId[fade] = true;
+	};
 
-		// 绘制成就页面
-		this.drawAchievement = function () {
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-			// 创建和清空画布
-			core.createCanvas("achievement", 0, 0, PX, PY, 130);
-			core.clearMap("achievement");
-			core.drawWindowSkin("winskin.png", "achievement", 0, 0, PX, PY)
-			// 背景
-			core.fillRect("achievement", 0, 0, PX, PY, [0, 0, 0, 0.9]);
-			core.drawLine("achievement", 0, 70, PX, 70, "#BBBBBB", 3);
-			core.drawLine("achievement", 0, 121, PX, 121, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
-			core.setTextAlign("achievement", "center");
-			core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "完成情况", 377, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.setTextAlign("achievement", "left");
-			core.fillText("achievement", "当前成就完成：" + getAchPoint(finish) + '/20', 234, 401, "#FFFFFF", "18px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "↓", 165, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "↑", 199, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-			// 绘制成就类型
+	// 绘制成就页面
+	function drawAchievement() {
+		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+		// 创建和清空画布
+		core.createCanvas("achievement", 0, 0, PX, PY, 130);
+		core.clearMap("achievement");
+		core.drawWindowSkin("winskin.png", "achievement", 0, 0, PX, PY)
+		// 背景
+		core.fillRect("achievement", 0, 0, PX, PY, [0, 0, 0, 0.9]);
+		core.drawLine("achievement", 0, 70, PX, 70, "#BBBBBB", 3);
+		core.drawLine("achievement", 0, 121, PX, 121, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
+		core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
+		core.setTextAlign("achievement", "center");
+		core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "完成情况", 377, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+		core.setTextAlign("achievement", "left");
+		core.fillText("achievement", "当前成就完成：" + getAchPoint(finish) + '/20', 234, 401, "#FFFFFF", "18px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "↓", 165, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "↑", 199, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
+		// 绘制成就类型
 
-			core.fillText("achievement", "成就一览", 180, 43, [255, 255, 255, 1], "22px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "[退出]", 350, 43, [255, 255, 255, 1], "18px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "成就一览", 180, 43, [255, 255, 255, 1], "22px " + core.status.globalAttribute.font);
+		core.fillText("achievement", "[退出]", 350, 43, [255, 255, 255, 1], "18px " + core.status.globalAttribute.font);
 
-			// 绘制成就信息
-			function drawDetail(achType) {
-				for (let i = first; i < 6 + first; i++) {
-					if (achType[i] == null) break;
-					// 名称
-					core.setTextAlign("achievement", "left");
-					if (finish[i] === 0) {
-						core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, [200, 200, 200, 0.6], "20px " + core.status.globalAttribute.font, 120);
-					} else {
-						core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, "#FFFFFF", "20px " + core.status.globalAttribute.font, 120);
-					}
-					// 说明
-					if (finish[i] === 0) {
-						let config = {
+		// 绘制成就信息
+		function drawDetail(achType) {
+			for (let i = first; i < 6 + first; i++) {
+				if (achType[i] == null) break;
+				// 名称
+				core.setTextAlign("achievement", "left");
+				if (finish[i] === 0) {
+					core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, [200, 200, 200, 0.6], "20px " + core.status.globalAttribute.font, 120);
+				} else {
+					core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, "#FFFFFF", "20px " + core.status.globalAttribute.font, 120);
+				}
+				// 说明
+				if (finish[i] === 0) {
+					let config = {
 							left: 129,
 							top: 52 * (i - first) + 89,
 							maxWidth: 227,
 							color: [200, 200, 200, 0.5],
 							fontSize: 15,
 						},
-							height = core.getTextContentHeight(achType[i][2], config);
-						if (height > 25) {
-							config.top -= 10;
-						}
-						core.drawTextContent("achievement", achType[i][2], config);
-					} else { // 自动放缩
-						let config = {
+						height = core.getTextContentHeight(achType[i][2], config);
+					if (height > 25) {
+						config.top -= 10;
+					}
+					core.drawTextContent("achievement", achType[i][2], config);
+				} else { // 自动放缩
+					let config = {
 							left: 129,
 							top: 52 * (i - first) + 89,
 							maxWidth: 227,
 							color: "#FFFFFF",
 							fontSize: 15,
 						},
-							height = core.getTextContentHeight(achType[i][2], config);
-						if (height > 25) {
-							config.top -= 10;
-						}
-						core.drawTextContent("achievement", achType[i][2], config);
+						height = core.getTextContentHeight(achType[i][2], config);
+					if (height > 25) {
+						config.top -= 10;
 					}
-					// 成就点
-					core.setTextAlign("achievement", "center");
-					if (finish[i] === 0) {
-						core.fillText("achievement", '-', 377, 52 * (i - first) + 104, [200, 200, 200, 0.6], "18px " + core.status.globalAttribute.font);
-					} else {
-						const str = 'clear';
-						const color = 'cyan';
-						core.fillText("achievement", str, 377, 52 * (i - first) + 100, color, "18px " + core.status.globalAttribute.font);
-					}
+					core.drawTextContent("achievement", achType[i][2], config);
 				}
-			}
-			drawDetail(list);
-		};
-		// // 键盘操作
-		// this.achKeyboardAction = function (keycode) {
-		// 	switch (keycode) {
-		// 		case 38: // Up
-		// 			if (first !== 0) {
-		// 				first--;
-		// 			} 
-		// 			break;
-		// 		case 40: // Down
-		// 			if (first <= list.length - 7) first++;
-		// 			break;
-		// 		case 27: // Esc
-		// 			core.insertAction({ "type": "break" });
-		// 			break;
-		// 		case 88: // X
-		// 			core.insertAction({ "type": "break" });
-		// 			break;
-		// 		case 13: // Enter
-		// 			core.insertAction({ "type": "break" });
-		// 			break;
-		// 	}
-		// };
-		// 点击操作
-		// this.achClickAction = function (px, py) {
-		// 	if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-		// 		if (first <= list.length - 7) first++;
-		// 	} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
-		// 		if (first != 0) {
-		// 			first--;
-		// 		}
-		// 	} else {
-		// 		if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
-		// 			core.insertAction({ "type": "break" });
-		// 		}
-		// 	}
-		// };
-		// 玩家操作
-		// this.achievementAction = function () {
-		// 	if (flags.type == 0) return this.achKeyboardAction(flags.keycode);
-		// 	else return this.achClickAction(flags.px, flags.py);
-		// };
-
-
-		function drawAchievementMenu() {
-			return new Promise((res) => {
-				function finish(){
-					core.deleteCanvas('achievement');
-					core.unregisterAction('ondown', 'achievementMenuClick');
-					core.unregisterAction('keyDown', 'achievementMenuKey');
-					res();
-				};
-
-				core.registerAction('ondown', 'achievementMenuClick', (px, py) => {
-					if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-						if (first <= list.length - 7) first++;
-					} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
-						if (first != 0) {
-							first--;
-						}
-					} else {
-						if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
-							finish();
-						}
-					}
-				}, 100);
-
-				core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
-					switch (keyCode) {
-						case 38: // Up
-							if (first !== 0) first--;
-							break;
-						case 40: // Down
-							if (first <= list.length - 7) first++;
-							break;
-						case 27: // Esc
-						case 88: // X
-						case 13: // Enter
-							finish();
-							break;
-					}
-				}, 100);
-
-				core.plugin.drawAchievement();
-			}
-			)
-		}
-
-		this.openAchievementMenu = async function(){
-			if (core.isReplaying()) return;
-			core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
-			core.lockControl();
-			await drawAchievementMenu();
-			core.setFlag('noOpenMenu', false);
-			core.unlockControl();
-		}
-		// 打开成就页面
-		this.achievement = function () {
-			core.insertAction([{
-				"type": "while",
-				"condition": "true",
-				"data": [
-					{ "type": "function", "function": "function () { core.plugin.drawAchievement(); }" },
-					{ "type": "wait" },
-					{ "type": "function", "function": "function() { core.plugin.achievementAction(); }" }
-				]
-			},
-			{
-				"type": "function",
-				"function": "function () { core.deleteCanvas('achievement'); core.ui.clearUIEventSelector(); }"
-			}
-			]);
-		}
-
-	},
-	"战后事件": function () {
-
-		// 执行战后事件
-		this.afterBattleInTurn = function (battle) {
-			const hero = battle.hero,
-				enemy = battle.enemy,
-				money = enemy.money,
-				exp = enemy.exp,
-				damage = enemy.totalDamage,
-				x = enemy.x,
-				y = enemy.y,
-				special = enemy.special;
-			core.status.hero.money += money;
-			core.status.hero.statistics.money += money;
-			core.status.hero.exp += exp;
-			core.status.hero.statistics.exp += exp;
-			core.status.hero.statistics.battleDamage += damage;
-			core.status.hero.statistics.battle++;
-
-			let todo = [];
-			// 战后事件
-			if (core.status.floorId != null) {
-				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
-			}
-			core.push(todo, enemy.afterBattle);
-
-			// 如果事件不为空，将其插入
-			if (todo.length > 0) core.insertAction(todo, x, y);
-
-			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
-			if (hero.smartCast) core.plugin.getAchievement(17);
-
-			if (core.hasSpecial(enemy.special, 20)) { //白银怪，掉落钱币
-				if (enemy.id == 'swordEmperor') core.setBlock(398, x, y);
-				if (enemy.id == 'goldHornSlime') core.setBlock(400, x, y);
-				if (enemy.id == 'whiteHornSlime') core.setBlock(403, x, y);
-				if (enemy.id == 'silverSlime') core.setBlock(407, x, y);
-			} else if (core.hasSpecial(enemy.special, 23)) { // 重生怪
-				if (enemy.id == 'E384') core.setBlock(385, x, y);
-				if (enemy.id == 'darkKnight') core.setBlock(225, x, y);
-				if (enemy.id == 'soldier') core.setBlock(212, x, y);
-			} else if (core.hasSpecial(enemy.special, 70)) { //炎之身体，变熔岩
-				core.setBlock(11, x, y);
-			} else if (core.hasSpecial(enemy.special, 71)) { //极寒身体，变冰块
-				core.setBlock(374, x, y);
-			} else if (enemy.magicIce) {
-				core.setBlock(25, x, y); //掉落魔法冰块
-			} else {
-				core.removeBlock(x, y, core.status.floorId);
-			}
-			if (core.hasFlag('poison') || core.hasFlag('weak')) core.plugin.getAchievement(27);
-			if (core.hasSpecial(enemy.special, 72) || core.hasSpecial(enemy.special, 73)) { //烈焰身体，极寒身体
-				for (var x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
-					for (var y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
-						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
-							if (core.hasSpecial(enemy.special, 72)) core.setBlock(11, x0, y0);
-							if (core.hasSpecial(enemy.special, 73) && (hero.loc.x != x0 || hero.loc.y != y0) && (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0 || core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
-						}
-					}
-				}
-			}
-		}
-	},
-	"战斗过程": function () {
-		// 在此增加新插件
-
-		const abbreviateList = { 'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316', 'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320', };
-
-		class GameCore {
-			constructor(enemy) {
-				this.isBattleEnd = false;
-				this.turn = 0; //当前回合数
-				this.hero = {
-					'hp': core.status.hero.hp,
-					'atk': core.status.hero.atk,
-					'def': core.status.hero.def,
-					'mdef': core.status.hero.mdef, //公主的魔法防御
-					'mana': core.status.hero.mana,
-					'manamax': core.status.hero.manamax,
-					'permana': core.status.hero.manamax / 6, //每一管气息的长度
-					'hpmax': core.status.hero.hpmax, // 公主体力
-					'fatigue': 0, //疲劳
-					'misfortune': 0, //负面事件计数
-					'totalFatigue': 0, //总疲劳计数
-					'atkm': core.getFlag('atkm', 10),
-					'defm': core.getFlag('defm', 40), //攻防临界值
-					'lv': core.status.hero.lv,
-					'freeze': false, //本回合是否不能行动 结晶盾特效
-					'fairy': 0, // 精灵罩剩余使用次数
-					'fairyBuff': 0, // 精灵罩防御增加量	
-					'orihp': core.status.hero.hp, // 初始血量，影响精灵罩加防数值
-					'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
-					'bone': 0, // 开启凡骨转化的攻防计数，攻防的绘制改变
-					'sword': core.items.getEquip(0), //当前装备的剑技
-					'shield': core.items.getEquip(1), //当前装备的盾技
-					'smartCast': false, //是否完成智能施法成就
-				}
-				this.enemy = {
-					'id': enemy.id,
-					'name': enemy.name, // 敌人中文名
-					'hp': enemy.hp,
-					'atk': enemy.atk,
-					'def': enemy.def,
-					'fatigue': 0,
-					'totalFatigue': 0, //总疲劳计数
-					'hasMisfortune': core.hasSpecial(enemy.special, 12) || core.hasSpecial(enemy.special, 13) ||
-						core.hasSpecial(enemy.special, 61) || core.hasSpecial(enemy.special, 82) ||
-						core.hasSpecial(enemy.special, 87) || core.hasSpecial(enemy.special, 81) ||
-						core.hasSpecial(enemy.special, 89), //该敌人是否带有负面事件
-					'poisonPoss': enemy.atkValue || 0,
-					'weakPoss': enemy.defValue || 0,
-					'weakPoint': enemy.damage || 0,
-					'mana': enemy.id === 'E437' ? 10 : 0,
-					'manamax': enemy.manamax, // 敌人最大气息值
-					'special': enemy.special, // 敌人特殊属性
-					'type': enemy.type, // 敌人为enemys还是enemy48 绘制用
-					'x': enemy.x,
-					'y': enemy.y,
-					'money': enemy.money,
-					'exp': enemy.exp,
-					'totalDamage': 0, // 对角色累计造成的伤害
-					'turn': 0, //敌人累计行动轮次
-					'atkStatus': {}, // 本回合每次攻击的状态，影响攻击动画
-					'combo': enemy.combo, //敌人连击数
-					'freeze': 0, //被冰冻的回合数,结晶盾特效
-					'magicIce': false, // 产出魔法冰块
-					'sword': 0, //剑大师计数
-					'shield': 0, //盾大师计数
-				}
-				this.actor = 'hero'; // 本回合行动角色
-				this.swordSkill = ''; // 当前剑技
-				this.shieldSkill = ''; // 当前盾技
-				this.isQuit = false; // 玩家是否从战斗中撤退。
-				this.route = 'bs'; //角色的操作序列(bs即battleSkill)
-			}
-
-			static getSkill(skill, type) {
-				const list = {
-					'c': { 'lv': 1, 'cost': 1, 'fatigue': 2 },
-					'b': { 'lv': 1, 'cost': 1, 'fatigue': 10 },
-					's': { 'lv': 20, 'cost': 1, 'fatigue': 4 },
-					'd': { 'lv': 26, 'cost': 1, 'fatigue': 4 },
-					'h': { 'lv': 79, 'cost': 2, 'fatigue': 8 },
-					'k': { 'lv': 100, 'cost': 2, 'fatigue': 30 },
-					'M': { 'lv': 1, 'cost': 1, 'fatigue': 3 },
-					'C': { 'lv': 18, 'cost': 2, 'fatigue': 12 },
-					'R': { 'lv': 28, 'cost': 1, 'fatigue': 3 },
-					'F': { 'lv': 57, 'cost': 2, 'fatigue': 9 },
-					'E': { 'lv': 100, 'cost': 2, 'fatigue': 2 },
-				}
-				if (list.hasOwnProperty(skill)) return list[skill][type];
-			}
-
-			canExecAction(action) {
-				if (this.isQuit || this.isBattleEnd) return { success: false, reason: '战斗已结束' };
-				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
-					const aimSword = abbreviateList[action];
-					if (!core.hasEquip(aimSword) && (!core.hasItem('I325') || !core.hasItem(aimSword)))
-						return { success: false, reason: '当前未持有该剑技' };
-				}
-				if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
-					const aimShield = abbreviateList[action];
-					if (!core.hasEquip(aimShield) && (!core.hasItem('I327') || !core.hasItem(aimShield)))
-						return { success: false, reason: '当前未持有该盾技' };
-				}
-				if (action === 'q')
-					return { success: true, reason: '' };
-				else if (action === 'v') {
-					if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
-					if (this.hero.fatigue <= 0) return { success: false, reason: '当前未处于疲劳状态' };
-					return { success: true, reason: '' };
-				} else if (['b', 's', 'd', 'h', 'k', 'c', 'M', 'C', 'R', 'F', 'E'].includes(action)) { //剑技
-					if (action !== 'c' && this.hero.fatigue >= core.getFlag('tiredMax', 20))
-						return { success: false, reason: '当前疲劳过高' }; // 会心的释放不受疲劳限制
-					if (this.hero.lv < this.constructor.getSkill(action, 'lv'))
-						return { success: false, reason: '等级不足' };
-					if (this.hero.mana < this.constructor.getSkill(action, 'cost') * this.hero.permana)
-						return { success: false, reason: '气息不足' };
-					if (['b', 's', 'd', 'h', 'k', 'c'].includes(action) && this.hero.atk <= this.enemy.def)
-						return { success: false, reason: '发动本技能需要攻击需要高于敌人防御' };
-					// 攻小于等于敌人防御，剑技和会心不能使用
-					if (action === 'F' && this.hero.fairy > 0)
-						return { success: false, reason: '精灵罩效果持续期间，不能再发动精灵罩' };
-					return { success: true, reason: '' };
-				}
-				return { success: false, reason: '未定义的行为' };
-			}
-
-			execInstantAction(action) {
-				const outcome = this.canExecAction(action);
-				if (!outcome.success) {
-					if (!core.isReplaying()) {
-						core.playSound('error.mp3');
-						core.drawTip(outcome.reason);
-					}
-					return;
-				}
-				switch (action) {
-					case 'q':
-						this.isQuit = true;
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'q'; //撤退
-						this.battleEnd();
-						break;
-					case 'v':
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'v'; //深呼吸
-						this.hero.mana -= this.hero.permana;
-						this.hero.fatigue -= core.getFlag('deepBreath', 5);
-						if (this.hero.fatigue < 0) this.hero.fatigue = 0;
-						break;
-				}
-			}
-
-			// 录像格式 bs:3f:3v:5q => 第3回合凡骨+深呼吸，第5回合逃跑
-			// 只记录有效技能，b-凡骨(bone)，s-流石(stone)，d-深红(darkRed)，h-天灵(heaven)，k-皇者(king)，c-会心一击
-			// M-镜膜盾(mirror)，C-结晶盾(crystal)，R-反射盾(reflection),F-精灵罩(fairy),E-贤者结界(enchantment)
-			execUserAction(action) {
-				const outcome = this.canExecAction(action);
-				if (!outcome.success) {
-					if (!core.isReplaying()) {
-						core.playSound('error.mp3');
-						core.drawTip(outcome.reason);
-					}
-					return;
-				}
-				if (action === 'c') {
-					this.swordSkill = 'c';
-				}
-				if (['b', 's', 'd', 'h', 'k'].includes(action)) {
-					const aimSword = abbreviateList[action];
-					this.hero.sword = aimSword;
-					this.swordSkill = action;
-				} else if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
-					const aimShield = abbreviateList[action];
-					this.hero.shield = aimShield;
-					this.shieldSkill = action;
-				}
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
-			}
-
-			isMagician() { // 是否为法师,成就判断用.条件为特技含有字段“魔法”或“秘术”
-				const especial = this.enemy.special;
-				return core.hasSpecial(especial, 2) || core.hasSpecial(especial, 60) ||
-					core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
-					core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
-					core.hasSpecial(especial, 65) || core.hasSpecial(especial, 66) ||
-					core.hasSpecial(especial, 67);
-			}
-
-			nextTurn() {
-				if (this.isQuit || this.isBattleEnd) return;
-				switch (this.actor) {
-					case 'hero':
-						this.heroAct();
-						break;
-					case 'enemy':
-						this.enemyAct();
-						break;
-				}
-			}
-
-			battleEnd() {
-				if (!core.isReplaying() && this.route.length > 3) { core.status.route.push(this.route); }
-				if (this.isQuit) {
-					core.status.hero.hp = Math.min(this.hero.hp, core.status.hero.hp);
-					core.status.hero.hpmax = Math.min(this.hero.hpmax, core.status.hero.hpmax);
+				// 成就点
+				core.setTextAlign("achievement", "center");
+				if (finish[i] === 0) {
+					core.fillText("achievement", '-', 377, 52 * (i - first) + 104, [200, 200, 200, 0.6], "18px " + core.status.globalAttribute.font);
 				} else {
-					core.status.hero.hp = this.hero.hp;
-					core.status.hero.mana = this.hero.mana;
-					core.status.hero.hpmax = this.hero.hpmax;
-				}
-				this.isBattleEnd = true;
-			}
-
-			// 攻防后增加气息
-			addMana(actor, damage, enemyCrit) {
-				switch (actor) {
-					case 'hero':
-						if (this.swordSkill.length > 0 || core.hasSpecial(this.enemy.special, 64) ||
-							this.enemy.def >= this.hero.atk) {
-							//使用剑技或C的回合中勇士将没有攻增气，魔神些多的死寂光环角色不加气，角色不破怪物防不加气
-						} else {
-							this.hero.mana += Math.round((10 * this.enemy.def) / (this.hero.atk)); // 角色攻增气
-						}
-						if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-						if ((this.hero.sword === 'I319' && this.swordSkill === 'c') || this.swordSkill === 's') {
-							// 装备流石用C,怪物不加防增气
-						} else {
-							this.enemy.mana += Math.round(damage / 3); // 怪物防增气
-						}
-						if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-						break;
-					case 'enemy':
-						if (core.hasSpecial(this.special, 60) || core.hasSpecial(this.enemy.special, 64)) {
-							//暗魔法无防增气，魔神些多的死寂光环角色不加气
-						} else {
-							this.hero.mana += Math.round(0.1 * damage); // 角色防增气
-						}
-						if (this.hero.mana > this.hero.manamax) this.hero.mana = this.hero.manamax;
-						if (!enemyCrit && !core.hasSpecial(this.special, 80)) { //怪物会心一击时无攻增气，魔眼不加气
-							if (core.hasSpecial(this.special, 55)) {
-								this.enemy.mana += Math.round((10 * this.hero.mdef) / (this.enemy.atk))
-							} else if (core.hasSpecial(this.special, 61) || core.hasSpecial(this.special, 62) ||
-								core.hasSpecial(this.special, 63) || core.hasSpecial(this.special, 64) ||
-								core.hasSpecial(this.special, 65)) { // 怪物攻增气
-								this.enemy.mana += Math.round((10 * (this.hero.mdef + this.hero.def)) / (this.enemy.atk));
-							} else this.enemy.mana += Math.round((10 * this.hero.def) / (this.enemy.atk));
-						}
-						if (this.enemy.mana > this.enemy.manamax) this.enemy.mana = this.enemy.manamax;
-						break;
-				}
-			}
-
-
-			//角色行动
-			heroAct() {
-				let atkStatus = { 'damage': 0, 'animate': 'g3' };
-				let hdamage = 0;
-				if (this.hero.freeze) { // 冻结，结晶盾特效
-					hdamage = 0;
-					atkStatus.freeze = true;
-					this.hero.freeze = false;
-				} else {
-					// 增加疲劳计数，决定是否miss
-					this.hero.totalFatigue += this.hero.fatigue;
-					if (this.hero.totalFatigue >= 100) {
-						hdamage = 0;
-						atkStatus.miss = true;
-						this.hero.totalFatigue -= 100;
-					}
-
-					// 检测是否发动技能
-					if (this.swordSkill.length > 0) {
-						atkStatus.skill = this.swordSkill;
-						this.hero.mana -= this.constructor.getSkill(this.swordSkill, 'cost') * this.hero.permana;
-						this.hero.fatigue += this.constructor.getSkill(this.swordSkill, 'fatigue');
-					}
-					if (!atkStatus.miss) {
-						if (core.hasSpecial(this.enemy.special, 86)) this.hero.fatigue += 10;
-						switch (this.swordSkill) {
-							case 'c':
-								hdamage = 2 * Math.max(this.hero.atk - this.enemy.def, 1);
-								atkStatus.animate = "g3-cri";
-								break;
-							case 'b': // 凡骨
-								hdamage = Math.round(1.5 * Math.max(this.hero.atk - this.enemy.def, 1));
-								if (this.isMagician()) this.hero.smartCast = true;
-								atkStatus.animate = "gsw1";
-								break;
-							case 's': //流石
-								hdamage = Math.round(1.3 * Math.max(this.hero.atk - this.enemy.def, 1));
-								if (!core.hasSpecial(this.enemy.special, 64)) //魔神些多的死寂光环下角色不加气
-									this.hero.mana += Math.round(this.enemy.mana / 2);
-								this.enemy.mana -= Math.round(this.enemy.mana / 2);
-								atkStatus.animate = "gsw2";
-								break;
-							case 'd': //深红
-								hdamage = Math.round(0.8 * Math.max(this.hero.atk - this.enemy.def, 1));
-								if (hdamage >= this.enemy.hp) hdamage = this.enemy.hp - 1;
-								this.hero.hp += Math.round(0.3 * hdamage);
-								atkStatus.animate = "gsw3";
-								break;
-							case 'h': //天灵
-								hdamage = Math.round(1.8 * Math.max(this.hero.atk - this.enemy.def, 1));
-								this.enemy.fatigue += 15;
-								atkStatus.animate = "gsw4";
-								break;
-							case 'k': // 皇者
-								hdamage = Math.round(5 * Math.max(this.hero.atk - this.enemy.def, 1));
-								if (hdamage >= this.enemy.hp) {
-									hdamage = this.enemy.hp - 1;
-									this.hero.smartCast = true;
-								}
-								this.hero.atk = this.enemy.def;
-								atkStatus.animate = "gsw5";
-								break;
-							default:
-								hdamage = Math.max(this.hero.atk - this.enemy.def, 1);
-								break;
-						}
-						if (this.enemy.def - this.hero.atk > this.hero.atkm) hdamage = 0; //攻临界
-						this.addMana(this.actor, hdamage);
-					}
-					if (this.swordSkill === 'b' && Math.round(1.5 * (this.hero.atk - this.enemy.def)) < this.hero.lv) {
-						// 伤害太低时，发动凡骨只有伤害1.5倍的效果，属性不增加
-						this.hero.atk += Math.round(1.5 * this.hero.lv);
-						this.hero.def -= this.hero.lv;
-						this.hero.bone += this.hero.lv;
-					}
-					this.swordSkill = ''; // 需要根据本回合剑技判断气息增减
-
-					if (core.hasSpecial(this.enemy.special, 92)) { // 盾大师
-						switch (this.enemy.shield) {
-							case 0:
-								hdamage = Math.round(hdamage / 2);
-								this.enemy.shield = 1;
-								break;
-							case 1:
-								this.hero.freeze = true;
-								this.enemy.shield = 2;
-								break;
-							case 2:
-								this.hero.hp -= Math.round(hdamage / 4);
-								this.enemy.shield = 0;
-								break;
-						}
-					}
-
-					atkStatus.damage = hdamage;
-					this.enemy.hp -= hdamage;
-					if (this.enemy.hp <= 0) {
-						this.enemy.hp = 0;
-						this.battleEnd();
-					}
-					if (this.hero.hp <= 0) {
-						this.battleEnd();
-					}
-				}
-				this.hero.atkStatus = atkStatus;
-				this.actor = 'enemy';
-				this.turn++;
-			}
-
-			//敌人行动
-			enemyAct() {
-				this.enemy.turn++;
-				let damage = 0,
-					oriDamage = 0,
-					princessDamage = 0, //公主受到的伤害
-					heal = 0, //敌人吸血回复
-					isPoisoned = false; // 是否被反射盾反弹中毒
-				let atkStatus = { 'damage': 0 };
-				const combo = this.enemy.combo,
-					especial = this.enemy.special;
-				this.enemy.totalFatigue += this.enemy.fatigue;
-				if (this.enemy.freeze > 0) {
-					atkStatus.freeze = true;
-					this.enemy.freeze--;
-				} else {
-					if (core.hasSpecial(especial, 80)) { // 魔眼
-						if (this.hero.def - this.hero.atk > this.hero.atkm) damage = 0;
-						else damage = Math.max(this.hero.atk - this.hero.def, 1);
-					} else if (core.hasSpecial(especial, 2) || core.hasSpecial(especial, 61) ||
-						core.hasSpecial(especial, 62) || core.hasSpecial(especial, 63) ||
-						core.hasSpecial(especial, 64) || core.hasSpecial(especial, 65) ||
-						core.hasSpecial(especial, 66)) { //魔攻
-						damage = this.enemy.atk;
-					} else {
-						if (this.hero.def - this.enemy.atk >= this.hero.defm) damage = 0; // 防临界
-						else damage = Math.max(this.enemy.atk - this.hero.def, 1);
-					}
-					if (core.hasSpecial(especial, 80) && this.hero.totalFatigue >= 100) { // 魔眼miss取决于勇士的疲劳
-						damage = 0;
-						atkStatus.miss = true;
-						this.hero.totalFatigue -= 100;
-					} else if (this.enemy.totalFatigue >= 100) {
-						damage = 0;
-						atkStatus.miss = true;
-						this.enemy.totalFatigue -= 100;
-					}
-					if (this.shieldSkill.length > 0) {
-						this.hero.mana -= this.constructor.getSkill(this.shieldSkill, 'cost') * this.hero.permana;
-						this.hero.fatigue += this.constructor.getSkill(this.shieldSkill, 'fatigue');
-					}
-					if (core.hasSpecial(especial, 61) || core.hasSpecial(especial, 62) ||
-						core.hasSpecial(especial, 63) || core.hasSpecial(especial, 64) ||
-						core.hasSpecial(especial, 65)) {
-						atkStatus.aim = 'all';
-						princessDamage = Math.max(this.enemy.atk - this.hero.mdef, 0);
-					} else if (core.hasSpecial(especial, 55)) {
-						atkStatus.aim = 'princess';
-						princessDamage = this.enemy.atk;
-					} else { atkStatus.aim = 'hero'; }
-					if (atkStatus.miss) princessDamage = 0;
-
-					if (this.enemy.mana >= this.enemy.manamax &&
-						this.hero.def - this.enemy.atk < this.hero.defm) { //满气息时怪物释放必杀，但若不能破防主角则永远不会释放
-						if (core.hasSpecial(especial, 91)) { } else {
-							let critRatio = 2;
-							if (core.hasSpecial(especial, 51)) critRatio = 2.5;
-							if (core.hasSpecial(especial, 59)) critRatio = 4;
-							if (core.hasSpecial(especial, 67)) critRatio = 3;
-							damage = Math.round(critRatio * damage);
-							princessDamage = Math.round(critRatio * princessDamage);
-							this.enemy.fatigue += (atkStatus.aim === 'all') ? 2 : 1;
-							atkStatus.crit = true; //暴击
-						}
-						this.enemy.mana = 0;
-					}
-				}
-				let reflect = false;
-				switch (this.shieldSkill) { //盾技
-					case 'M': //镜膜盾
-						damage = Math.ceil(damage / 2.5); //盾技伤害计算方式是ceil
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'M';
-						atkStatus.heroAnimate = "gsh1";
-						break;
-					case 'C': //结晶盾
-						damage = Math.ceil(damage / 1.5);
-						atkStatus.freeze = true;
-						if (this.enemy.id === 'bluePriest') this.enemy.magicIce = true; //制取魔法冰块
-						this.enemy.freeze = 2 * combo - this.turn % (combo + 1);
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'C';
-						atkStatus.heroAnimate = "gsh2";
-						break;
-					case 'R': //反射
-						oriDamage = damage;
-						damage = Math.ceil(damage / 1.3);
-						reflect = true;
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'R';
-						atkStatus.heroAnimate = "gsh3";
-						break;
-					case 'F': //精灵罩
-						this.hero.fairy = 3;
-						this.hero.fairyBuff = (this.hero.orihp + this.hero.def) % this.hero.lv;
-						this.hero.def += this.hero.fairyBuff;
-						if (this.isMagician()) this.hero.smartCast = true;
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'F';
-						atkStatus.heroAnimate = "gsh4";
-						break;
-					case 'E': //贤者结界
-						this.hero.hpmax += Math.round(1.5 * damage);
-						if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'E';
-						atkStatus.heroAnimate = "gsh5";
-						break;
-					default:
-						break;
-				}
-				if (!atkStatus.freeze && !atkStatus.miss) {
-					if (core.hasSpecial(especial, 91)) { // 剑大师
-						switch (this.enemy.sword) {
-							case 0:
-								this.hero.fatigue += 8;
-								this.enemy.sword = 1;
-								break;
-							case 1:
-								this.hero.mana -= this.hero.permana;
-								if (this.hero.mana < 0) this.hero.mana = 0;
-								this.enemy.sword = 2;
-								break;
-							case 2:
-								heal = Math.round(damage / 5);
-								this.enemy.sword = 0;
-								break;
-						}
-					}
-					if (core.hasSpecial(especial, 93)) // 魔界之王古顿
-					{
-						atkStatus.bounceDamage = [damage, Math.round(0.8 * damage),
-							Math.round(0.64 * damage), Math.round(0.512 * damage)
-						];
-						atkStatus.aim = 'lastBoss';
-					}
-
-					if (core.hasSpecial(especial, 52) || core.hasSpecial(especial, 53)) {
-						if (reflect) this.enemy.fatigue++;
-						else this.hero.fatigue++;
-					}
-					if (core.hasSpecial(especial, 54)) {
-						if (reflect) this.enemy.fatigue += 3;
-						else this.hero.fatigue += 3;
-					}
-					if (core.hasSpecial(especial, 56)) {
-						if (reflect) this.enemy.fatigue += 4;
-						else this.hero.fatigue += 4;
-					}
-					if (core.hasSpecial(especial, 62)) {
-						this.enemy.fatigue -= 1;
-						if (this.enemy.fatigue <= 0) this.enemy.fatigue = 0;
-					}
-					if (core.hasSpecial(especial, 58) && atkStatus.crit) {
-						this.hero.mana -= this.hero.permana;
-						if (this.hero.mana < 0) this.hero.mana = 0;
-					}
-					if (core.hasSpecial(especial, 65)) { //血秘术
-						heal = Math.round(0.5 * (damage + princessDamage));
-					}
-					if (core.hasSpecial(especial, 57) || core.hasSpecial(especial, 66) ||
-						core.hasSpecial(especial, 67)) { //血魔法
-						heal = Math.round(0.5 * damage);
-					}
-					if (core.hasSpecial(especial, 88)) {
-						if (reflect) {
-							this.hero.mana = core.clamp(this.hero.mana + 40, 0, this.hero.manamax);
-							this.enemy.mana = core.clamp(this.enemy.mana - 40, 0, this.enemy.manamax);
-
-						} else {
-							this.hero.mana = core.clamp(this.hero.mana - 40, 0, this.hero.manamax);
-							this.enemy.mana = core.clamp(this.enemy.mana + 40, 0, this.enemy.manamax);
-						}
-					}
-					if (core.hasSpecial(especial, 84)) { damage += 100; }
-					// 执行敌人带有的debuff技能
-					if (this.enemy.hasMisfortune) {
-						if (core.hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
-							this.hero.misfortune += 40;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) this.enemy.def -= 12;
-								else this.hero.def -= 12;
-							}
-						} else if (core.hasSpecial(especial, 89)) { // 89-压制:攻击60%几率降低20攻击，5防御
-							this.hero.misfortune += 60;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) {
-									this.enemy.atk -= 20;
-									this.enemy.def -= 5;
-								} else {
-									this.hero.atk -= 20;
-									this.hero.def -= 5;
-								}
-							}
-						} else if (core.hasSpecial(especial, 12) || core.hasSpecial(especial, 61) ||
-							core.hasSpecial(especial, 82)) { // 12-中毒
-							this.hero.misfortune += this.enemy.poisonPoss;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) isPoisoned = true;
-								else if (!core.getFlag('weak')) {
-									core.triggerDebuff('get', 'poison');
-								}
-							}
-						} else if (core.hasSpecial(especial, 13) || core.hasSpecial(especial, 87)) { // 13-衰弱
-							this.hero.misfortune += this.enemy.weakPoss;
-							if (this.hero.misfortune >= 100) {
-								this.hero.misfortune -= 100;
-								if (reflect) {
-									this.enemy.atk -= this.enemy.weakPoint;
-									this.enemy.def -= this.enemy.weakPoint;
-								} else if (!core.getFlag('poison')) {
-									// weakV为本次衰弱扣除的属性值,weakValue为衰弱总计扣除的属性值
-									core.setFlag('weakV', this.enemy.weakPoint);
-									core.triggerDebuff('get', 'weak');
-								}
-							}
-						}
-
-					}
-					this.addMana('enemy', damage, atkStatus.crit); //本回合敌人未暴击，则它会回复气息
-					if (this.hero.fairy > 0) {
-						atkStatus.fairy = true;
-						this.hero.fairy--;
-						if (this.hero.fairy === 0) {
-							this.hero.def -= Math.round(this.hero.def / 50) + (this.hero.orihp % this.hero.lv);
-							this.hero.fairyBuff = 0;
-						}
-					}
-				}
-				this.shieldSkill = '';
-				atkStatus.damage = damage;
-				atkStatus.princessDamage = princessDamage;
-				atkStatus.animate = enemyAni(this.enemy.id, atkStatus.crit);
-				this.enemy.atkStatus = atkStatus;
-				this.enemy.totalDamage += damage;
-				this.hero.hp -= damage;
-				this.hero.hpmax -= princessDamage;
-				if (core.hasSpecial(especial, 93)) { // 古顿
-					this.hero.hp -= atkStatus.bounceDamage[2];
-					this.hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
-				}
-				if (this.hero.hp <= 0 || this.hero.hpmax <= 0) this.battleEnd();
-				if (reflect) { //反射盾
-					let reflectDamage = Math.round(oriDamage / 2.6 + this.hero.atk / 10);
-					if (isPoisoned) reflectDamage += 25; // 反弹中毒会多弹25血
-					atkStatus.reflectDamage = reflectDamage;
-					this.enemy.hp -= reflectDamage;
-					if (core.hasSpecial(especial, 3) && reflectDamage > 0) this.hero.smartCast = true;
-					if (this.enemy.hp <= 0) this.enemy.hp = 0;
-				}
-				this.enemy.hp += heal; //吸血效果
-				if (this.enemy.hp <= 0) this.battleEnd();
-				if (this.turn % (this.enemy.combo + 1) === this.enemy.combo) { this.actor = 'hero'; }
-				this.turn++;
-
-				// 获取敌人攻击动画名称
-				function enemyAni(id, critical) {
-					switch (id) {
-						case 'bat':
-						case 'bigBat':
-						case 'redBat':
-						case 'poisonBat':
-							return critical ? 'g1-cri' : 'g1';
-						case 'bluePriest':
-							return critical ? 'g4-cri' : 'g4'; //初级法师攻击
-						case 'skeletonSoilder':
-						case 'yellowKnight':
-						case 'swordsman':
-							return critical ? 'g5-cri' : 'g5'; //骷髅兵，骑士，双手剑士攻击
-						case 'zombie':
-							return critical ? 'g6-cri' : 'g6'; //兽人攻击
-						case 'grayPriest':
-							return critical ? 'g7-cri' : 'g7'; //中级法师攻击
-						case 'E330':
-						case 'E334':
-							return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人攻击
-						case 'skeletonCaptain':
-						case 'blueKnight':
-						case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
-							return critical ? 'g9-cri' : 'g9';
-						case 'redKnight':
-						case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
-							return critical ? 'g10-cri' : 'g10';
-						case 'redWizard':
-							return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
-						case 'vampire':
-							return critical ? 'g13-cri' : 'g13'; //魔王格勒第攻击
-						case 'E377':
-						case 'E378':
-							return critical ? 'g14-cri' : 'g14'; //弓兵，精锐弓兵攻击
-						case 'magicDragon':
-							return critical ? 'g19-cri' : 'g19'; //恶龙攻击
-						case 'E432':
-							return critical ? 'g20-cri' : 'g20'; //毒龙攻击
-						case 'brownWizard':
-						case 'greenKing':
-							return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
-						case 'redWizard':
-							return critical ? 'g23-cri' : 'g23'; //高级法师攻击
-						case 'redSwordsman':
-							return critical ? 'g24-cri' : 'g24'; //剑王攻击
-						case 'whiteGhost':
-							return critical ? 'g25-cri' : 'g25'; //水银人攻击
-						case 'whiteKing':
-						case 'E413':
-							return critical ? 'g26-cri' : 'g26'; //蓝衣魔王，极地法师攻击
-						case 'skeletonPriest':
-						case 'E444':
-						case 'E442':
-							return critical ? 'g28-cri' : 'g28'; //混沌术士，血使者，血剑士攻击
-						case 'E446':
-							return critical ? 'g29-cri' : 'g29'; //史莱姆阿修罗攻击
-						case 'yellowKing':
-							return critical ? 'g30-cri' : 'g30'; //黄衣魔王攻击
-						case 'redKing':
-							return critical ? 'g31-cri' : 'g31'; //红衣魔王攻击
-						case 'E337':
-							return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆攻击
-						case 'skeletonKing':
-							return critical ? 'g34-cri' : 'g34'; //魔神·些多攻击
-						case 'goldSlime':
-							return critical ? 'g35-cri' : 'g35'; //剑神沙士攻击
-						case 'E380':
-							return critical ? 'g36-cri' : 'g36'; //斗神高巴攻击
-						case 'E379':
-							return critical ? 'g37-cri' : 'g37'; //箭神法比攻击
-						case 'yellowGuard':
-						case 'ghostSkeleton':
-							return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
-						case 'E382':
-							return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
-						case 'E436':
-							return critical ? 'g43-cri' : 'g43'; //冥界矮人战士攻击
-						case 'E435':
-							return critical ? 'g44-cri' : 'g44'; //生气灵攻击
-						case 'E447':
-							return critical ? 'g48-cri' : 'g48'; //最终BOSS
-						default:
-							return critical ? 'g2-cri' : 'g2';
-					}
+					const str = 'clear';
+					const color = 'cyan';
+					core.fillText("achievement", str, 377, 52 * (i - first) + 100, color, "18px " + core.status.globalAttribute.font);
 				}
 			}
 		}
+		drawDetail(list);
+	};
 
-		//// 每回合的战斗过程
-		function battleByTurn(id, x, y) {
-			if (!core.isReplaying()) core.lockControl();
-			let delay = 400,
-				combodelay = 50;
-			if (core.getFlag('battleSpeed', 0) === 2) {
-				delay = 800;
-				combodelay = 100;
-			} else if (core.getFlag('battleSpeed', 0) === 0) {
-				delay = 20;
-				combodelay = 2;
-			}
-			const enemyInfo = core.enemys.getEnemyInfo(id, null, x, y, core.status.floorId),
-				ehp = enemyInfo.hp,
-				eatk = enemyInfo.atk,
-				edef = enemyInfo.def,
-				especial = enemyInfo.special;
-			let combo = 1;
-			if (core.hasSpecial(especial, 4) || core.hasSpecial(especial, 53)) combo = 2;
-			if (core.hasSpecial(especial, 5) || core.hasSpecial(especial, 83)) combo = 3;
-			if (core.hasSpecial(especial, 6)) combo = core.material.enemys[id].n || 1;
-			if (core.hasSpecial(especial, 87)) combo = 6;
-			let battle = new GameCore({
-				'id': id,
-				'name': core.material.enemys[id].name,
-				'hp': ehp,
-				'atk': core.hasSpecial(especial, 60) ? 3 * eatk : eatk,
-				'def': edef,
-				'type': 'enemys',
-				'x': x,
-				'y': y,
-				'money': enemyInfo.money,
-				'exp': enemyInfo.exp,
-				'manamax': core.material.enemys[id].value,
-				'special': especial,
-				'combo': combo,
-				'atkValue': core.material.enemys[id].atkValue,
-				'defValue': core.material.enemys[id].defValue,
-				'damage': core.material.enemys[id].damage,
-			});
-
+	function drawAchievementMenu() {
+		return new Promise((res) => {
 			function finish() {
-				core.unregisterAction('keyDown', 'battleSkill');
-				core.unregisterAction('keyDown', 'battleClick')
-				let currTime = 0,
-					h = 0;
-				if (!battle.isQuit) {
-					core.registerAnimationFrame('showBottomBar', true, function (timestamp) {
-						if (timestamp - currTime < 10) return;
-						currTime = timestamp;
-						if (h < 40) h += 4;
-						core.plugin.drawBattleBottomBar(battle, h);
-					})
-				}
-				new Promise(res => setTimeout(res, 500)).then(() => {
-					core.unregisterAnimationFrame('drawDamage');
-					core.unregisterAnimationFrame('showBottomBar');
-					core.unregisterAnimationFrame('battleIcon');
-					core.deleteCanvas('battleUI');
-					core.deleteCanvas('battleIcon');
-					core.deleteCanvas('battleBottomBar');
-					core.deleteCanvas("skillIcon");
-					core.updateStatusBar();
-					if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-					core.unlockControl();
-					if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
-					return;
-				})
-			}
+				core.deleteCanvas('achievement');
+				core.unregisterAction('ondown', 'achievementMenuClick');
+				core.unregisterAction('keyDown', 'achievementMenuKey');
+				res();
+			};
 
-			function takeTurn() {
-				let currDelay = delay;
-				if (combo >= 2 && this.turn % (combo + 1) <= combo - 1) currDelay = combodelay;
-				if (battle.isBattleEnd) return;
-				battle.nextTurn();
-				core.plugin.drawBattleUI(battle);
-				core.plugin.drawSkillIcon(battle);
-				core.plugin.drawBattleAnimate(battle, currDelay);
-
-				if (battle.isBattleEnd) finish();
-				else setTimeout(takeTurn, currDelay);
-			}
-
-			if (core.isReplaying()) {
-				let actionList = {};
-				if (core.status.replay.toReplay.length > 0) {
-					const next = core.status.replay.toReplay[0];
-					if (next.startsWith('bs:')) {
-						const nextList = next.split(':');
-						for (let i = 1, l = nextList.length; i < l; i++) {
-							const currTurn = parseInt(nextList[i]);
-							if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
-							actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
-						}
+			core.registerAction('ondown', 'achievementMenuClick', (x, y, px, py) => {
+				console.log(px + ',' + py);
+				if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
+					if (first <= list.length - 7) first++;
+				} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
+					if (first != 0) {
+						first--;
 					}
-				}
-				while (!battle.isBattleEnd) {
-					const currTurn = battle.turn;
-					if (actionList.hasOwnProperty(currTurn)) {
-						if (actionList[currTurn].includes('q')) {
-							battle.execInstantAction('q');
-							core.updateStatusBar();
-							if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-							break;
-						}
-						if (actionList[currTurn].includes('v'))
-							battle.execInstantAction('v');
-						for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
-							battle.execUserAction(actionList[currTurn][i]);
-						}
-					}
-					battle.nextTurn();
-				}
-				core.updateStatusBar();
-				if (!battle.isQuit) core.plugin.afterBattleInTurn(battle);
-				if (core.status.hero.hp <= 0 || core.status.hero.hpmax <= 0) core.lose();
-			} else {
-				const equipList = { 'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k', 'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E', };
-				core.registerAction('keyDown', 'battleSkill', function (keyCode) {
-					if (battle.isQuit || battle.isBattleEnd) return;
-					switch (keyCode) {
-						case 49: //1
-							if (core.hasItem('I325')) battle.execUserAction('b');
-							else if (core.hasItem('I327')) battle.execUserAction('M');
-							break;
-						case 50: //2
-							if (core.hasItem('I325')) battle.execUserAction('s');
-							else if (core.hasItem('I327')) battle.execUserAction('C');
-							break;
-						case 51: //3
-							if (core.hasItem('I325')) battle.execUserAction('d');
-							else if (core.hasItem('I327')) battle.execUserAction('R');
-							break;
-						case 52: //4
-							if (core.hasItem('I325')) battle.execUserAction('h');
-							else if (core.hasItem('I327')) battle.execUserAction('F');
-							break;
-						case 53: //5
-							if (core.hasItem('I325')) battle.execUserAction('k');
-							else if (core.hasItem('I327')) battle.execUserAction('E');
-							break;
-						case 8: //backSpace
-						case 81: //Q
-							battle.execInstantAction('q');
-							finish();
-							break;
-						case 86: //V
-							battle.execInstantAction('v');
-							break;
-						case 67: //C
-							battle.execUserAction('c');
-							break;
-						case 90: //Z
-							if (!battle.hero.sword) {
-								core.playSound('error.mp3');
-								core.drawTip('当前未装备剑技');
-							} else { battle.execUserAction(equipList[battle.hero.sword]); }
-							break;
-						case 88: //X
-							if (!battle.hero.shield) {
-								core.playSound('error.mp3');
-								core.drawTip('当前未装备盾技');
-							} else { battle.execUserAction(equipList[battle.hero.shield]); }
-							break;
-					}
-					core.plugin.drawSkillIcon(battle);
-				}, 100);
-
-				core.registerAction('ondown', 'battleClick', function (x, y, px, py) {
-					if (battle.isQuit || battle.isBattleEnd) return;
-					const sword = equipList[core.items.getEquip(0)],
-						shield = equipList[core.items.getEquip(1)];
-					if (60 < px && px <= 92 && 320 <= py && py <= 352) {
-						if (core.hasItem('I325')) battle.execUserAction('b');
-						else if (core.hasItem('I327')) battle.execUserAction('M');
-					}
-					if (92 < px && px <= 124 && 320 <= py && py <= 352) {
-						if (core.hasItem('I325')) battle.execUserAction('s');
-						else if (core.hasItem('I327')) battle.execUserAction('C');
-					}
-					if (124 < px && px <= 156 && 320 <= py && py <= 352) {
-						if (core.hasItem('I325')) battle.execUserAction('d');
-						else if (core.hasItem('I327')) battle.execUserAction('R');
-					}
-					if (156 < px && px <= 188 && 320 <= py && py <= 352) {
-						if (core.hasItem('I325')) battle.execUserAction('h');
-						else if (core.hasItem('I327')) battle.execUserAction('F');
-					}
-					if (188 < px && px <= 220 && 320 <= py && py <= 352) {
-						if (core.hasItem('I325')) battle.execUserAction('k');
-						else if (core.hasItem('I327')) battle.execUserAction('E');
-					}
-					if (220 < px && px <= 252 && 320 <= py && py <= 352) {
-						if (!battle.hero.sword) {
-							core.playSound('error.mp3');
-							core.drawTip('当前未装备剑技');
-						} else { battle.execUserAction(equipList[battle.hero.sword]); }
-					}
-
-					if (252 < px && px <= 284 && 320 <= py && py <= 352) {
-						if (!battle.hero.shield) {
-							core.playSound('error.mp3');
-							core.drawTip('当前未装备盾技');
-						} else { battle.execUserAction(equipList[battle.hero.shield]); }
-					}
-					if (284 < px && px <= 316 && 320 <= py && py <= 352) {
-						battle.execUserAction('c');
-					}
-					if (316 < px && px <= 348 && 320 <= py && py <= 352) {
-						battle.execInstantAction('v');
-					}
-					if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
-						battle.execInstantAction('q');
+				} else {
+					if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
 						finish();
+						return;
 					}
-				}, 100);
-
-				let drawIconCount = 0,
-					timeCount = 0;
-				core.registerAnimationFrame('battleIcon', true, function (timestamp) {
-					if (timestamp - timeCount < 200) return;
-					drawIconCount++;
-					timeCount = timestamp;
-					core.plugin.drawBattleIcon(battle, drawIconCount);
-				});
-				core.plugin.drawBattleUI(battle);
-				core.plugin.drawSkillIcon(battle);
-				setTimeout(takeTurn, delay); //第一回合留时间输入技能
-			}
-		}
-
-		// bs开头录像用于读取下一场战斗的操作
-		function _replayAction_bs(action) {
-			if (!action.startsWith('bs')) return false;
-			core.status.route.push(action);
-			core.replay();
-			return true;
-		}
-		core.registerReplayAction('bs', _replayAction_bs);
-
-		events.prototype.battle = function (id, x, y, force, callback) {
-			core.saveAndStopAutomaticRoute();
-			id = id || core.getBlockId(x, y);
-			if (!id) return core.clearContinueAutomaticRoute(callback);
-
-			// 是否采用战斗动画
-			let useBattleAnimate = true;
-			if (core.hasSpecial(id, 20)) useBattleAnimate = false; // 白银怪不进行特殊战斗
-			// 非强制战斗
-			if (!useBattleAnimate) {
-				if (!core.enemys.canBattle(id, x, y) && !force && !core.status.event.id) {
-					core.stopSound();
-					core.playSound('操作失败');
-					core.drawTip("你打不过此怪物！", id);
-					return core.clearContinueAutomaticRoute(callback);
 				}
-			}
-			// 自动存档
-			if (!core.status.event.id) core.autosave(true);
-			// 战前事件
-			if (!this.beforeBattle(id, x, y))
-				return core.clearContinueAutomaticRoute(callback);
-			// 战后事件
-			if (useBattleAnimate) {
-				battleByTurn(id, x, y);
-			} else {
-				this.afterBattle(id, x, y);
-			}
-			if (callback) callback();
-		}
+				drawAchievement();
+			}, 100);
 
-	},
-	"回合制战斗": function () {
+			core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
+				console.log(keyCode);
+				switch (keyCode) {
+				case 38: // Up
+					if (first !== 0) first--;
+					break;
+				case 40: // Down
+					if (first <= list.length - 7) first++;
+					break;
+				case 27: // Esc
+				case 81: // q
+				case 8: // BackSpace
+					finish();
+					return;
+				}
+				drawAchievement();
+			}, 100);
+
+			drawAchievement();
+		})
+	}
+
+	this.openAchievementMenu = async function () {
+		if (core.isReplaying()) return;
+		core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
+		core.lockControl();
+		await drawAchievementMenu();
+		core.setFlag('noOpenMenu', false);
+		core.unlockControl();
+	}
+
+},
+    "回合制战斗": function () {
 
 		// #region 回合制战斗的执行
 
@@ -6228,11 +4758,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.lockControl();
 
 			beginListen(battle);
-			// drawBattleUI(battle);
-			// let frame = 0;
-			// core.plugin.registerAnimationInterval('battleIcon',200,()=>{
-			// 	drawBattleIcon(battle,frame++);
-			// });
+			drawBattleUI(battle);
+			let frame = 0;
+			core.plugin.registerAnimationInterval('battleIcon',200,()=>{
+				drawBattleIcon(battle,frame++);
+			});
 
 			while (true) {
 				if (battle.status !== 'pending') break;
@@ -6246,21 +4776,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								battle.execUserAction('q');
 								res();
 							}
-						});
-						core.registerAction('onDown', 'quit', (x, y, px, py) => {
+						}, 100);
+						core.registerAction('ondown', 'quit', (x, y, px, py) => {
 							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
 								battle.execUserAction('q');
 								res();
 							} //撤退键的坐标
-						});
+						}, 100);
 					})
 				]);
 				battle.nextTurn();
 				battle.checkEnd();
 				// 此处更新动画
-				// drawBattleUI();
-				// if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				// drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
+				drawBattleUI(battle);
+				if (battle.speed !== 'quick') drawBattleAnimate(battle);
+				//drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
 
 				battle.updateActor();
 				if (battle.status === 'quit') break;
@@ -6332,7 +4862,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else if (battle.speed === 'normal') return 1;
 				else return 2;
 			})());
-			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquipedd);
+			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
 			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
 			switch (battle.status) {
 				case 'win':
@@ -6368,6 +4898,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} y 
 		 */
 		function afterBattleEvent(battle, x, y) {
+			if (battle.status !== 'win') return;
 			const hero = battle.hero,
 				enemy = battle.enemy,
 				id = enemy.id;
@@ -6555,7 +5086,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
 					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakV', 0));
 				/** 一管气息的容量 */
-				this.permana = this.mana / 6;
+				this.permana = this.manamax / 6;
 				/** 本次攻击的状态 
 				 * @type {HeroAtkStatus}
 				 */
@@ -7140,12 +5671,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.enemy.act(this.hero);
 						break;
 				}
-
-				console.log("turn " + this.turn);
-				console.log("hero:");
-				console.log(this.hero);
-				console.log("enemy:");
-				console.log(this.enemy);
 			}
 
 			/** 更新下回合的行动者，更新等待时间*/
@@ -7341,7 +5866,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setTextAlign(ctx, "center");
 			// 绘制敌人名字，勇者名字，VS标志
 			core.fillText(ctx, "勇者", bx2 + size / 2, by - fontSize * 3 / 4, "white", font);
-			core.fillText(ctx, enemy.name, bx + size / 2, by - fontSize * 3 / 4, "white", font);
+			core.fillText(ctx, enemy.data.name, bx + size / 2, by - fontSize * 3 / 4, "white", font);
 			core.fillText(ctx, "VS", width / 2, by - fontSize * 3 / 4, "white", "Bold Italic 24px Verdana");
 			core.setTextAlign(ctx, "left");
 
@@ -7404,8 +5929,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			core.fillText(ctx, '-撤退(Q)-', 100, 180, "yellow", '16px hkbdt');
 
-			drawMana();
-
 			// 绘制气息条
 			const enemyManaRatio = (enemy.manamax === 0) ? 0 : enemy.mana / enemy.manamax,
 				heroManaRemainder = (hero.mana) % (hero.permana);
@@ -7461,7 +5984,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.strokeRect(ctx, bx, by, size, size, strokeStyle, 2);
 
 			const fireCount = (hero.mana - (hero.mana) % (hero.permana)) / hero.permana,
-				image = 'tinyFire' + (frame % 3 + 1).toString() + '.png'
+				image = 'tinyFire' + (frame % 3 + 1).toString() + '.png';
 			if (fireCount >= 1)
 				core.drawImage(ctx, image, width - tx, ty + 3 * (textFontSize + lineHeight) + 5);
 			if (fireCount >= 2)
@@ -7582,7 +6105,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		function drawBattleAnimate(battle) {
 			const atkStatusH = battle.hero.atkStatus,
-				atkStatusE = battle.enemy.atkStatuso;
+				atkStatusE = battle.enemy.atkStatus;
 			const hx = 355,
 				hy = 152,
 				ex = 60,
@@ -7596,8 +6119,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
 						break;
 					}
-					drawAnimateByPixel(atkStatusH.animate, ex, ey);
-					core.plugin.addScrollingText(atkStatusH.damage, {
+					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex, ey);
+					let damageH = atkStatusH.damage;
+					if (atkStatusH.crit) damageH+='crit';
+					core.plugin.addScrollingText(damageH, {
 						'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
 						'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 					});
@@ -7619,7 +6144,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						}
 						break;
 					}
-					const damageE = atkStatusE.damage.toString(),
+					let damageE = atkStatusE.damage.toString(),
 						princessDamageE = atkStatusE.princessDamage.toString();
 					if (atkStatusE.crit) {
 						damageE += 'crit';
@@ -7665,58 +6190,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					break;
 			}
-
-
-		}
-
-		/**
-		 * 绘制技能图标
-		 * @param {Battle} battleInfo 
-		 */
-		function drawSkillIcon(battleInfo) {
-			const swordSkill = battleInfo.swordSkill,
-				shieldSkill = battleInfo.shieldSkill,
-				crit = (swordSkill === 'c');
-			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
-			ctx.canvas.style.backgroundColor = "gray";
-			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
-			core.setTextAlign(ctx, "center");
-			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
-			const start = 20,
-				interval = 32;
-			core.drawImage(ctx, 'yellowBall.png', start, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
-			if (core.hasItem('I325')) {
-				core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I318', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I317', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I316', start + 4 * interval + 5, 6, 20, 20);
-			} else if (core.hasItem('I327')) {
-				core.drawIcon(ctx, 'I339', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I321', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I375', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I322', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I320', start + 4 * interval + 5, 6, 20, 20);
-			}
-			core.drawImage(ctx, 'pong.png', start + 7 * interval + 3, 2, 28, 28);
-			core.drawImage(ctx, 'iconBreathe.png', start + 8 * interval + 4, 4, 24, 24);
-			if (swordSkill && swordSkill !== 'c')
-				core.fillText(ctx, 'OK', start + 5 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconSword.png', start + 5 * interval + 6, 6, 20, 20);
-			if (shieldSkill)
-				core.fillText(ctx, 'OK', start + 6 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconShield.png', start + 6 * interval + 6, 6, 20, 20);
-			if (crit) core.fillText(ctx, 'OK', start + 7 * interval + 14, 21, 'green', 'Bold 14px Arial');
-			else core.fillText(ctx, 'C', start + 7 * interval + 16, 21, 'red', 'Bold 14px Arial');
-			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), start + 8 * interval + 16, 19, 'blue', 'Bold 10px Arial');
 		}
 
 		/**
@@ -7727,7 +6200,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {boolean} alignWindow 
 		 * @param {Function} callback 
 		 */
-		function drawAnimateByPixel(name, x, y, alignWindow, callback) {
+		this.drawAnimateByPixel = function(name, x, y, alignWindow, callback) {
 			name = core.getMappedName(name);
 
 			// 正在播放录像：不显示动画
@@ -7875,7 +6348,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					ele.event(x, y, px, py);
 				}
 			});
-			drawSkillIcon(battle); //每次点击重绘所有按钮
+			// drawSkillIcon(battle); //每次点击重绘所有按钮
 		}
 
 		/**
@@ -7885,18 +6358,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function beginListen(battle) {
 			core.registerAction('keyDown', 'battleSkill', (keyCode) => {
 				listenKey(keyCode, battle);
-			});
+			}, 100);
 			core.registerAction('ondown', 'battleClick', (x, y, px, py) => {
 				listenClick(x, y, px, py, battle);
-			});
+			}, 100);
 		}
 
 		/** 注销所有事件和画布 */
 		function clearCanvasAndEvent() {
 			core.unregisterAction('keyDown', 'battleSkill');
-			core.unregisterAction('onDown', 'battleClick');
+			core.unregisterAction('ondown', 'battleClick');
 			core.unregisterAction('keyDown', 'quit');
-			core.unregisterAction('onDown', 'quit');
+			core.unregisterAction('ondown', 'quit');
 
 			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
 				core.unregisterAnimationFrame(x);
@@ -7924,22 +6397,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			return false;
 		}
-
-		/**
-		 * 注册一个每interval帧执行一次的动画
-		 * @param {string} name 
-		 * @param {number} interval 
-		 * @param {Function} event 
-		 */
-		this.registerAnimationInterval = function(name, interval, event) {
-			let currTime = 0;
-			core.registerAnimationFrame(name, true, (timestamp) => {
-				if (timestamp - currTime < interval) return;
-				currTime = timestamp;
-				event();
-			});
-		}
-
 
 		/**
 		 * 读取录像的下一项，解析为actionList
