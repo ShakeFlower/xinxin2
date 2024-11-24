@@ -1,6 +1,6 @@
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
-    "init": function () {
+	"init": function () {
 
 		console.log("插件编写测试");
 
@@ -1303,7 +1303,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "drawLight": function () {
+	"drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1364,7 +1364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-    "shop": function () {
+	"shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1549,7 +1549,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-    "removeMap": function () {
+	"removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1636,7 +1636,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-    "fiveLayers": function () {
+	"fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1791,7 +1791,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-    "itemShop": function () {
+	"itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2097,7 +2097,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "enemyLevel": function () {
+	"enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2185,7 +2185,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-    "dynamicHp": function () {
+	"dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2217,7 +2217,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-    "multiHeros": function () {
+	"multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2362,7 +2362,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-    "itemCategory": function () {
+	"itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2500,7 +2500,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-    "heroFourFrames": function () {
+	"heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2555,7 +2555,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-    "startCanvas": function () {
+	"startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2641,25 +2641,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "自动拾取": function () {
+	"自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
-
-		// 
-		// var noUpdate = false;
-		////// 更新状态栏 ////// 不建议状态栏刷新后触发 容易导致录像不一致的问题
-		//control.prototype.updateStatusBar = function (doNotCheckAutoEvents) {
-		//	if (!core.isPlaying()) return;
-		//	if (noUpdate) return;
-		//	noUpdate = true;
-		//	core.autoGetItem();
-		//	noUpdate = false;
-		//	this.controldata.updateStatusBar();
-		//	if (!doNotCheckAutoEvents) core.checkAutoEvents();
-		//	this._updateStatusBar_setToolboxIcon();
-		//	core.clearRouteFolding();
-		//}
 
 		////// 每移动一格后执行的事件 //////
 		/*
@@ -2795,7 +2780,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-    "修复装备Bug": function () {
+	"修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -2928,7 +2913,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "新版道具栏": function () {
+	"新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -3919,114 +3904,113 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "跳字插件": function () {
-	// 在此增加新插件
+	"跳字插件": function () {
+		// 在此增加新插件
 
-	let sTextList = new Set([]);
-	const canvas = 'scroll';
-	const gravity = 0.2;
+		let sTextList = new Set([]);
+		const canvas = 'scroll';
+		const gravity = 0.2;
 
-
-	// 声明必须在调用之前
-	/**
-	 * 注册一个每interval帧执行一次的动画
-	 * @param {string} name 
-	 * @param {number} interval 
-	 * @param {Function} event 
-	 */
-	this.registerAnimationInterval = function (name, interval, event) {
-		let currTime = 0;
-		core.registerAnimationFrame(name, true, (timestamp) => {
-			if (timestamp - currTime < interval) return;
-			currTime = timestamp;
-			event();
-		});
-	}
-
-	function drawScrollingText() {
-		core.ui.clearMap(canvas);
-		sTextList.forEach(
-			function (currText) {
-				core.setAlpha(canvas, currText.alpha);
-				core.fillText(canvas, currText.text, currText.x, currText.y,
-					currText.style, currText.font, currText.maxWidth)
-			}
-		)
-	}
-
-	class ScrollingText {
-		constructor(text, args) {
-			this.text = text;
-			this.x = args.x || 0;
-			this.y = args.y || 0;
-			this.x0 = args.x || 0;
-			this.y0 = args.y || 0;
-			this.style = args.style;
-			this.font = args.font;
-			this.maxWidth = args.maxWidth;
-			this.type = args.type || 'line';
-			this.vx = args.vx || 0;
-			this.vy = args.vy || 0;
-			this.t = 0;
-			this.tmax = args.tmax || 1000;
-			this.alpha = args.alpha || 1;
+		// 声明必须在调用之前
+		/**
+		 * 注册一个每interval帧执行一次的动画
+		 * @param {string} name 
+		 * @param {number} interval 
+		 * @param {Function} event 
+		 */
+		this.registerAnimationInterval = function (name, interval, event) {
+			let currTime = 0;
+			core.registerAnimationFrame(name, true, (timestamp) => {
+				if (timestamp - currTime < interval) return;
+				currTime = timestamp;
+				event();
+			});
 		}
-	}
 
-	this.addScrollingText = function (text, args) {
-		if (core.isReplaying()) return;
-		if (!core.getFlag('popDamage')) return;
-		let sText = new ScrollingText(text, args);
-		sTextList.add(sText);
-	}
-
-	function updateScrollingText() {
-		sTextList.forEach(function (currText) {
-			switch (currText.type) {
-			case 'line':
-				currText.x += currText.vx;
-				currText.y += currText.vy;
-				break;
-			case 'projectile':
-				currText.x += currText.vx;
-				currText.y += currText.vy;
-				currText.vy += gravity;
-				break;
-			case 'down':
-				if (currText.t < currText.tmax / 2) {
-					currText.x += currText.vx;
-					currText.y += currText.vy;
-				} else {
-					if (currText.alpha > 0.05)
-						currText.alpha -= 0.05;
+		function drawScrollingText() {
+			core.ui.clearMap(canvas);
+			sTextList.forEach(
+				function (currText) {
+					core.setAlpha(canvas, currText.alpha);
+					core.fillText(canvas, currText.text, currText.x, currText.y,
+						currText.style, currText.font, currText.maxWidth)
 				}
-			}
-			currText.t++;
-			if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-				currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-				currText.t > currText.tmax) {
-				sTextList.delete(currText);
-			}
-		})
-	}
-
-	// 每次切换楼层后执行
-	this.clearScrollingText = function () {
-		sTextList.clear();
-	}
-
-	core.plugin.registerAnimationInterval('scrollText', 10, () => {
-		if (core.isReplaying()) return;
-		if (!core.getFlag('popDamage')) return;
-		if (!core.dymCanvas[canvas]) {
-			core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+			)
 		}
-		updateScrollingText();
-		drawScrollingText();
-	});
 
-},
-    "切装事件": function () {
+		class ScrollingText {
+			constructor(text, args) {
+				this.text = text;
+				this.x = args.x || 0;
+				this.y = args.y || 0;
+				this.x0 = args.x || 0;
+				this.y0 = args.y || 0;
+				this.style = args.style;
+				this.font = args.font;
+				this.maxWidth = args.maxWidth;
+				this.type = args.type || 'line';
+				this.vx = args.vx || 0;
+				this.vy = args.vy || 0;
+				this.t = 0;
+				this.tmax = args.tmax || 1000;
+				this.alpha = args.alpha || 1;
+			}
+		}
+
+		this.addScrollingText = function (text, args) {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			let sText = new ScrollingText(text, args);
+			sTextList.add(sText);
+		}
+
+		function updateScrollingText() {
+			sTextList.forEach(function (currText) {
+				switch (currText.type) {
+					case 'line':
+						currText.x += currText.vx;
+						currText.y += currText.vy;
+						break;
+					case 'projectile':
+						currText.x += currText.vx;
+						currText.y += currText.vy;
+						currText.vy += gravity;
+						break;
+					case 'down':
+						if (currText.t < currText.tmax / 2) {
+							currText.x += currText.vx;
+							currText.y += currText.vy;
+						} else {
+							if (currText.alpha > 0.05)
+								currText.alpha -= 0.05;
+						}
+				}
+				currText.t++;
+				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
+					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
+					currText.t > currText.tmax) {
+					sTextList.delete(currText);
+				}
+			})
+		}
+
+		// 每次切换楼层后执行
+		this.clearScrollingText = function () {
+			sTextList.clear();
+		}
+
+		core.plugin.registerAnimationInterval('scrollText', 10, () => {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			if (!core.dymCanvas[canvas]) {
+				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+			}
+			updateScrollingText();
+			drawScrollingText();
+		});
+
+	},
+	"切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4084,7 +4068,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "自定义设置": function () {
+	"自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4323,7 +4307,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4490,150 +4474,153 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "成就": function () {
-	// 在此增加新插件
+	"成就": function () {
+		// 在此增加新插件
 
-	const PX = core.__PIXELS__,
-		PY = core.__PIXELS__;
+		const PX = core.__PIXELS__,
+			PY = core.__PIXELS__;
 
-	//， 成就界面
-	let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
-		type = 1, // 当前类型
-		first = 0, // 成就栏中显示的第一个成就的数组索引
-		point = 0; //完成的成就数
-	// 定义成就
-	const list = [
-		[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福..."],
-		[1, "白银狙击手", "白银怪物？在我面前不值一提！"],
-		[2, "大难不死", "哇...不怕不怕..."],
-		[3, "肉盾", "一打十根本不成问题的呢"],
-		[4, "起死回生", "我感觉死去活来！！"],
-		[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的"],
-		[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰..."],
-		[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？"],
-		[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！"],
-		[9, "防守姿态", "有人能打破我的防守吗？"],
-		[10, "熔炉", "有了这东西打白银怪物就很有效率了"],
-		[11, "冰冷的手", "呼...手很冰..."],
-		[12, "三相之力", "白银怪物？杀个稀巴烂！"],
-		[13, "剑大师", "我的剑技很华丽吧"],
-		[14, "盾大师", "你有什么方法攻击我都有方法防守！"],
-		[15, "捐血站", "卖血！卖血！有人买吗？"],
-		[16, "持匙人", "这些锁匙是开哪些门的？"],
-		[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事..."],
-		[18, "一代宗师", "我要开班授徒的话有人会来加入吗？"],
-		[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～"],
-		[20, "国家大事", "什么事都不比国家大事重要吧！"],
-		[21, "职业冒险家", "去冒险就是要做足准备！"],
-		[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的"],
-		[23, "心灵相通", "我知道你在想什么！"],
-		[24, "天上之住民", "传说以前的人都是能在空中飞翔的"],
-		[25, "透视", "嘻嘻...什么都看到了..."],
-		[26, "小叮当", "你其实是小叮当吧？！"],
-		[27, "异常状态", "初尝异常状态...感觉不错(嗯)"],
-		[28, "攻略本", "你一定是看着攻略玩的！"],
-		[29, "神之防护", "我的防御像神一般！直到我中了一箭..."],
-		[30, "出门靠朋友", "在家靠父母，出门靠朋友！"],
-		[31, "投入战斗", "热身差不多完毕了！！"],
-		[32, "见习剑士", "真想快点试试学到的剑术！"],
-		[33, "防守入门", "防守？是这样这样的吗？"],
-		[34, "圣水加护", "感谢圣水的帮助！"],
-		[35, "圣神的加护", "我简直像受到圣神般的帮助"],
-		[36, "弑神者", "遇神杀神！！谁也阻不到我！"],
-		[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了"],
-		[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？"],
-		[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！"],
-		[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药..."],
-		[41, "凝神储息", "......暂先时不要影响我......"],
-		[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈"],
-		[43, "学有所成", "只学不实践的话还是不太足够吧？"],
-		[44, "守财奴", "钱要用才是钱！钱！"],
-	];
-	const defaultList = Array(list.length).fill(0);
+		//， 成就界面
+		let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
+			type = 1, // 当前类型
+			first = 0, // 成就栏中显示的第一个成就的数组索引
+			point = 0; //完成的成就数
+		// 定义成就
+		const list = [
+			[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福...", '2865'],
+			[1, "白银狙击手", "白银怪物？在我面前不值一提！", '2867'],
+			[2, "大难不死", "哇...不怕不怕...", '2869'],
+			[3, "肉盾", "一打十根本不成问题的呢", '2871'],
+			[4, "起死回生", "我感觉死去活来！！", '2873'],
+			[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的", '2875'],
+			[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰...", '2877'],
+			[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？", '2879'],
+			[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！", '2881'],
+			[9, "防守姿态", "有人能打破我的防守吗？", '2883'],
+			[10, "熔炉", "有了这东西打白银怪物就很有效率了", '2885'],
+			[11, "冰冷的手", "呼...手很冰...", '2887'],
+			[12, "三相之力", "白银怪物？杀个稀巴烂！", '2889'],
+			[13, "剑大师", "我的剑技很华丽吧", '2891'],
+			[14, "盾大师", "你有什么方法攻击我都有方法防守！", '2893'],
+			[15, "捐血站", "卖血！卖血！有人买吗？", '2895'],
+			[16, "持匙人", "这些锁匙是开哪些门的？", '2897'],
+			[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事...", '2899'],
+			[18, "一代宗师", "我要开班授徒的话有人会来加入吗？", '2901'],
+			[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～", '2903'],
+			[20, "国家大事", "什么事都不比国家大事重要吧！", '2905'],
+			[21, "职业冒险家", "去冒险就是要做足准备！", '2907'],
+			[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的", '2909'],
+			[23, "心灵相通", "我知道你在想什么！", '2911'],
+			[24, "天上之住民", "传说以前的人都是能在空中飞翔的", '2913'],
+			[25, "透视", "嘻嘻...什么都看到了...", '2915'],
+			[26, "小叮当", "你其实是小叮当吧？！", '2917'],
+			[27, "异常状态", "初尝异常状态...感觉不错(嗯)", '2919'],
+			[28, "攻略本", "你一定是看着攻略玩的！", '2921'],
+			[29, "神之防护", "我的防御像神一般！直到我中了一箭...", '2923'],
+			[30, "出门靠朋友", "在家靠父母，出门靠朋友！", '2925'],
+			[31, "投入战斗", "热身差不多完毕了！！", '2927'],
+			[32, "见习剑士", "真想快点试试学到的剑术！", '2929'],
+			[33, "防守入门", "防守？是这样这样的吗？", '2931'],
+			[34, "圣水加护", "感谢圣水的帮助！", '2933'],
+			[35, "圣神的加护", "我简直像受到圣神般的帮助", 'N483', '2935'],
+			[36, "弑神者", "遇神杀神！！谁也阻不到我！", 'N484', '2937'],
+			[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了", '2939'],
+			[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？", '2941'],
+			[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！", '2943'],
+			[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药...", '2945'],
+			[41, "凝神储息", "......暂先时不要影响我......", '2947'],
+			[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈", '2949'],
+			[43, "学有所成", "只学不实践的话还是不太足够吧？", '2951'],
+			[44, "守财奴", "钱要用才是钱！钱！", '2953'],
+		];
+		const defaultList = Array(list.length).fill(0);
 
-	// 统计已完成成就数量
-	function getAchPoint(finish) {
-		let point = 0;
-		for (let i = 0; i < list.length; i++) {
-			// 获得完成情况
-			if (finish[i] > 0) { point++; }
+		// 统计已完成成就数量
+		function getAchPoint(finish) {
+			let point = 0;
+			for (let i = 0; i < list.length; i++) {
+				// 获得完成情况
+				if (finish[i] > 0) { point++; }
+			}
+			return point;
 		}
-		return point;
-	}
 
-	// 重置成就获得情况
-	this.resetFinish = function () {
-		if (core.isReplaying()) return;
-		core.setLocalStorage("finish", defaultList);
-		core.playSound('achievement.mp3');
-		core.drawTip('成就已清空！');
+		// 重置成就获得情况
+		this.resetFinish = function () {
+			if (core.isReplaying()) return;
+			core.setLocalStorage("finish", defaultList);
+			core.playSound('achievement.mp3');
+			core.drawTip('成就已清空！');
 
-	}
+		}
 
-	this.hasAchievement = function (index) {
-		if (core.isReplaying()) return false;
-		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-		return finish[index] > 0;
-	}
+		this.hasAchievement = function (index) {
+			if (core.isReplaying()) return false;
+			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+			return finish[index] > 0;
+		}
 
-	// 获得成就
-	this.getAchievement = function (index, test) {
-		if (core.hasFlag("debug") || core.isReplaying()) return;
-		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-		if (finish[index] > 0 && !test) return; // 成就已完成
-		finish[index] = 1;
-		core.setLocalStorage("finish", finish);
+		// 获得成就
+		this.getAchievement = function (index, test) {
+			if (core.hasFlag("debug") || core.isReplaying()) return;
+			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+			if (finish[index] > 0 && !test) return; // 成就已完成
+			finish[index] = 1;
+			core.setLocalStorage("finish", finish);
 
-		const canvas = "achievementEffect";
-		core.playSound('achievement.mp3');
-		core.createCanvas(canvas, 0, 0, PX, PY, 200);
-		core.setTextAlign(canvas, "center");
-		core.drawWindowSkin("winskin.png", canvas,
-			140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-		core.drawIcon(canvas, 'N454', 126, 80) // to be fixed 换成各自的图标
-		core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
-			"cyan", "24px " + core.status.globalAttribute.font);
-		core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
-			"#FFFFFF", "20px " + core.status.globalAttribute.font);
-		let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
-			delete core.animateFrame.asyncId[fade];
-			clearInterval(fade);
-			core.deleteCanvas(canvas);
-		}, 1000);
-		core.animateFrame.asyncId[fade] = true;
-	};
+			const canvas = "achievementEffect";
+			core.playSound('achievement.mp3');
+			core.createCanvas(canvas, 0, 0, PX, PY, 200);
+			core.setTextAlign(canvas, "center");
+			core.drawWindowSkin("winskin.png", canvas,
+				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+			core.drawImage(canvas, list[index][3], 126, 80) // 换成各自的图标
+			core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
+				"cyan", "24px " + core.status.globalAttribute.font);
+			core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+				"#FFFFFF", "20px " + core.status.globalAttribute.font);
+			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
+				delete core.animateFrame.asyncId[fade];
+				clearInterval(fade);
+				core.deleteCanvas(canvas);
+			}, 1000);
+			core.animateFrame.asyncId[fade] = true;
+		};
 
-	// 绘制成就页面
-	function drawAchievement() {
-		let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-		// 创建和清空画布
-		core.createCanvas("achievement", 0, 0, PX, PY, 130);
-		core.clearMap("achievement");
-		core.drawWindowSkin("winskin.png", "achievement", 0, 0, PX, PY)
-		// 背景
-		core.fillRect("achievement", 0, 0, PX, PY, [0, 0, 0, 0.9]);
-		core.drawLine("achievement", 0, 70, PX, 70, "#BBBBBB", 3);
-		core.drawLine("achievement", 0, 121, PX, 121, "#BBBBBB", 1);
-		core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
-		core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
-		core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
-		core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
-		core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
-		core.setTextAlign("achievement", "center");
-		core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-		core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-		core.fillText("achievement", "完成情况", 377, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-		core.setTextAlign("achievement", "left");
-		core.fillText("achievement", "当前成就完成：" + getAchPoint(finish) + '/20', 234, 401, "#FFFFFF", "18px " + core.status.globalAttribute.font);
-		core.fillText("achievement", "↓", 165, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-		core.fillText("achievement", "↑", 199, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-		// 绘制成就类型
+		// 绘制成就页面
+		function drawAchievement() {
+			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+			// 创建和清空画布
+			core.createCanvas("achievement", 0, 0, PX, PY, 130);
+			core.clearMap("achievement");
+			core.drawWindowSkin("winskin.png", "achievement", 0, 0, PX, PY)
+			// 背景
+			core.fillRect("achievement", 0, 0, PX, PY, [0, 0, 0, 0.9]);
+			core.drawLine("achievement", 0, 70, PX, 70, "#BBBBBB", 3);
+			core.drawLine("achievement", 0, 121, PX, 121, "#BBBBBB", 1);
+			core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
+			core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
+			core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
+			core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
+			core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
+			core.setTextAlign("achievement", "center");
+			core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "完成情况", 377, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
+			core.setTextAlign("achievement", "left");
+			core.fillText("achievement", "当前成就完成：" + getAchPoint(finish) + '/20', 234, 401, "#FFFFFF", "18px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "↓", 165, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "↑", 199, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
+			// 绘制成就类型
 
-		core.fillText("achievement", "成就一览", 180, 43, [255, 255, 255, 1], "22px " + core.status.globalAttribute.font);
-		core.fillText("achievement", "[退出]", 350, 43, [255, 255, 255, 1], "18px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "成就一览", 180, 43, [255, 255, 255, 1], "22px " + core.status.globalAttribute.font);
+			core.fillText("achievement", "[退出]", 350, 43, [255, 255, 255, 1], "18px " + core.status.globalAttribute.font);
+
+			drawDetail(list, finish);
+		}
 
 		// 绘制成就信息
-		function drawDetail(achType) {
+		function drawDetail(achType, finish) {
 			for (let i = first; i < 6 + first; i++) {
 				if (achType[i] == null) break;
 				// 名称
@@ -4646,12 +4633,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 说明
 				if (finish[i] === 0) {
 					let config = {
-							left: 129,
-							top: 52 * (i - first) + 89,
-							maxWidth: 227,
-							color: [200, 200, 200, 0.5],
-							fontSize: 15,
-						},
+						left: 129,
+						top: 52 * (i - first) + 89,
+						maxWidth: 227,
+						color: [200, 200, 200, 0.5],
+						fontSize: 15,
+					},
 						height = core.getTextContentHeight(achType[i][2], config);
 					if (height > 25) {
 						config.top -= 10;
@@ -4659,12 +4646,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.drawTextContent("achievement", achType[i][2], config);
 				} else { // 自动放缩
 					let config = {
-							left: 129,
-							top: 52 * (i - first) + 89,
-							maxWidth: 227,
-							color: "#FFFFFF",
-							fontSize: 15,
-						},
+						left: 129,
+						top: 52 * (i - first) + 89,
+						maxWidth: 227,
+						color: "#FFFFFF",
+						fontSize: 15,
+					},
 						height = core.getTextContentHeight(achType[i][2], config);
 					if (height > 25) {
 						config.top -= 10;
@@ -4674,76 +4661,72 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 成就点
 				core.setTextAlign("achievement", "center");
 				if (finish[i] === 0) {
-					core.fillText("achievement", '-', 377, 52 * (i - first) + 104, [200, 200, 200, 0.6], "18px " + core.status.globalAttribute.font);
+					core.setAlpha("achievement", 0.3);
+					core.drawImage("achievement", achType[i][3] + '.png', 377, 52 * (i - first) + 80, 32, 32);
+					core.setAlpha("achievement", 1);
 				} else {
-					const str = 'clear';
-					const color = 'cyan';
-					core.fillText("achievement", str, 377, 52 * (i - first) + 100, color, "18px " + core.status.globalAttribute.font);
+					core.drawImage("achievement", achType[i][3] + '.png', 377, 52 * (i - first) + 80, 32, 32);
 				}
 			}
 		}
-		drawDetail(list);
-	};
 
-	function drawAchievementMenu() {
-		return new Promise((res) => {
-			function finish() {
-				core.deleteCanvas('achievement');
-				core.unregisterAction('ondown', 'achievementMenuClick');
-				core.unregisterAction('keyDown', 'achievementMenuKey');
-				res();
-			};
-
-			core.registerAction('ondown', 'achievementMenuClick', (x, y, px, py) => {
-				console.log(px + ',' + py);
-				if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-					if (first <= list.length - 7) first++;
-				} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
-					if (first != 0) {
-						first--;
-					}
-				} else {
-					if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
-						finish();
-						return;
-					}
+		function drawAchievementMenu() {
+			return new Promise((res) => {
+				function finish() {
+					core.deleteCanvas('achievement');
+					core.unregisterAction('ondown', 'achievementMenuClick');
+					core.unregisterAction('keyDown', 'achievementMenuKey');
+					res();
 				}
+
+				core.registerAction('ondown', 'achievementMenuClick', (x, y, px, py) => {
+					if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
+						if (first <= list.length - 7) first++;
+					} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
+						if (first != 0) {
+							first--;
+						}
+					} else {
+						if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
+							finish();
+							return;
+						}
+					}
+					drawAchievement();
+				}, 100);
+
+				core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
+					switch (keyCode) {
+						case 38: // Up
+							if (first !== 0) first--;
+							break;
+						case 40: // Down
+							if (first <= list.length - 7) first++;
+							break;
+						case 27: // Esc
+						case 81: // q
+						case 8: // BackSpace
+							finish();
+							return;
+					}
+					drawAchievement();
+				}, 100);
+
 				drawAchievement();
-			}, 100);
+			})
+		}
 
-			core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
-				console.log(keyCode);
-				switch (keyCode) {
-				case 38: // Up
-					if (first !== 0) first--;
-					break;
-				case 40: // Down
-					if (first <= list.length - 7) first++;
-					break;
-				case 27: // Esc
-				case 81: // q
-				case 8: // BackSpace
-					finish();
-					return;
-				}
-				drawAchievement();
-			}, 100);
+		this.openAchievementMenu = async function () {
+			if (core.isReplaying()) return;
+			core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
+			core.lockControl();
+			await drawAchievementMenu();
+			core.setFlag('noOpenMenu', false);
+			core.unlockControl();
+		}
 
-			drawAchievement();
-		})
-	}
-
-	this.openAchievementMenu = async function () {
-		if (core.isReplaying()) return;
-		core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
-		core.lockControl();
-		await drawAchievementMenu();
-		core.setFlag('noOpenMenu', false);
-		core.unlockControl();
-	}
-
-},
-    "回合制战斗": function () {
+	},
+	"回合制战斗": function () {
 
 		// #region 回合制战斗的执行
 
@@ -4760,8 +4743,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			beginListen(battle);
 			drawBattleUI(battle);
 			let frame = 0;
-			core.plugin.registerAnimationInterval('battleIcon',200,()=>{
-				drawBattleIcon(battle,frame++);
+			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
+				drawBattleIcon(battle, frame++);
 			});
 
 			while (true) {
@@ -4790,7 +4773,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				//drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
+				drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
 
 				battle.updateActor();
 				if (battle.status === 'quit') break;
@@ -4798,10 +4781,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (battle.speed !== 'quick') {
 				// 获胜时，绘制底边栏
 				let h = 0;
-				// if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
-				// 	if (h < 40) h += 4;
-				// 	drawBattleBottomBar(battle, h);
-				// });
+				if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
+					if (h < 40) h += 4;
+					drawBattleBottomBar(battle, h);
+				});
 				//等待500ms后擦除画布
 				await new Promise((res) => { setTimeout(res, 500) });
 			}
@@ -5091,6 +5074,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				 * @type {HeroAtkStatus}
 				 */
 				this.atkStatus;
+				if (core.hasFlag('poison')) this.status = 'poison';
 				if (core.hasFlag('weak')) this.status = 'weak';
 			}
 
@@ -5594,7 +5578,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		class Button {
 			/**
-			 * @param {Function} event 
+			 * @param {number} x 
+			 * @param {number} y
+			 * @param {number} w
+			 * @param {number} h
+			 * @param {number} hitX
+			 * @param {number} hitY
+			 * @param {number} hitW
+			 * @param {number} hitH
+			 * @param {Function} event
 			 */
 			constructor(x, y, w, h, hitX, hitY, hitW, hitH, event) {
 				this.x = x;
@@ -5936,10 +5928,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (hero.mana >= hero.manamax) heroManaRatio = 1;
 			core.strokeRoundRect(ctx, tx, ty + 4 * (textFontSize + lineHeight) - 8, 60, 8, 2, 'yellow', 1);
 			core.fillRoundRect(ctx, tx + 1, ty + 4 * (textFontSize + lineHeight) - 7,
-				enemyManaRatio * 58, 6, 2, 'LightGreen ')
+				enemyManaRatio * 58, 6, 2, 'LightGreen ');
 			core.strokeRoundRect(ctx, width - tx, ty + 4 * (textFontSize + lineHeight), 60, 8, 2, 'yellow', 1);
 			core.fillRoundRect(ctx, width - tx + 1, ty + 4 * (textFontSize + lineHeight) + 1,
-				heroManaRatio * 58, 6, 2, 'LightGreen ')
+				heroManaRatio * 58, 6, 2, 'LightGreen ');
 		}
 
 		/** 
@@ -6014,54 +6006,63 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 绘制技能图标
 		 */
 		function drawSkillIcon(battleInfo) {
-			const swordSkill = battleInfo.swordSkill,
-				shieldSkill = battleInfo.shieldSkill,
+			const swordSkill = battleInfo.hero.swordSkill,
+				shieldSkill = battleInfo.hero.shieldSkill,
 				crit = (swordSkill === 'c');
-			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
+			let offset = (core.hasItem('I325') || core.hasItem('I327')) ? 0 : 160;
+			const ctx = core.createCanvas("skillIcon", 40 + offset, 320, 330 - offset, 32, 68);
 			ctx.canvas.style.backgroundColor = "gray";
 			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
 			core.setTextAlign(ctx, "center");
-			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
+			core.strokeRect(ctx, 1, 1, 328 - offset, 30, strokeStyle, 2);
 			const start = 20,
 				interval = 32;
-			core.drawImage(ctx, 'yellowBall.png', start, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 2 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 3 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 4 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 5 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 6 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 7 * interval, 0);
-			core.drawImage(ctx, 'yellowBall.png', start + 8 * interval, 0);
-			if (core.hasItem('I325')) {
-				core.drawIcon(ctx, 'I315', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I319', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I318', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I317', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I316', start + 4 * interval + 5, 6, 20, 20);
-			} else if (core.hasItem('I327')) {
-				core.drawIcon(ctx, 'I339', start + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I321', start + interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I375', start + 2 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I322', start + 3 * interval + 5, 6, 20, 20);
-				core.drawIcon(ctx, 'I320', start + 4 * interval + 5, 6, 20, 20);
+			if (core.hasItem('I325') || core.hasItem('I327')) {
+				for (let i = 0; i <= 8; i++) {
+					core.drawImage(ctx, 'yellowBall.png', start + i * interval, 0);
+				}
 			}
-			core.drawImage(ctx, 'pong.png', start + 7 * interval + 3, 2, 28, 28);
-			core.drawImage(ctx, 'iconBreathe.png', start + 8 * interval + 4, 4, 24, 24);
+			else {
+				for (let i = 0; i <= 3; i++) {
+					core.drawImage(ctx, 'yellowBall.png', start + i * interval, 0);
+				}
+			}
+			if (core.hasItem('I325')) {
+				const list = ['I315', 'I319', 'I318', 'I317', 'I316'];
+				for (let i = 0; i <= 4; i++) {
+					core.drawIcon(ctx, list[i], start + i * interval + 5, 6, 20, 20);
+				}
+			} else if (core.hasItem('I327')) {
+				const list = ['I339', 'I321', 'I375', 'I322', 'I320'];
+				for (let i = 0; i <= 4; i++) {
+					core.drawIcon(ctx, list[i], start + i * interval + 5, 6, 20, 20);
+				}
+			}
+			let xList = [start, start + interval,
+				start + 2 * interval, start + 3 * interval,];
+			if (core.hasItem('I325') || core.hasItem('I327')) {
+				xList.forEach((v) => { v += 5 * interval });
+			}
+
 			if (swordSkill && swordSkill !== 'c')
-				core.fillText(ctx, 'OK', start + 5 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconSword.png', start + 5 * interval + 6, 6, 20, 20);
+				core.fillText(ctx, 'OK', xList[0] + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconSword.png', xList[0] + 6, 6, 20, 20);
+
 			if (shieldSkill)
-				core.fillText(ctx, 'OK', start + 6 * interval + 16, 21, 'green', 'Bold 14px Arial');
-			else core.drawImage(ctx, 'iconShield.png', start + 6 * interval + 6, 6, 20, 20);
-			if (crit) core.fillText(ctx, 'OK', start + 7 * interval + 14, 21, 'green', 'Bold 14px Arial');
-			else core.fillText(ctx, 'C', start + 7 * interval + 16, 21, 'red', 'Bold 14px Arial');
-			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), start + 8 * interval + 16, 19, 'blue', 'Bold 10px Arial');
+				core.fillText(ctx, 'OK', xList[1] + 16, 21, 'green', 'Bold 14px Arial');
+			else core.drawImage(ctx, 'iconShield.png', xList[1] + 6, 6, 20, 20);
+
+			core.drawImage(ctx, 'pong.png', xList[2] + 3, 2, 28, 28);
+			if (crit) core.fillText(ctx, 'OK', xList[2] + 14, 21, 'green', 'Bold 14px Arial');
+			else core.fillText(ctx, 'C', xList[2] + 16, 21, 'red', 'Bold 14px Arial');
+
+			core.drawImage(ctx, 'iconBreathe.png', xList[3] + 4, 4, 24, 24);
+			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), xList[3] + 16, 19, 'blue', 'Bold 10px Arial');
 		}
 
 		/**
 		 * 绘制底边栏
-		 * @param {Battle} battleInfo 
+		 * @param {Battle} battleInfo
 		 * @param {number} h 底边栏的宽度
 		 */
 		function drawBattleBottomBar(battleInfo, h) {
@@ -6081,8 +6082,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.fillText(ctx, "金币：", 100, 26, "white", "20px hkbdt");
 				core.fillText(ctx, "经验值：", 200, 26, "white", "20px hkbdt");
 				core.setTextAlign(ctx, "left");
-				core.fillText(ctx, battleInfo.enemy.money.toString(), 150, 26, "gold", "20px Verdana");
-				core.fillText(ctx, battleInfo.enemy.exp.toString(), 270, 26, "cyan", "20px Verdana");
+				core.fillText(ctx, battleInfo.enemy.data.money.toString(), 150, 26, "gold", "20px Verdana");
+				core.fillText(ctx, battleInfo.enemy.data.exp.toString(), 270, 26, "cyan", "20px Verdana");
 			}
 		}
 
@@ -6121,7 +6122,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex, ey);
 					let damageH = atkStatusH.damage;
-					if (atkStatusH.crit) damageH+='crit';
+					if (atkStatusH.crit) damageH += 'crit';
 					core.plugin.addScrollingText(damageH, {
 						'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
 						'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
@@ -6200,7 +6201,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {boolean} alignWindow 
 		 * @param {Function} callback 
 		 */
-		this.drawAnimateByPixel = function(name, x, y, alignWindow, callback) {
+		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
 			name = core.getMappedName(name);
 
 			// 正在播放录像：不显示动画
@@ -6290,42 +6291,42 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		*/
 		function generateBtnList(battle) {
 			return new Map([
-				['btn1', new Button(60, 320, 32, 32, 60, 320, 32, 32, () => {
+				['btn1', new Button(20, 320, 32, 32, 52, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('b');
 					else if (core.hasItem('I327')) battle.execUserAction('M');
 				})],
-				['btn2', new Button(92, 320, 32, 32, 92, 322, 32, 32, () => {
+				['btn2', new Button(52, 320, 32, 32, 84, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('s');
 					else if (core.hasItem('I327')) battle.execUserAction('C');
 				}),],
-				['btn3', new Button(124, 320, 32, 32, 124, 320, 32, 32, () => {
+				['btn3', new Button(84, 320, 32, 32, 116, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('d');
 					else if (core.hasItem('I327')) battle.execUserAction('R');
 				}),],
-				['btn4', new Button(156, 320, 32, 32, 156, 320, 32, 32, () => {
+				['btn4', new Button(116, 320, 32, 32, 148, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('h');
 					else if (core.hasItem('I327')) battle.execUserAction('F');
 				}),],
-				['btn5', new Button(188, 320, 32, 32, 188, 320, 32, 32, () => {
+				['btn5', new Button(148, 320, 32, 32, 180, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('k');
 					else if (core.hasItem('I327')) battle.execUserAction('E');
 				}),],
-				['sword', new Button(220, 320, 32, 32, 220, 320, 32, 32, () => {
+				['sword', new Button(180, 320, 32, 32, 212, 320, 32, 32, () => {
 					if (!battle.hero.swordEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备剑技');
 					} else { battle.execUserAction(equipList[battle.hero.sword]); }
 				}),],
-				['shield', new Button(252, 320, 32, 32, 252, 320, 32, 32, () => {
+				['shield', new Button(212, 320, 32, 32, 244, 320, 32, 32, () => {
 					if (!battle.hero.shieldEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备盾技');
 					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
 				}),],
-				['crit', new Button(284, 320, 32, 32, 284, 320, 32, 32, () => {
+				['crit', new Button(244, 320, 32, 32, 276, 320, 32, 32, () => {
 					battle.execUserAction('c');
 				}),],
-				['breathe', new Button(316, 320, 32, 32, 316, 320, 32, 32, () => {
+				['breathe', new Button(276, 320, 32, 32, 308, 320, 32, 32, () => {
 					battle.execUserAction('v');
 				}),],
 			]);
@@ -6342,13 +6343,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function listenClick(x, y, px, py, battle) {
 			const list = battle.btnList;
 			list.forEach((ele) => {
-				if (x >= ele.hitboxX && x <= ele.hitboxX + ele.hitboxW &&
-					y >= ele.hitboxY && y <= ele.hitboxY + ele.hitboxH
+				console.log(x, y, px, py);
+				if (px >= ele.hitboxX && px <= ele.hitboxX + ele.hitboxW &&
+					py >= ele.hitboxY && py <= ele.hitboxY + ele.hitboxH
 				) {
 					ele.event(x, y, px, py);
 				}
 			});
-			// drawSkillIcon(battle); //每次点击重绘所有按钮
+			drawSkillIcon(battle); //每次点击重绘所有按钮
 		}
 
 		/**
@@ -6547,5 +6549,45 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		// #endregion
+	},
+	"动画": function () {
+		// 在此增加新插件
+
+		let frame = 1;
+		const ctx = core.dom.statusCanvasCtx;
+		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
+			const hero = core.status.hero;
+			if (!hero) return;
+			const permana = hero.manamax / 6;
+			const heroManaRemainder = (hero.mana) % (permana);
+			const fireCount = hero.mana - (hero.mana) % (permana) / permana,
+				image = 'tinyFire' + (frame).toString() + '.png';
+			if (!core.domStyle.isVertical) {
+				ctx.clearRect(55, 178, 60, 15);
+				if (fireCount >= 1)
+					core.drawImage(ctx, image, 53, 177);
+				if (fireCount >= 2)
+					core.drawImage(ctx, image, 65, 177);
+				if (fireCount >= 3)
+					core.drawImage(ctx, image, 77, 177);
+				if (fireCount >= 4)
+					core.drawImage(ctx, image, 89, 177);
+				if (fireCount >= 5)
+					core.drawImage(ctx, image, 101, 177);
+			} else {
+				ctx.clearRect(333, 15, 65, 13);
+				if (fireCount >= 1)
+					core.drawImage(ctx, image, 333, 13);
+				if (fireCount >= 2)
+					core.drawImage(ctx, image, 345, 13);
+				if (fireCount >= 3)
+					core.drawImage(ctx, image, 357, 13);
+				if (fireCount >= 4)
+					core.drawImage(ctx, image, 369, 13);
+				if (fireCount >= 5)
+					core.drawImage(ctx, image, 381, 13);
+			}
+			if (++frame > 3) frame = 1;
+		})
 	}
 }
