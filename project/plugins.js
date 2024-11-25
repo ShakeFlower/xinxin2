@@ -2644,6 +2644,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	"动画": function () {
 		// 在此增加新插件
 
+		this.dice = function (x) {
+			if (!Number.isInteger(x) || x < 0) return 0;
+			const rNumber = Math.random();
+			for (let i = 0; i <= x; i++) {
+				if (rNumber >= i / (x + 1) && rNumber <= (i + 1) / (x + 1)) {
+					return i;
+				}
+			}
+			return 0;
+		}
+
 		/**
 		 * 注册一个每interval帧执行一次的动画
 		 * @param {string} name 
@@ -5123,12 +5134,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else if (value > this.manamax) this._mana = this.manamax;
 				else this._mana = value;
 			};
-			get fatigue(){
+			get fatigue() {
 				return this._fatigue;
 			}
-			set fatigue(value){
+			set fatigue(value) {
 				this.fatigue = value;
-				if (this instanceof Hero && value>80) core.plugin.getAchievement(39);
+				if (this instanceof Hero && value > 80) core.plugin.getAchievement(39);
 			}
 			constructor(hp, atk, def, manamax, mana, weakPoint) {
 				/** 生命值*/
@@ -6699,5 +6710,158 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 	},
+	"弹幕插件": function () {
+		// 在此增加新插件
+		if (core.isReplaying()) return;
 
+		axios
+			.post('/backend/tower/barrage.php', {})
+			.then(function (res) { })
+			.catch(function () { })
+
+		const towerName = "xinxin2";
+		const request = axios.create({
+			baseURL: 'https://h5mota.com',
+			timeout: 1000,
+			headers: {
+				"Content-Type": "application/x-www-form-urlencoded",
+				"Access-Control-Allow-Origin": "*",
+			}
+		})
+
+		//tags格式：[楼层名,x,y]
+
+		function reason(message) {
+			if (typeof (message) === 'string') return message;
+			else return '';
+		}
+
+		this.postComment = function (comment, tags) {
+			if (core.isReplaying()) return;
+			if (tags == null || tags == undefined) { tags = []; }
+			var form = new FormData();
+			form.append('type', 2);
+			form.append('towername', towerName);
+			form.append('comment', comment);
+			form.append('tags', tags);
+
+			request({
+				method: 'post',
+				url: '/backend/tower/barrage.php',
+				data: form
+			})
+				.then(res => {
+					if (res?.data?.code === 0) {
+						core.drawTip('提交成功！')
+						core.playSound('item.mp3');
+					} else {
+						core.drawTip('提交失败！' + reason(res?.data?.message));
+						core.playSound('error.mp3');
+					}
+				})
+				.catch(err => {
+					core.drawTip('提交失败！' + reason(err?.message));
+					core.playSound('error.mp3');
+				})
+		}
+
+		this.getComment = function () {
+			if (core.isReplaying()) return;
+			var form = new FormData();
+			form.append('type', 1);
+			form.append('towername', towerName);
+
+			request({
+				method: 'post',
+				url: '/backend/tower/barrage.php',
+				data: form
+			})
+				.then(res => {
+					console.log(res);
+					core.drawTip('接收成功！')
+					core.playSound('item.mp3');
+					let commentCollection = {};
+					const commentList = res?.data?.list;
+					for (let i = 0, l = commentList.length; i <= l - 1; i++) {
+						if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
+						const commentTags = commentList[i].tags;
+						const cFloorId = commentTags.split(',')[0],
+							cX = parseInt(commentTags.split(',')[1]),
+							cY = parseInt(commentTags.split(',')[2]);
+						if (0 <= cX && cX <= core._WIDTH_ - 1 && 0 <= cY && cY <= core._HEIGHT_ - 1 && core.floorIds.includes(cFloorId)) {
+							if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
+							const str = cX + ',' + cY;
+							if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
+							commentCollection[cFloorId][str].push(commentList[i]?.comment);
+						}
+					}
+					core.setFlag('commentCollection', commentCollection);
+				})
+				.catch(err => {
+					console.log(err);
+					core.drawTip('接收失败' + reason(err?.message));
+					core.playSound('error.mp3');
+				})
+		}
+
+		this.drawCommentSign = function () {
+			if (!core.getFlag('comment') || core.isReplaying()) return;
+			let commentCollection = core.getFlag('commentCollection', {}),
+				floorId = core.status.floorId;
+			core.createCanvas('sign', 0, 0, core._PX_, core._PY_, 120);
+			core.setOpacity('sign', 0.6);
+			if (commentCollection.hasOwnProperty(floorId)) {
+				for (let pos in commentCollection[floorId]) {
+					if (commentCollection[floorId][pos].length > 0) {
+						for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
+							if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
+								const x = pos.split(',')[0],
+									y = pos.split(',')[1];
+								core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		this.clearCommentSign = function () {
+			core.deleteCanvas('sign');
+		}
+
+		function pickComment(commentArr, showNum = 5) {
+			let showList = [];
+			if (commentArr.length <= showNum) { showList = commentArr; } else {
+				for (let i = 0; i <= showNum - 1; i++) {
+					const l = commentArr.length,
+						n = core.plugin.dice(l - 1);
+					showList.push(commentArr[n]);
+					commentArr.splice(n, 1);
+				}
+			}
+			return showList;
+		}
+
+		function drawComment(commentArr) {
+			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
+				core.events.popStr(commentArr[i], 'white', core._PX_ + 20 * Math.random(),
+					core.plugin.dice(i + 1) * core._PY_ / (l + 1) + 40 * Math.random(), -2 + Math.random());
+			}
+		}
+
+		this.showComment = function (x, y) {
+			if (!core.getFlag('comment') || core.isReplaying()) return;
+			const commentCollection = core.getFlag('commentCollection', {});
+			const floorId = core.status.floorId,
+				str = x + ',' + y;
+			if (commentCollection.hasOwnProperty(floorId) &&
+				commentCollection[floorId].hasOwnProperty(str)) {
+				let commentArr = commentCollection[floorId][str].concat();
+				const showNum = 5;
+				const commentArrPicked = pickComment(commentArr, showNum);
+				drawComment(commentArrPicked);
+			}
+		}
+	}
 }
