@@ -5058,7 +5058,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				id = enemy.id;
 
 			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
-			if (hero.smartCast) core.plugin.getAchievement(17);
+			if (hero.smartCast) core.plugin.getAchievement(38);
 			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
 
 			const blockList = {
@@ -5109,6 +5109,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		};
 		class ActorBase {
 			_mana;
+			_fatigue;
 			/** 将要被冻结的回合数*/
 			freeze = 0;
 			/** 状态，分为'normal''poisoned','weak'*/
@@ -5122,6 +5123,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else if (value > this.manamax) this._mana = this.manamax;
 				else this._mana = value;
 			};
+			get fatigue(){
+				return this._fatigue;
+			}
+			set fatigue(value){
+				this.fatigue = value;
+				if (this instanceof Hero && value>80) core.plugin.getAchievement(39);
+			}
 			constructor(hp, atk, def, manamax, mana, weakPoint) {
 				/** 生命值*/
 				this.hp = hp;

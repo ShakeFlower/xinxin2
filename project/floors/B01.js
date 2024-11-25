@@ -79,7 +79,7 @@ main.floors.B01=
             },
             {
                 "type": "function",
-                "function": "function(){\ncore.plugin.getAchievement(31);\n}"
+                "function": "function(){\ncore.plugin.getAchievement(36);\n}"
             }
         ]
     },

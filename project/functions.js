@@ -561,99 +561,99 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 获得一个道具后触发的事件
 	// itemId：获得的道具ID；x和y是该道具所在的坐标
 	// isGentleClick：是否是轻按触发的
-	if (itemId.endsWith('Potion') && core.material.items[itemId].cls == 'items')
-		core.playSound('回血');
-	else
-		core.playSound('获得道具');
-	core.autoGetItem();
-	var todo = [];
-	// 检查该点的获得道具后事件。
-	if (core.status.floorId == null) return;
-	var event = core.floors[core.status.floorId].afterGetItem[x + "," + y];
-	if (event && (event instanceof Array || !isGentleClick || !event.disableOnGentleClick)) {
-		core.unshift(todo, event);
-	}
+			if (itemId.endsWith('Potion') && core.material.items[itemId].cls == 'items')
+				core.playSound('回血');
+			else
+				core.playSound('获得道具');
+			core.autoGetItem();
+			var todo = [];
+			// 检查该点的获得道具后事件。
+			if (core.status.floorId == null) return;
+			var event = core.floors[core.status.floorId].afterGetItem[x + "," + y];
+			if (event && (event instanceof Array || !isGentleClick || !event.disableOnGentleClick)) {
+				core.unshift(todo, event);
+			}
 
-	if (todo.length > 0) core.insertAction(todo, x, y);
-	switch (itemId) {
-	case 'I328':
-		core.plugin.getAchievement(1);
-		break;
-	case 'redPotion':
-		if (hero.hp < 300) core.plugin.getAchievement(4);
-		break;
-	case 'bluePotion':
-		if (hero.hp < 300) core.plugin.getAchievement(4);
-		break;
-	case 'I315':
-	case 'I316':
-	case 'I317':
-	case 'I318':
-	case 'I319':
-		if (flags.atkm == 10) core.plugin.getAchievement(32);
-		else if (flags.atkm == 34) core.plugin.getAchievement(13);
-		break;
-	case 'I320':
-	case 'I321':
-	case 'I322':
-	case 'I339':
-	case 'I375':
-		if (flags.defm == 40) core.plugin.getAchievement(33);
-		else if (flags.defm == 16) core.plugin.getAchievement(14);
-		break;
-	case 'I451':
-		core.plugin.getAchievement(23);
-		break;
-	case 'moneyPocket':
-		core.plugin.getAchievement(21);
-		break;
-	case 'skill1':
-	case 'I307':
-	case 'I309':
-		if (flags.sxzl >= 2) core.plugin.getAchievement(12);
-		break;
-	case 'pickaxe':
-		core.plugin.getAchievement(22);
-		break;
-	case 'shield3':
-	case 'shield4':
-	case 'shield5':
-		core.plugin.getAchievement(18);
-		break;
-	case 'iceCube':
-		core.plugin.getAchievement(11);
-		break;
-	case 'snow':
-		core.plugin.getAchievement(6);
-		break;
-	case 'I398':
-	case 'I400':
-	case 'I403':
-	case 'I407':
-		if (core.itemCount('I398') + core.itemCount('I400') + core.itemCount('I403') + core.itemCount('I407') > 90) core.plugin.getAchievement(1);
-		break;
-	case 'knife':
-		core.plugin.getAchievement(10);
-		break;
-	case 'redKey':
-	case 'bigKey':
-		if (core.itemCount('redKey') >= 16) core.plugin.getAchievement(25);
-		break;
-	case 'icePickaxe':
-		core.plugin.getAchievement(19);
-		break;
-	case 'greenKey':
-		if (core.itemCount('greenKey') >= 16) core.plugin.getAchievement(26);
-		break;
-	case 'cross':
-		if (hero.mdef >= 265) core.plugin.getAchievement(29);
-		break;
-	case 'superPotion':
-		if (core.plugin.hasAchievement(34)) core.plugin.getAchievement(35);
-		else core.plugin.getAchievement(34);
-		break;
-	}
-},
+			if (todo.length > 0) core.insertAction(todo, x, y);
+			switch (itemId) {
+				case 'I328':
+					core.plugin.getAchievement(0); //成就：幻之虹币
+					break;
+				case 'redPotion':
+					if (hero.hp < 300) core.plugin.getAchievement(4);
+					break;
+				case 'bluePotion':
+					if (hero.hp < 300) core.plugin.getAchievement(4);
+					break;
+				case 'I315':
+				case 'I316':
+				case 'I317':
+				case 'I318':
+				case 'I319':
+					if (flags.atkm === 10) core.plugin.getAchievement(32);
+					else if (flags.atkm === 34) core.plugin.getAchievement(13);
+					break;
+				case 'I320':
+				case 'I321':
+				case 'I322':
+				case 'I339':
+				case 'I375':
+					if (flags.defm === 40) core.plugin.getAchievement(33);
+					else if (flags.defm === 16) core.plugin.getAchievement(14);
+					break;
+				case 'I451':
+					core.plugin.getAchievement(23);
+					break;
+				case 'moneyPocket':
+					core.plugin.getAchievement(21);
+					break;
+				case 'skill1':
+				case 'I307':
+				case 'I309':
+					if (flags.sxzl >= 2) core.plugin.getAchievement(12);
+					break;
+				case 'pickaxe':
+					core.plugin.getAchievement(22);
+					break;
+				case 'shield3':
+				case 'shield4':
+				case 'shield5':
+					core.plugin.getAchievement(7);
+					break;
+				case 'iceCube':
+					core.plugin.getAchievement(11);
+					break;
+				case 'snow':
+					core.plugin.getAchievement(6);
+					break;
+				case 'I398':
+				case 'I400':
+				case 'I403':
+				case 'I407': // 成就：白银狙击手 持有的白银钱币超过90枚
+					if (core.itemCount('I398') + core.itemCount('I400') + core.itemCount('I403') + core.itemCount('I407') > 90) core.plugin.getAchievement(1);
+					break;
+				case 'knife':
+					core.plugin.getAchievement(10);
+					break;
+				case 'redKey':
+				case 'bigKey':
+					if (core.itemCount('redKey') >= 10) core.plugin.getAchievement(16);
+					break;
+				case 'icePickaxe':
+					core.plugin.getAchievement(19);
+					break;
+				case 'greenKey':
+					if (core.itemCount('greenKey') >= 16) core.plugin.getAchievement(26);
+					break;
+				case 'cross':
+					if (hero.mdef >= 265) core.plugin.getAchievement(29);
+					break;
+				case 'superPotion':
+					if (core.plugin.hasAchievement(34)) core.plugin.getAchievement(35);
+					else core.plugin.getAchievement(34);
+					break;
+			}
+		},
         "afterPushBox": function () {
 	// 推箱子后的事件
 	if (core.searchBlock('box').length == 0) {
@@ -2023,6 +2023,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	core.drawHero();
 	// 检查中毒状态的扣血和死亡
 	if (core.hasFlag('poison')) {
+		core.addFlag('poisonedStepCount', 1);
+		if (core.getFlag('poisonedStepCount', 0) > 20) core.plugin.getAchievement(40);
 		core.status.hero.statistics.poisonDamage += core.values.poisonDamage;
 		core.status.hero.hp -= core.values.poisonDamage;
 		if (core.status.hero.hp <= 0) {
@@ -2033,6 +2035,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		} else {
 			core.updateStatusBar();
 		}
+	} else {
+		core.setFlag('poisonedStepCount', 0);
 	}
 
 	// 从v2.7开始，每一步行走不会再刷新状态栏。
