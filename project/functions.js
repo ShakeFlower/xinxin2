@@ -2185,24 +2185,24 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		// 横屏模式
 
 		core.drawIcon(ctx, 'N449', 20, 30)
-		fill("状态", 60, 40, 'white', '14px Arial');
-		fill(status, 68, 68, 'white', '14px Arial');
+		fill("状态", 60, 40, 'white', '14px hkbdt');
+		fill(status, 68, 68, 'white', '14px hkbdt');
 		core.strokeRoundRect(ctx, 60, 50, 45, 25, 2, '#00a8f3');
 
 		const nameLeftMargin = 20,
 			valueLeftMargin = 60,
 			itemSideLength = 16;
-		fill("等级", nameLeftMargin, 95, 'white', '14px Arial');
-		fill(hero.lv, valueLeftMargin, 95, null, '14px ubuntu');
-		fill("体力", nameLeftMargin, 115, null, '14px Arial');
+		fill("等级", nameLeftMargin, 95, 'white', '14px hkbdt');
+		fill(hero.lv, valueLeftMargin, 95, null, '14px Arial');
+		fill("体力", nameLeftMargin, 115, null, '14px hkbdt');
 		fill(core.formatBigNumber(core.getRealStatus('hp')), valueLeftMargin, 115, null, '14px ubuntu');
-		fill("攻击", nameLeftMargin, 135, null, '14px Arial');
+		fill("攻击", nameLeftMargin, 135, null, '14px hkbdt');
 		fill(core.formatBigNumber(core.getRealStatus('atk')), valueLeftMargin, 135, null, '14px ubuntu');
-		fill("防御", nameLeftMargin, 155, null, '14px Arial');
+		fill("防御", nameLeftMargin, 155, null, '14px hkbdt');
 		fill(core.formatBigNumber(core.getRealStatus('def')), valueLeftMargin, 155, null, '14px ubuntu');
-		fill("经验", nameLeftMargin, 175, null, '14px Arial');
+		fill("经验", nameLeftMargin, 175, null, '14px hkbdt');
 		fill(core.formatBigNumber(hero.exp), valueLeftMargin, 175, null, '14px ubuntu');
-		fill("气息", nameLeftMargin, 195, null, '14px Arial');
+		fill("气息", nameLeftMargin, 195, null, '14px hkbdt');
 
 		core.drawIcon(ctx, 'yellowKey', 15, 205, itemSideLength, itemSideLength);
 		core.drawIcon(ctx, 'redKey', 15, 225, itemSideLength, itemSideLength);
@@ -2221,38 +2221,38 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 		if (hero.mdef > 0) {
 			core.drawIcon(ctx, 'princess', 12, 248);
-			fill("生命", 47, 260, 'white', '14px Arial');
-			fill("魔防", 47, 280, null, '14px Arial');
-			fill(core.formatBigNumber(hero.hpmax), 87, 260, null, '14px');
-			fill(core.formatBigNumber(hero.mdef), 87, 280, null, '14px');
+			fill("生命", 47, 260, 'white', '14px hkbdt');
+			fill("魔防", 47, 280, null, '14px hkbdt');
+			fill(core.formatBigNumber(hero.hpmax), 87, 260, null, '14px Arial');
+			fill(core.formatBigNumber(hero.mdef), 87, 280, null, '14px Arial');
 		}
 	} else {
 		// 竖屏模式
 		core.drawIcon(ctx, 'N449', 20, 15);
-		fill("状态", 60, 26, 'white', '14px Arial');
+		fill("状态", 60, 26, 'white', '14px hkbdt');
 		core.strokeRoundRect(ctx, 100, 10, 45, 25, 2, '#00a8f3');
-		fill(status, 108, 26, 'white', '14px Arial');
+		fill(status, 108, 26, 'white', '14px hkbdt');
 
-		fill("等级", 150, 26, 'white', '14px Arial');
-		fill(hero.lv, 190, 26, null, '14px ubuntu');
-		fill("体力", 240, 26, null, '14px Arial');
-		fill(core.formatBigNumber(core.getRealStatus('hp')), 285, 26, null, '14px ubuntu');
-		fill("攻击", 60, 52, null, '14px Arial');
-		fill(core.formatBigNumber(core.getRealStatus('atk')), 110, 52, null, '14px ubuntu');
-		fill("防御", 150, 52, null, '14px Arial');
-		fill(core.formatBigNumber(core.getRealStatus('def')), 190, 52, null, '14px ubuntu');
-		fill("经验", 240, 52, null, '14px Arial');
-		fill(core.formatBigNumber(hero.exp), 285, 52, null, '14px ubuntu');
+		fill("等级", 150, 26, 'white', '14px hkbdt');
+		fill(hero.lv, 190, 26, null, '14px Arial');
+		fill("体力", 240, 26, null, '14px hkbdt');
+		fill(core.formatBigNumber(core.getRealStatus('hp')), 285, 26, null, '14px Arial');
+		fill("攻击", 60, 52, null, '14px hkbdt');
+		fill(core.formatBigNumber(core.getRealStatus('atk')), 110, 52, null, '14px Arial');
+		fill("防御", 150, 52, null, '14px hkbdt');
+		fill(core.formatBigNumber(core.getRealStatus('def')), 190, 52, null, '14px Arial');
+		fill("经验", 240, 52, null, '14px hkbdt');
+		fill(core.formatBigNumber(hero.exp), 285, 52, null, '14px Arial');
 
 		core.strokeRoundRect(ctx, 336, 33, 60, 8, 2, 'yellow', 1);
 		core.fillRoundRect(ctx, 337, 34, heroManaRatio * 58, 6, 2, 'LightGreen');
 
 		if (hero.mdef > 0) {
 			core.drawIcon(ctx, 'princess', 275, 60);
-			fill("体力", 320, 70, null, '14px Arial');
-			fill(core.formatBigNumber(hero.hpmax), 360, 70, null, '14px ubuntu');
-			fill("魔防", 320, 90, null, '14px Arial');
-			fill(core.formatBigNumber(hero.mdef), 360, 90, null, '14px ubuntu');
+			fill("体力", 320, 70, null, '14px hkbdt');
+			fill(core.formatBigNumber(hero.hpmax), 360, 70, null, '14px Arial');
+			fill("魔防", 320, 90, null, '14px hkbdt');
+			fill(core.formatBigNumber(hero.mdef), 360, 90, null, '14px Arial');
 		}
 
 		core.drawIcon(ctx, "yellowKey", 33, 65, 24, 24);

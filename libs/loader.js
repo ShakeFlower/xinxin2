@@ -42,6 +42,7 @@ loader.prototype._load_sync = function (callback) {
             })
         })
     });
+    this._loadFonts();
 }
 
 loader.prototype._load_async = function (callback) {
@@ -88,9 +89,31 @@ loader.prototype._load_async = function (callback) {
     this._loadExtraImages_async(_makeOnProgress('images'), _makeOnFinished('images'));
     this._loadAutotiles_async(_makeOnProgress('autotiles'), _makeOnFinished('autotiles'));
     this._loadTilesets_async(_makeOnProgress('tilesets'), _makeOnFinished('tilesets'));
+    this._loadFonts();
 }
 
 // ----- 加载资源文件 ------ //
+
+// 加载字体文件
+loader.prototype._loadFonts = async function () {
+    try {
+        const fontFileList = [new FontFace(
+            "hkbdt",
+            "url(project/fonts/hkbdt.ttf)",
+        ), new FontFace(
+            "Arial",
+            "url(project/fonts/Arial.ttf)"
+        )];
+        for (let i = 0, l = fontFileList.length; i < l; i++) {
+            const fontFile = fontFileList[i];
+            await fontFile.load();
+            document.fonts.add(fontFile);
+        }
+    }
+    catch (error) {
+        console.log(error + ",load fonts failed!")
+    }
+}
 
 loader.prototype._loadMaterials_sync = function (callback) {
     this._setStartLoadTipText("正在加载资源文件...");
