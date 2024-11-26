@@ -6378,6 +6378,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
 		}
 
+		const offsetList = {
+			'hero':{},
+			'princess':{},
+			'enemy':{},
+			// to be tested?
+		}
+
 		/**
 		 * 解析当前atkStatus信息，播放动画
 		 * @param {Battle} battle 
