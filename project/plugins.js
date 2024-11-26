@@ -2715,12 +2715,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		if (!enable) return;
 
 		////// 每移动一格后执行的事件 //////
-		/*
-		control.prototype.moveOneStep = function (callback) {
-			if (core.getBgNumber() != 6 || core.hasEquip('I932')) core.autoGetItem();
-			return this.controldata.moveOneStep(callback);
-		}
-		*/
 
 		function bfsFlood(sx, sy, blockfn) {
 			var canMoveArray = core.generateMovableArray();
@@ -4837,11 +4831,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				tempName2 = 'temp2_' + i;
 			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
 			const tempCanvas = core.dymCanvas[tempName1];
-			core.drawImage(tempCanvas, 'tinyFire' + (i).toString + '.png', 0, 0);
+			core.drawImage(tempName1, 'tinyFire' + (i+1).toString() + '.png', 0, 0);
 			const fire = tempCanvas.getImageData(0, 0, w, h);
 			core.deleteCanvas(tempName1);
 			const darkFire = darkFireFilter(fire);
-			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 200);
 			const tempCanvas2 = core.dymCanvas[tempName2];
 			tempCanvas2.putImageData(darkFire, 0, 0);
 			darkFireCanvasList[i] = tempCanvas2;
@@ -4878,60 +4872,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} index 绘制第几张火焰的图
 		 * @param {number} x 
 		 * @param {number} y
-		 * @param {boolean} dark 是否绘制黑色火焰
+		 * @param {boolean} light 是否绘制亮色火焰
 		 */
-		function drawFire(ctx, index, x, y, dark) {
-			if (dark) {
+		function drawFire(ctx, index, x, y, light) {
+			if (!light) {
 				const darkFire = darkFireCanvasList[index];
-				if (!darkFire || !(darkFire.canvas instanceof HTMLCanvasElement)) darkFireInit(index);
-				core.drawImage(ctx, darkFire.canvas, x, y);
+				if (!darkFire) darkFireInit(index);
+				core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
 			}
 			else
 				core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
 		}
 
-		let frame = 0;
-
 		let manaCache = 0,
 			perManaCache = 40;
 
-		if (false)
-		{
-			function darkFireFilter(imageData) {
-				const data = imageData.data,
-					w = imageData.width,
-					h = imageData.height;
-				const darkImageData = new ImageData(w, h),
-					darkData = darkImageData.data,
-					l = data.length;
-				for (let i = 0; i < l; i += 4) {
-					darkData[i] = data[i] - 130;
-				}
-				for (let i = 1; i < l; i += 4) {
-					darkData[i] = data[i] - 177;
-				}
-				for (let i = 2; i < l; i += 4) {
-					darkData[i] = data[i] - 255;
-				}
-				for (let i = 3; i < l; i += 4) {
-					darkData[i] = Math.ceil(0.5 * data[i]);
-				}
-				return darkImageData;
-			}
-			const ctx = core.dom.statusCanvasCtx;
-			core.drawImage(ctx, 'tinyFire1.png', 333, 13);
-			core.drawImage(ctx, 'tinyFire1.png', 345, 13);
-			core.plugin.createCanvasWithWidth('temp', 0, 0, 15, 18, 0);
-			const tempCanvas = core.dymCanvas['temp'];
-			core.drawImage('temp', 'tinyFire1.png',0, 0);
-			const fire1 = tempCanvas.getImageData(0, 0, 15, 18);
-			const darkFire1 = darkFireFilter(fire1);
-			core.plugin.createCanvasWithWidth('temp2', 0, 0, 15, 18, 0);
-			const tempCanvas2 = core.dymCanvas['temp2'];
-			tempCanvas2.putImageData(darkFire1, 0, 0);
-			core.drawImage(ctx, tempCanvas2.canvas, 357, 13);
-		}
-
+		let frame = 0;
 		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
 			const hero = core.status.hero;
 			let mana, permana;
@@ -4967,7 +4923,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * 
-		 * @param {*} hero 
+		 * @param {Hero} hero 
 		 * @param {string|CanvasRenderingContext2D} ctx 
 		 * @param {Array<number>} posList 
 		 * @param {number} frame 
@@ -4985,12 +4941,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
 			drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
 			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
-
 		}
 	},
 	"回合制战斗": function () {
 
-		// #region 回合制战斗的执行
+		// #region 回合制战斗的执行 **************************************************
 
 		const equipList = {
 			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
@@ -5004,9 +4959,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			beginListen(battle);
 			drawBattleUI(battle);
-			let frame = 0;
+			let count = 0;
 			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
-				drawBattleIcon(battle, frame++);
+				drawBattleIcon(battle, count++);
 			});
 
 			while (true) {
@@ -5193,7 +5148,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		// #region 回合制战斗的具体过程
+		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
@@ -5218,7 +5173,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return this._fatigue;
 			}
 			set fatigue(value) {
-				this.fatigue = value;
+				this._fatigue = value;
 				if (this instanceof Hero && value > 80) core.plugin.getAchievement(39);
 			}
 			constructor(hp, atk, def, manamax, mana, weakPoint) {
@@ -6040,7 +5995,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		// #region
+		// #region **************************************************
 		/** 复写events.prototype.battle */
 		events.prototype.battle = function (id, x, y, force, callback) {
 			core.saveAndStopAutomaticRoute();
@@ -6085,7 +6040,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		// #region 动画
+		// #region 动画 **************************************************
 
 		const fontSize = 18; // 战斗角色名字的字体大小
 		const bx = 36,
@@ -6207,9 +6162,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/** 
 		 * 绘制敌人动态图像和动态的火焰图标
 		 * @param {Battle} battleInfo 
-		 * @param {number} frame // 敌人图像一共2帧，火焰一共3帧
+		 * @param {number} count // 敌人图像一共2帧，火焰一共3帧
 		 */
-		function drawBattleIcon(battleInfo, frame) {
+		function drawBattleIcon(battleInfo, count) {
 			if (!battleInfo) return;
 			const width = core.__PIXELS__ - 16,
 				height = 192,
@@ -6242,29 +6197,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const enemyImage = core.material.images[enemyType];
 
 			// 绘制敌人
-			core.drawImage(ctx, enemyImage, (frame % 2) * b_width, b_pos * b_height, b_width, b_height, bx, by, size, size);
+			core.drawImage(ctx, enemyImage, (count % 2) * b_width, b_pos * b_height, b_width, b_height, bx, by, size, size);
 			core.strokeRect(ctx, bx, by, size, size, strokeStyle, 2);
 
 			core.plugin.drawFireInBattle(hero, "battleIcon",
 				[width - tx, ty + 3 * (textFontSize + lineHeight) + 5,
 				width - tx + 12, ty + 3 * (textFontSize + lineHeight) + 5,
 				width - tx + 24, ty + 3 * (textFontSize + lineHeight) + 5,
-				width - tx + 24, ty + 4 * (textFontSize + lineHeight) + 5,
-				width - tx + 24, ty + 5 * (textFontSize + lineHeight) + 5,
-				], frame);
-
-			// const fireCount = (hero.mana - (hero.mana) % (hero.permana)) / hero.permana,
-			// 	image = 'tinyFire' + (frame % 3 + 1).toString() + '.png';
-			// if (fireCount >= 1)
-			// 	core.drawImage(ctx, image, width - tx, ty + 3 * (textFontSize + lineHeight) + 5);
-			// if (fireCount >= 2)
-			// 	core.drawImage(ctx, image, width - tx + 12, ty + 3 * (textFontSize + lineHeight) + 5);
-			// if (fireCount >= 3)
-			// 	core.drawImage(ctx, image, width - tx + 24, ty + 3 * (textFontSize + lineHeight) + 5);
-			// if (fireCount >= 4)
-			// 	core.drawImage(ctx, image, width - tx + 36, ty + 3 * (textFontSize + lineHeight) + 5);
-			// if (fireCount >= 5)
-			// 	core.drawImage(ctx, image, width - tx + 48, ty + 3 * (textFontSize + lineHeight) + 5);
+				width - tx + 36, ty + 3 * (textFontSize + lineHeight) + 5,
+				width - tx + 48, ty + 3 * (textFontSize + lineHeight) + 5,
+				], count % 3);
 
 			// 绘制公主
 			if (core.status.hero.mdef > 0) {
@@ -6480,7 +6422,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
-		// #region 监听事件及注销
+		// #region 监听事件及注销 **************************************************
 
 		/**
 		 * 监听按键，执行相应的用户行为
@@ -6629,7 +6571,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 		// #endregion
 
-		// #region 工具函数
+		// #region 工具函数 **************************************************
 
 		/** 判断敌人是否具有列表中的某项特殊属性
 		 * @param {Array} enemySpecial 
