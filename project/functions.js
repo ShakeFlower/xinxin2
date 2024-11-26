@@ -2223,6 +2223,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.strokeRoundRect(ctx, valueLeftMargin - 5, 195, 60, 8, 2, 'yellow', 1);
 		core.fillRoundRect(ctx, valueLeftMargin - 4, 196, heroManaRatio * 58, 6, 2, 'LightGreen');
 
+		core.plugin.drawOneFire();
 		if (hero.mdef > 0) {
 			core.drawIcon(ctx, 'princess', 12, 248);
 			fill("生命", 47, 260, 'white', '14px hkbdt');
@@ -2251,6 +2252,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.strokeRoundRect(ctx, 336, 33, 60, 8, 2, 'yellow', 1);
 		core.fillRoundRect(ctx, 337, 34, heroManaRatio * 58, 6, 2, 'LightGreen');
 
+		core.plugin.drawOneFire();
 		if (hero.mdef > 0) {
 			core.drawIcon(ctx, 'princess', 275, 60);
 			fill("体力", 320, 70, null, '14px hkbdt');

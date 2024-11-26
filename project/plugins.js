@@ -1,6 +1,6 @@
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 
 		console.log("插件编写测试");
 
@@ -1303,7 +1303,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"drawLight": function () {
+    "drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1364,7 +1364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-	"shop": function () {
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1549,7 +1549,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1636,7 +1636,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1791,7 +1791,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2097,7 +2097,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"enemyLevel": function () {
+    "enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2185,7 +2185,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-	"dynamicHp": function () {
+    "dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2217,7 +2217,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-	"multiHeros": function () {
+    "multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2362,7 +2362,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-	"itemCategory": function () {
+    "itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2500,7 +2500,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2555,7 +2555,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"startCanvas": function () {
+    "startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2641,7 +2641,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-	"动画": function () {
+    "动画": function () {
 		// 在此增加新插件
 
 		this.dice = function (x) {
@@ -2734,7 +2734,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-	"自动拾取": function () {
+    "自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2867,7 +2867,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-	"修复装备Bug": function () {
+    "修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -3000,7 +3000,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"新版道具栏": function () {
+    "新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -3798,7 +3798,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		core.registerAction("ondown", "inEventClickAction", function (x, y, px, py) {
 			if (!core.status.thisEventClickArea) return false;
-			// console.log(px + "," + py);
 			var info = core.status.thisEventClickArea;
 			for (var i = 0; i < info.length; i++) {
 				var obj = info[i];
@@ -3991,7 +3990,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"跳字插件": function () {
+    "跳字插件": function () {
 		// 在此增加新插件
 
 		let sTextList = new Set([]);
@@ -4081,7 +4080,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"切装事件": function () {
+    "切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4139,7 +4138,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"自定义设置": function () {
+    "自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4378,7 +4377,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"血瓶宝石显示数据": function () {
+    "血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4545,7 +4544,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"成就": function () {
+    "成就": function () {
 		// 在此增加新插件
 
 		const PX = core.__PIXELS__,
@@ -4797,178 +4796,169 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"动态火焰": function () {
-		// 在此增加新插件
+    "动态火焰": function () {
+	// 在此增加新插件
 
-		////// canvas创建 //////
-		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
-			// 如果画布已存在则直接调用
-			if (core.dymCanvas[name]) {
-				core.ui.relocateCanvas(name, x, y);
-				core.ui.resizeCanvas(name, width, height);
-				core.dymCanvas[name].canvas.style.zIndex = z;
-				return core.dymCanvas[name];
-			}
-			let newCanvas = document.createElement("canvas");
-			newCanvas.id = name;
-			newCanvas.style.display = 'block';
-			newCanvas.setAttribute("_left", x);
-			newCanvas.setAttribute("_top", y);
-			newCanvas.width = width ;
-			newCanvas.height = height ;
-			newCanvas.style.width = width * core.domStyle.scale + 'px';
-			newCanvas.style.height = height * core.domStyle.scale + 'px';
-			newCanvas.style.left = x * core.domStyle.scale + 'px';
-			newCanvas.style.top = y * core.domStyle.scale + 'px';
-			newCanvas.style.zIndex = z;
-			newCanvas.style.position = 'absolute';
-			newCanvas.style.pointerEvents = 'none';
-			core.dymCanvas[name] = newCanvas.getContext('2d');
-			core.dom.gameDraw.appendChild(newCanvas);
+	////// canvas创建 //////
+	this.createCanvasWithWidth = function (name, x, y, width, height, z) {
+		// 如果画布已存在则直接调用
+		if (core.dymCanvas[name]) {
+			core.ui.relocateCanvas(name, x, y);
+			core.ui.resizeCanvas(name, width, height);
+			core.dymCanvas[name].canvas.style.zIndex = z;
 			return core.dymCanvas[name];
 		}
+		let newCanvas = document.createElement("canvas");
+		newCanvas.id = name;
+		newCanvas.style.display = 'block';
+		newCanvas.setAttribute("_left", x);
+		newCanvas.setAttribute("_top", y);
+		newCanvas.width = width;
+		newCanvas.height = height;
+		newCanvas.style.width = width * core.domStyle.scale + 'px';
+		newCanvas.style.height = height * core.domStyle.scale + 'px';
+		newCanvas.style.left = x * core.domStyle.scale + 'px';
+		newCanvas.style.top = y * core.domStyle.scale + 'px';
+		newCanvas.style.zIndex = z;
+		newCanvas.style.position = 'absolute';
+		newCanvas.style.pointerEvents = 'none';
+		core.dymCanvas[name] = newCanvas.getContext('2d');
+		core.dom.gameDraw.appendChild(newCanvas);
+		return core.dymCanvas[name];
+	}
 
-		const ctx = core.dom.statusCanvasCtx;
+	const ctx = core.dom.statusCanvasCtx;
 
-		/**
-		 * 绘制了黑色火焰的画布的列表
-		 * @type {Array<CanvasRenderingContext2D>}
-		 */
-		let darkFireCanvasList = [undefined, undefined, undefined];
+	/**
+	 * 绘制了黑色火焰的画布的列表
+	 * @type {Array<CanvasRenderingContext2D>}
+	 */
+	let darkFireCanvasList = [undefined, undefined, undefined];
 
-		function darkFireInit(i) {
-			let w = 0,h=0;
-			switch (i) {
-				case 0:
-					w = 15;
-					h = 18;
-					break;
-				case 1:
-					w = 13;
-					h = 17;
-					break;
-				case 2:
-					w = 14;
-					h = 18;
-					break;
-			}
-			const tempName1 = 'temp_' + i,
-				tempName2 = 'temp2_' + i;
-			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
-			const tempCanvas = core.dymCanvas[tempName1];
-			core.drawImage(tempName1, 'tinyFire' + (i+1).toString() + '.png', 0, 0);
-			const fire = tempCanvas.getImageData(0, 0, w, h);
-			core.deleteCanvas(tempName1);
-			const darkFire = darkFireFilter(fire);
-			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
-			const tempCanvas2 = core.dymCanvas[tempName2];
-			tempCanvas2.putImageData(darkFire, 0, 0);
-			darkFireCanvasList[i] = tempCanvas2;
+	function darkFireInit(i) {
+		let w = 0,
+			h = 0;
+		switch (i) {
+		case 0:
+			w = 15;
+			h = 18;
+			break;
+		case 1:
+			w = 13;
+			h = 17;
+			break;
+		case 2:
+			w = 14;
+			h = 18;
+			break;
 		}
+		const tempName1 = 'temp_' + i,
+			tempName2 = 'temp2_' + i;
+		core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
+		const tempCanvas = core.dymCanvas[tempName1];
+		core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
+		const fire = tempCanvas.getImageData(0, 0, w, h);
+		core.deleteCanvas(tempName1);
+		const darkFire = darkFireFilter(fire);
+		core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+		const tempCanvas2 = core.dymCanvas[tempName2];
+		tempCanvas2.putImageData(darkFire, 0, 0);
+		darkFireCanvasList[i] = tempCanvas2;
+	}
 
-		/** 
-		 * @param {ImageData} imageData
-		 */
-		function darkFireFilter(imageData) {
-			const data = imageData.data,
-				w = imageData.width,
-				h = imageData.height;
-			const darkImageData = new ImageData(w, h),
-				darkData = darkImageData.data,
-				l = data.length;
-			for (let i = 0; i < l; i += 4) {
-				darkData[i] = data[i] - 130;
-			}
-			for (let i = 1; i < l; i += 4) {
-				darkData[i] = data[i] - 177;
-			}
-			for (let i = 2; i < l; i += 4) {
-				darkData[i] = data[i] - 255;
-			}
-			for (let i = 3; i < l; i += 4) {
-				darkData[i] = Math.ceil(0.5 * data[i]);
-			}
-			return darkImageData;
+	/** 
+	 * @param {ImageData} imageData
+	 */
+	function darkFireFilter(imageData) {
+		const data = imageData.data,
+			w = imageData.width,
+			h = imageData.height;
+		const darkImageData = new ImageData(w, h),
+			darkData = darkImageData.data,
+			l = data.length;
+		for (let i = 0; i < l; i += 4) {
+			darkData[i] = data[i] - 130;
 		}
-
-		/**
-		 * 
-		 * @param {CanvasRenderingContext2D} ctx 
-		 * @param {number} index 绘制第几张火焰的图
-		 * @param {number} x 
-		 * @param {number} y
-		 * @param {boolean} light 是否绘制亮色火焰
-		 */
-		function drawFire(ctx, index, x, y, light) {
-			if (!light) {
-				const darkFire = darkFireCanvasList[index];
-				if (!darkFire) darkFireInit(index);
-				core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
-			}
-			else
-				core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
+		for (let i = 1; i < l; i += 4) {
+			darkData[i] = data[i] - 177;
 		}
+		for (let i = 2; i < l; i += 4) {
+			darkData[i] = data[i] - 255;
+		}
+		for (let i = 3; i < l; i += 4) {
+			darkData[i] = Math.ceil(0.5 * data[i]);
+		}
+		return darkImageData;
+	}
 
-		let manaCache = 0,
-			perManaCache = 40;
+	/**
+	 * 
+	 * @param {CanvasRenderingContext2D} ctx 
+	 * @param {number} index 绘制第几张火焰的图
+	 * @param {number} x 
+	 * @param {number} y
+	 * @param {boolean} light 是否绘制亮色火焰
+	 */
+	function drawFire(ctx, index, x, y, light) {
+		if (!light) {
+			const darkFire = darkFireCanvasList[index];
+			if (!darkFire) darkFireInit(index);
+			core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
+		} else
+			core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
+	}
 
-		let frame = 0;
-		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
-			const hero = core.status.hero;
-			let mana, permana;
-			if (!hero) { // 防止在拾取道具期间该动画不显示
-				mana = manaCache;
-				permana = perManaCache;
-			}
-			else {
-				manaCache = mana;
-				perManaCache = permana;
-			}
-			mana = hero.mana;
+	let frame = 0;
+	this.drawOneFire = function () {
+		const hero = core.status.hero;
+		let mana = hero.mana;
+		permana = hero.manamax / 6;
+		let fireCount = (mana - mana % permana) / permana;
+
+		if (!core.domStyle.isVertical) {
+			ctx.clearRect(55, 178, 60, 15);
+			drawFire(ctx, frame, 53, 177, fireCount >= 1);
+			drawFire(ctx, frame, 65, 177, fireCount >= 2);
+			drawFire(ctx, frame, 77, 177, fireCount >= 3);
+			drawFire(ctx, frame, 89, 177, fireCount >= 4);
+			drawFire(ctx, frame, 101, 177, fireCount >= 5);
+		} else {
+			ctx.clearRect(333, 15, 65, 13);
+			drawFire(ctx, frame, 333, 13, fireCount >= 1);
+			drawFire(ctx, frame, 345, 13, fireCount >= 2);
+			drawFire(ctx, frame, 357, 13, fireCount >= 3);
+			drawFire(ctx, frame, 369, 13, fireCount >= 4);
+			drawFire(ctx, frame, 381, 13, fireCount >= 5);
+		}
+	}
+	core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
+		core.plugin.drawOneFire();
+		if (++frame > 2) frame = 0;
+	})
+
+	/**
+	 * 
+	 * @param {Hero} hero 
+	 * @param {string|CanvasRenderingContext2D} ctx 
+	 * @param {Array<number>} posList 
+	 * @param {number} frame 
+	 */
+	this.drawFireInBattle = function (hero, ctx, posList, frame) {
+
+		if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
+		const mana = hero.mana,
 			permana = hero.manamax / 6;
-			const fireCount = (mana - mana % permana) / permana;
 
-			if (!core.domStyle.isVertical) {
-				ctx.clearRect(55, 178, 60, 15);
-				drawFire(ctx, frame, 53, 177, fireCount >= 1);
-				drawFire(ctx, frame, 65, 177, fireCount >= 2);
-				drawFire(ctx, frame, 77, 177, fireCount >= 3);
-				drawFire(ctx, frame, 89, 177, fireCount >= 4);
-				drawFire(ctx, frame, 101, 177, fireCount >= 5);
-			} else {
-				ctx.clearRect(333, 15, 65, 13);
-				drawFire(ctx, frame, 333, 13, fireCount >= 1);
-				drawFire(ctx, frame, 345, 13, fireCount >= 2);
-				drawFire(ctx, frame, 357, 13, fireCount >= 3);
-				drawFire(ctx, frame, 369, 13, fireCount >= 4);
-				drawFire(ctx, frame, 381, 13, fireCount >= 5);
-			}
-			if (++frame > 2) frame = 0;
-		})
+		const fireCount = (mana - mana % permana) / permana;
 
-		/**
-		 * 
-		 * @param {Hero} hero 
-		 * @param {string|CanvasRenderingContext2D} ctx 
-		 * @param {Array<number>} posList 
-		 * @param {number} frame 
-		 */
-		this.drawFireInBattle = function (hero, ctx, posList, frame) {
-
-			if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
-			const mana = hero.mana,
-				permana = hero.manamax / 6;
-
-			const fireCount = (mana - mana % permana) / permana;
-
-			drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
-			drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
-			drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
-			drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
-			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
-		}
-	},
-	"回合制战斗": function () {
+		drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
+		drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
+		drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
+		drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
+		drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
+	}
+},
+    "回合制战斗": function () {
 
 		// #region 回合制战斗的执行 **************************************************
 
@@ -4984,6 +4974,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			beginListen(battle);
 			drawBattleUI(battle);
+			drawSkillButton(battle);
 			let count = 0;
 			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
 				drawBattleIcon(battle, count++);
@@ -5015,7 +5006,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				drawSkillIcon(battle); // 更新按钮的状态（技能释放完毕）
+				drawSkillButton(battle); // 更新按钮的状态（技能释放完毕）
 
 				battle.updateActor();
 				if (battle.status === 'quit') break;
@@ -5231,7 +5222,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			checkMiss() {
 				this.totalFatigue += this.fatigue;
 				if (this.totalFatigue > 100) {
-					this.totalFatigue -= -100;
+					this.totalFatigue -= 100;
 					return true;
 				}
 				return false;
@@ -5398,7 +5389,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					case 'b': // 凡骨
 						hdamage = Math.round(1.5 * Math.max(this.atk - enemy.def, 1));
 						if (isMagician(enemy.special)) this.smartCast = true;
-						if (Math.round(1.5 * (this.atk - enemy.def)) < this.lv) {
+						if (Math.round(1.5 * (this.atk - enemy.def)) >= this.lv) {
 							// 伤害太低时，发动凡骨只有伤害1.5倍的效果，属性不增加
 							this.atk += Math.round(1.5 * this.lv);
 							this.def -= this.lv;
@@ -5856,7 +5847,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		class Battle {
 			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 'quit'临阵脱逃*/
 			status = 'pending';
-			/** 战斗的默认行进速度 */
+			/** 战斗的默认行进速度 quick - 快 normal -中 slow - 慢*/
 			speed = (() => {
 				switch (core.getFlag('battleSpeed', 1)) {
 					case 0: return 'quick';
@@ -6252,7 +6243,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battleInfo 
 		 * 绘制技能图标
 		 */
-		function drawSkillIcon(battleInfo) {
+		function drawSkillButton(battleInfo) {
 			const swordSkill = battleInfo.hero.swordSkill,
 				shieldSkill = battleInfo.hero.shieldSkill,
 				crit = (swordSkill === 'c');
@@ -6262,6 +6253,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
 			core.setTextAlign(ctx, "center");
 			core.strokeRect(ctx, 1, 1, 328 - offset, 30, strokeStyle, 2);
+			
 			const start = 20,
 				interval = 32;
 			if (core.hasItem('I325') || core.hasItem('I327')) {
@@ -6305,6 +6297,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			core.drawImage(ctx, 'iconBreathe.png', xList[3] + 4, 4, 24, 24);
 			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), xList[3] + 16, 19, 'blue', 'Bold 10px Arial');
+
+			core.createCanvas('speedButton', 0, 0, 96, 30, 100);
+			core.fillRect('speedButton', 0, 0, 96, 30, 'gray');
+			core.strokeRect('speedButton',1,1,94,28,'blue');
+			core.fillText('speedButton', '快  中  慢', 8, 20, 'white', '16px Verdana');
+			let rectPos = 4;
+			if (battleInfo.speed === 'normal') rectPos = 32;
+			else if (battleInfo.speed === 'slow') rectPos = 60;
+			core.strokeRect('speedButton',rectPos,4,24,22,'yellow');
 		}
 
 		/**
@@ -6351,10 +6352,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'hero': {
 				'brownWizard': { 'y': -20 },
 				'grayPriest': { 'y': -20 },
+				'redPriest': { 'y': -20 },
 			},
 			'princess': {},
-			'enemy': {},
-			// to be tested?
+			'enemy': {
+				'gsw1': { 'y': -40 },
+			},
+		// to be tested?
 		}
 
 		/**
@@ -6377,7 +6381,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
 						break;
 					}
-					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex, ey);
+					let oex = 0,
+						oey = 0;
+					const enemyOffsetList = offsetList['enemy'];
+					if (enemyOffsetList.hasOwnProperty(atkStatusH.animate)) {
+						oex = enemyOffsetList[atkStatusH.animate].x || 0;
+						oey = enemyOffsetList[atkStatusH.animate].y || 0;
+					}
+					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
 					if (atkStatusH.crit) damageH += 'crit';
 					core.plugin.addScrollingText(damageH, {
@@ -6396,16 +6407,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					const heroOffsetList = offsetList['hero'],
 						eid = battle.enemy.id;
 					let currOffset = 0,
-						ox = 0,
-						oy = 0;
+						ohx = 0,
+						ohy = 0;
 					if (heroOffsetList.hasOwnProperty(eid)) {
 						currOffset = heroOffsetList[eid];
-						ox = currOffset.x || 0;
-						oy = currOffset.y || 0;
+						ohx = currOffset.x || 0;
+						ohy = currOffset.y || 0;
 					}
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
-							core.plugin.drawAnimateByPixel('miss', hx + ox, hy + oy);
+							core.plugin.drawAnimateByPixel('miss', hx + ohx, hy + ohy);
 						}
 						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 							core.plugin.drawAnimateByPixel('miss', px, py);
@@ -6419,7 +6430,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						princessDamageE += 'crit';
 					}
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ox, hy + oy);
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
 						core.plugin.addScrollingText(damageE, {
 							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
@@ -6553,7 +6564,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (!battle.hero.swordEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备剑技');
-					} else { battle.execUserAction(equipList[battle.hero.sword]); }
+					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
 				}),],
 				['shield', new Button(212, 320, 32, 32, 244, 320, 32, 32, () => {
 					if (!battle.hero.shieldEquiped) {
@@ -6566,6 +6577,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}),],
 				['breathe', new Button(276, 320, 32, 32, 308, 320, 32, 32, () => {
 					battle.execUserAction('v');
+				}),],
+				['quick', new Button(0, 0, 32, 32, 0, 0, 32, 32, () => {
+					battle.speed = 'quick';
+				}),],
+				['normal', new Button(32, 0, 32, 32, 32, 0, 32, 32, () => {
+					battle.speed = 'normal';
+				}),],
+				['slow', new Button(64, 0, 32, 32, 64, 0, 32, 32, () => {
+					battle.speed = 'slow';
 				}),],
 			]);
 		}
@@ -6581,14 +6601,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function listenClick(x, y, px, py, battle) {
 			const list = battle.btnList;
 			list.forEach((ele) => {
-				console.log(x, y, px, py);
 				if (px >= ele.hitboxX && px <= ele.hitboxX + ele.hitboxW &&
 					py >= ele.hitboxY && py <= ele.hitboxY + ele.hitboxH
 				) {
 					ele.event(x, y, px, py);
 				}
 			});
-			drawSkillIcon(battle); //每次点击重绘所有按钮
+			drawSkillButton(battle); //每次点击重绘所有按钮
 		}
 
 		/**
@@ -6614,9 +6633,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
 				core.unregisterAnimationFrame(x);
 			});
-			['battleUI', 'battleIcon', 'battleBottomBar', 'skillIcon', 'quit'].forEach((x) => {
-				core.deleteCanvas(x);
-			});
+			['battleUI', 'battleIcon', 'battleBottomBar',
+				'skillIcon', 'quit', 'speedButton'].forEach((x) => {
+					core.deleteCanvas(x);
+				});
 		}
 		// #endregion
 
@@ -6797,7 +6817,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 	},
-	"弹幕插件": function () {
+    "弹幕插件": function () {
 		// 在此增加新插件
 		if (core.isReplaying()) return;
 
