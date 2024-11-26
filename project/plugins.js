@@ -4780,28 +4780,71 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	},
 	"动态火焰": function () {
 		// 在此增加新插件
+
+		////// canvas创建 //////
+		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
+			// 如果画布已存在则直接调用
+			if (core.dymCanvas[name]) {
+				core.ui.relocateCanvas(name, x, y);
+				core.ui.resizeCanvas(name, width, height);
+				core.dymCanvas[name].canvas.style.zIndex = z;
+				return core.dymCanvas[name];
+			}
+			let newCanvas = document.createElement("canvas");
+			newCanvas.id = name;
+			newCanvas.style.display = 'block';
+			newCanvas.setAttribute("_left", x);
+			newCanvas.setAttribute("_top", y);
+			newCanvas.width = width ;
+			newCanvas.height = height ;
+			newCanvas.style.width = width * core.domStyle.scale + 'px';
+			newCanvas.style.height = height * core.domStyle.scale + 'px';
+			newCanvas.style.left = x * core.domStyle.scale + 'px';
+			newCanvas.style.top = y * core.domStyle.scale + 'px';
+			newCanvas.style.zIndex = z;
+			newCanvas.style.position = 'absolute';
+			newCanvas.style.pointerEvents = 'none';
+			core.dymCanvas[name] = newCanvas.getContext('2d');
+			core.dom.gameDraw.appendChild(newCanvas);
+			return core.dymCanvas[name];
+		}
+
 		const ctx = core.dom.statusCanvasCtx;
 
-		let darkFireList = [undefined, undefined, undefined];
-		let hasInitialized = false;
+		/**
+		 * 绘制了黑色火焰的画布的列表
+		 * @type {Array<CanvasRenderingContext2D>}
+		 */
+		let darkFireCanvasList = [undefined, undefined, undefined];
 
-		function darkFireInit() {
-			const tempCanvasName = "tempFire";
-			const tempCanvas = core.createCanvas(tempCanvasName, 416, 0, 20, 20, 0);
-			core.drawImage(tempCanvasName, "tinyFire1.png", 0, 0);
-			const fire1 = tempCanvas.getImageData(0, 0, 15, 18);
-			const darkFire1 = darkFireFilter(fire1);
-			core.clearMap(tempCanvasName);
-			core.drawImage(tempCanvasName, "tinyFire2.png", 0, 0);
-			const fire2 = tempCanvas.getImageData(0, 0, 13, 17);
-			const darkFire2 = darkFireFilter(fire2);
-			core.clearMap(tempCanvasName);
-			core.drawImage(tempCanvasName, "tinyFire3.png", 0, 0);
-			const fire3 = tempCanvas.getImageData(0, 0, 14, 18);
-			const darkFire3 = darkFireFilter(fire3);
-			darkFireList = [darkFire1, darkFire2, darkFire3];
-			core.deleteCanvas(tempCanvasName);
-			hasInitialized = true;
+		function darkFireInit(i) {
+			let w = 0,h=0;
+			switch (i) {
+				case 0:
+					w = 15;
+					h = 18;
+					break;
+				case 1:
+					w = 13;
+					h = 17;
+					break;
+				case 2:
+					w = 14;
+					h = 18;
+					break;
+			}
+			const tempName1 = 'temp_' + i,
+				tempName2 = 'temp2_' + i;
+			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
+			const tempCanvas = core.dymCanvas[tempName1];
+			core.drawImage(tempCanvas, 'tinyFire' + (i).toString + '.png', 0, 0);
+			const fire = tempCanvas.getImageData(0, 0, w, h);
+			core.deleteCanvas(tempName1);
+			const darkFire = darkFireFilter(fire);
+			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+			const tempCanvas2 = core.dymCanvas[tempName2];
+			tempCanvas2.putImageData(darkFire, 0, 0);
+			darkFireCanvasList[i] = tempCanvas2;
 		}
 
 		/** 
@@ -4838,8 +4881,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {boolean} dark 是否绘制黑色火焰
 		 */
 		function drawFire(ctx, index, x, y, dark) {
-			if (dark && (darkFireList[index] instanceof ImageData)) {
-				ctx.putImageData(darkFireList[index], x, y);
+			if (dark) {
+				const darkFire = darkFireCanvasList[index];
+				if (!darkFire || !(darkFire.canvas instanceof HTMLCanvasElement)) darkFireInit(index);
+				core.drawImage(ctx, darkFire.canvas, x, y);
 			}
 			else
 				core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
@@ -4850,8 +4895,44 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		let manaCache = 0,
 			perManaCache = 40;
 
+		if (false)
+		{
+			function darkFireFilter(imageData) {
+				const data = imageData.data,
+					w = imageData.width,
+					h = imageData.height;
+				const darkImageData = new ImageData(w, h),
+					darkData = darkImageData.data,
+					l = data.length;
+				for (let i = 0; i < l; i += 4) {
+					darkData[i] = data[i] - 130;
+				}
+				for (let i = 1; i < l; i += 4) {
+					darkData[i] = data[i] - 177;
+				}
+				for (let i = 2; i < l; i += 4) {
+					darkData[i] = data[i] - 255;
+				}
+				for (let i = 3; i < l; i += 4) {
+					darkData[i] = Math.ceil(0.5 * data[i]);
+				}
+				return darkImageData;
+			}
+			const ctx = core.dom.statusCanvasCtx;
+			core.drawImage(ctx, 'tinyFire1.png', 333, 13);
+			core.drawImage(ctx, 'tinyFire1.png', 345, 13);
+			core.plugin.createCanvasWithWidth('temp', 0, 0, 15, 18, 0);
+			const tempCanvas = core.dymCanvas['temp'];
+			core.drawImage('temp', 'tinyFire1.png',0, 0);
+			const fire1 = tempCanvas.getImageData(0, 0, 15, 18);
+			const darkFire1 = darkFireFilter(fire1);
+			core.plugin.createCanvasWithWidth('temp2', 0, 0, 15, 18, 0);
+			const tempCanvas2 = core.dymCanvas['temp2'];
+			tempCanvas2.putImageData(darkFire1, 0, 0);
+			core.drawImage(ctx, tempCanvas2.canvas, 357, 13);
+		}
+
 		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
-			if (!hasInitialized) darkFireInit();
 			const hero = core.status.hero;
 			let mana, permana;
 			if (!hero) { // 防止在拾取道具期间该动画不显示
@@ -4893,7 +4974,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		this.drawFireInBattle = function (hero, ctx, posList, frame) {
 
-			if (!hasInitialized) darkFireInit();
 			if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
 			const mana = hero.mana,
 				permana = hero.manamax / 6;
