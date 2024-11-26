@@ -2190,7 +2190,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 		core.drawIcon(ctx, 'N449', 20, 30)
 		fill("状态", 60, 40, 'white', '14px hkbdt');
-		fill(status, 68, 68, 'white', '14px hkbdt');
+		fill(status, 68, 68, 'white', '14px qzzy');
 		core.strokeRoundRect(ctx, 60, 50, 45, 25, 2, '#00a8f3');
 
 		const nameLeftMargin = 20,
@@ -2233,7 +2233,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	} else {
 		// 竖屏模式
 		core.drawIcon(ctx, 'N449', 20, 15);
-		fill("状态", 60, 26, 'white', '14px hkbdt');
+		fill("状态", 60, 26, 'white', '14px qzzy');
 		core.strokeRoundRect(ctx, 100, 10, 45, 25, 2, '#00a8f3');
 		fill(status, 108, 26, 'white', '14px hkbdt');
 

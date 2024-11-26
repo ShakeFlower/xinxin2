@@ -2708,6 +2708,31 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 			return id;
 		}
+
+		////// 检查并执行领域、夹击、阻击事件 //////
+		control.prototype.checkBlock = function () {
+			let x = core.getHeroLoc('x'), y = core.getHeroLoc('y'), loc = x + "," + y;
+			let damage = core.status.checkBlock.damage[loc];
+			if (damage) {
+				core.status.hero.hp -= damage;
+				let text = (Object.keys(core.status.checkBlock.type[loc] || {}).join("，")) || "伤害";
+				core.drawTip("受到" + text + damage + "点");
+				if (core.hasItem('snow')) core.drawHeroAnimate("gice"); 
+				else core.drawHeroAnimate("gfire"); //岩浆动画效果
+				this._checkBlock_disableQuickShop();
+				core.status.hero.statistics.extraDamage += damage;
+				if (core.status.hero.hp <= 0) {
+					core.status.hero.hp = 0;
+					core.updateStatusBar();
+					core.events.lose();
+					return;
+				} else {
+					core.updateStatusBar();
+				}
+			}
+			this._checkBlock_ambush(core.status.checkBlock.ambush[loc]);
+			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
+		}
 	},
 	"自动拾取": function () {
 		// 自動拾取
@@ -4835,7 +4860,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const fire = tempCanvas.getImageData(0, 0, w, h);
 			core.deleteCanvas(tempName1);
 			const darkFire = darkFireFilter(fire);
-			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 200);
+			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
 			const tempCanvas2 = core.dymCanvas[tempName2];
 			tempCanvas2.putImageData(darkFire, 0, 0);
 			darkFireCanvasList[i] = tempCanvas2;
@@ -5254,6 +5279,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		class Hero extends ActorBase {
 			/** 公主的体力值 */
 			hpmax = core.status.hero.hpmax;
+			/** 公主的魔防 */
+			mdef = core.status.hero.mdef;
 			/** 攻击临界值 */
 			atkm = core.getFlag('atkm', 10);
 			/** 防御临界值 */
@@ -6321,9 +6348,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		const offsetList = {
-			'hero':{},
-			'princess':{},
-			'enemy':{},
+			'hero': {
+				'brownWizard': { 'y': -20 },
+				'grayPriest': { 'y': -20 },
+			},
+			'princess': {},
+			'enemy': {},
 			// to be tested?
 		}
 
@@ -6363,9 +6393,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					break;
 				case 'enemy':
 					if (atkStatusE.frozen) break;
+					const heroOffsetList = offsetList['hero'],
+						eid = battle.enemy.id;
+					let currOffset = 0,
+						ox = 0,
+						oy = 0;
+					if (heroOffsetList.hasOwnProperty(eid)) {
+						currOffset = heroOffsetList[eid];
+						ox = currOffset.x || 0;
+						oy = currOffset.y || 0;
+					}
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
-							core.plugin.drawAnimateByPixel('miss', hx, hy);
+							core.plugin.drawAnimateByPixel('miss', hx + ox, hy + oy);
 						}
 						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 							core.plugin.drawAnimateByPixel('miss', px, py);
@@ -6379,7 +6419,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						princessDamageE += 'crit';
 					}
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
-						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx, hy);
+						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ox, hy + oy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
 						core.plugin.addScrollingText(damageE, {
 							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
@@ -6388,6 +6428,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px, py);
+						let shieldAnimate = (()=>{
+							if (core.hasItem('I325')) return 'gprin1';
+							else if (core.hasItem('I326')) return 'gprin2';
+							else if (core.hasItem('I327')) return 'gprin3';
+							return undefined;
+						})();
+
+						if (shieldAnimate) core.plugin.drawAnimateByPixel(shieldAnimate, px, py);
+
 						core.plugin.addScrollingText(princessDamageE, {
 							'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
@@ -6673,6 +6722,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					return critical ? 'g10-cri' : 'g10';
 				case 'redWizard':
 					return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
+				case 'blackMagician':
+				case 'E396':
+				case 'E397':
+					return critical ? 'g12-cri' : 'g12'; //暗魔法攻击
 				case 'vampire':
 					return critical ? 'g13-cri' : 'g13'; //魔王格勒第攻击
 				case 'E377':
@@ -6715,8 +6768,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'E379':
 					return critical ? 'g37-cri' : 'g37'; //箭神法比攻击
 				case 'yellowGuard':
+				case 'blueGuard':
+				case 'redGuard':
 				case 'ghostSkeleton':
+				case 'E329':
 					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
+				case 'redPriest':
+					return critical ? 'g40-cri' : 'g40'; //卫兵、冥骷髅攻击
 				case 'E382':
 					return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
 				case 'E436':

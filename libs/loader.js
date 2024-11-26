@@ -103,6 +103,9 @@ loader.prototype._loadFonts = async function () {
         ), new FontFace(
             "Arial",
             "url(project/fonts/Arial.ttf)"
+        ), new FontFace(
+            "qzzy",
+            "url(project/fonts/qzzy.ttf)"
         )];
         for (let i = 0, l = fontFileList.length; i < l; i++) {
             const fontFile = fontFileList[i];

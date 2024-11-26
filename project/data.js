@@ -299,6 +299,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"gweak",
 			"hand",
 			"jianji",
+			"miss",
 			"sword",
 			"swords",
 			"thunder",
@@ -390,7 +391,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 		"fonts": [
 			"Arial",
 			"hkbdt",
-			"number"
+			"number",
+			"qzzy"
 		],
 		"nameMap": {
 			"确定": "confirm.mp3",
