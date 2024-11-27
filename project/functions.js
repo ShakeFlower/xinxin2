@@ -2228,8 +2228,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.drawIcon(ctx, 'princess', 12, 248);
 			fill("生命", 47, 260, 'white', '14px hkbdt');
 			fill("魔防", 47, 280, null, '14px hkbdt');
-			fill(core.formatBigNumber(hero.hpmax), 87, 260, null, '14px Arial');
-			fill(core.formatBigNumber(hero.mdef), 87, 280, null, '14px Arial');
+			core.setTextAlign(ctx, 'right');
+			fill(core.formatBigNumber(hero.hpmax), 110, 260, null, '14px Arial');
+			fill(core.formatBigNumber(hero.mdef), 110, 280, null, '14px Arial');
+			core.setTextAlign(ctx, 'start');
 		}
 	} else {
 		// 竖屏模式
@@ -2255,7 +2257,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.plugin.drawOneFire();
 		if (hero.mdef > 0) {
 			core.drawIcon(ctx, 'princess', 275, 60);
-			fill("体力", 320, 70, null, '14px hkbdt');
+			fill("体力", 320, 70, 'white', '14px hkbdt');
 			fill(core.formatBigNumber(hero.hpmax), 360, 70, null, '14px Arial');
 			fill("魔防", 320, 90, null, '14px hkbdt');
 			fill(core.formatBigNumber(hero.mdef), 360, 90, null, '14px Arial');
