@@ -5551,7 +5551,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if (this.actIndex++ > this.combo) this.actIndex = 1;
 
-				if (core.hasSpecial(especial, 91)) { //剑大师切换行动列表
+				if (hasSpecial(especial, 91)) { //剑大师切换行动列表
 					this.phase++;
 					if (this.phase > 2) this.phase = 0;
 				}
@@ -5559,7 +5559,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					atkStatus.frozen = true;
 					return;
 				}
-				if (core.hasSpecial(especial, 80)) { // 魔眼
+				if (hasSpecial(especial, 80)) { // 魔眼
 					atkStatus.evilEye = true;
 					if (hero.def - hero.atk > hero.atkm) atkStatus.damage = 0;
 					else atkStatus.damage = Math.max(hero.atk - hero.def, 1);
@@ -5583,7 +5583,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					hero.hp -= atkStatus.damage;
 					hero.hpmax -= atkStatus.princessDamage;
 					this.totalDamage += atkStatus.damage;
-					if (core.hasSpecial(especial, 93)) { // 古顿的弹跳攻击效果
+					if (hasSpecial(especial, 93)) { // 古顿的弹跳攻击效果
 						hero.hp -= atkStatus.bounceDamage[2];
 						hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
 						this.totalDamage += atkStatus.bounceDamage[2];
@@ -5738,7 +5738,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (hasSpecial(especial, [52, 53])) hero.fatigue++;
 				if (hasSpecial(especial, 54)) hero.fatigue += 3;
 				if (hasSpecial(especial, 56)) hero.fatigue += 4;
-				if (core.hasSpecial(especial, 62)) {
+				if (hasSpecial(especial, 62)) {
 					this.fatigue -= 1;
 					if (this.fatigue < 0) this.fatigue = 0;
 				}
@@ -5761,7 +5761,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.checkDebuff(hero, 'suppress', reflect, 60);
 				} else if (hasSpecial(especial, [12, 61, 82])) { // 12-中毒
 					this.checkDebuff(hero, 'poison', reflect, this.poisonPoss);
-				} else if (core.hasSpecial(especial, [13, 87])) { // 13-衰弱
+				} else if (hasSpecial(especial, [13, 87])) { // 13-衰弱
 					this.checkDebuff(hero, 'weak', reflect, this.weakPoss);
 				}
 			}
@@ -5813,34 +5813,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							break;
 					}
 				}
-			}
-		}
-
-		/**
-		 * 按钮对象
-		 */
-		class Button {
-			/**
-			 * @param {number} x 
-			 * @param {number} y
-			 * @param {number} w
-			 * @param {number} h
-			 * @param {number} hitX
-			 * @param {number} hitY
-			 * @param {number} hitW
-			 * @param {number} hitH
-			 * @param {Function} event
-			 */
-			constructor(x, y, w, h, hitX, hitY, hitW, hitH, event) {
-				this.x = x;
-				this.y = y;
-				this.width = w;
-				this.height = h;
-				this.hitboxX = hitX;
-				this.hitboxY = hitY;
-				this.hitboxW = hitW;
-				this.hitboxH = hitH;
-				this.event = event;
 			}
 		}
 
@@ -6348,18 +6320,20 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
 		}
 
-		const offsetList = {
-			'hero': {
-				'brownWizard': { 'y': -20 },
-				'grayPriest': { 'y': -20 },
-				'redPriest': { 'y': -20 },
-			},
-			'princess': {},
-			'enemy': {
-				'gsw1': { 'y': -40 },
-			},
-		// to be tested?
-		}
+		/** 在勇士图标上播放的动画的偏移量 */
+		const heroOffsetList = {
+			'brownWizard': { 'y': -20 },
+			'grayPriest': { 'y': -20 },
+			'redPriest': { 'y': -20 },
+		},
+		/** 在公主图标上播放的动画的偏移量 */
+		princessOffsetList = {
+
+		},
+		/** 在敌人图标上播放的动画的偏移量 */
+		enemyOffsetList = {
+			'gsw1': { 'y': -40 },
+		};
 
 		/**
 		 * 解析当前atkStatus信息，播放动画
@@ -6383,10 +6357,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					let oex = 0,
 						oey = 0;
-					const enemyOffsetList = offsetList['enemy'];
-					if (enemyOffsetList.hasOwnProperty(atkStatusH.animate)) {
-						oex = enemyOffsetList[atkStatusH.animate].x || 0;
-						oey = enemyOffsetList[atkStatusH.animate].y || 0;
+					const hAnimate = atkStatusH.animate;
+					if (enemyOffsetList.hasOwnProperty(hAnimate)) {
+						oex = enemyOffsetList[hAnimate].x || 0;
+						oey = enemyOffsetList[hAnimate].y || 0;
 					}
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
@@ -6404,22 +6378,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					break;
 				case 'enemy':
 					if (atkStatusE.frozen) break;
-					const heroOffsetList = offsetList['hero'],
-						eid = battle.enemy.id;
-					let currOffset = 0,
-						ohx = 0,
-						ohy = 0;
+					const eid = battle.enemy.id;
+					let [currOffset, ohx, ohy, opx, opy] = [0, 0, 0, 0, 0];
 					if (heroOffsetList.hasOwnProperty(eid)) {
 						currOffset = heroOffsetList[eid];
-						ohx = currOffset.x || 0;
-						ohy = currOffset.y || 0;
+						[ohx, ohy] = [currOffset.x || 0, currOffset.y || 0];
+					}
+					if (princessOffsetList.hasOwnProperty(eid)) {
+						currOffset = princessOffsetList[eid];
+						[opx, opy] = [currOffset.x || 0, currOffset.y || 0];
 					}
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
 							core.plugin.drawAnimateByPixel('miss', hx + ohx, hy + ohy);
 						}
 						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel('miss', px, py);
+							core.plugin.drawAnimateByPixel('miss', px + opx, py + opy);
 						}
 						break;
 					}
@@ -6534,59 +6508,75 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+
+		/**
+		 * 一个点击时触发对应事件的按钮
+		 */
+		class Button {
+		/**
+		 * @param {number} x 按钮判定区左上角的x坐标
+		 * @param {number} y 按钮判定区左上角的y坐标
+		 * @param {number} w 按钮判定区的宽度
+		 * @param {number} h 按钮判定区的高度
+		 * @param {Function} event 点击按钮时触发的事件
+		 */
+			constructor(x, y, w, h, event) {
+				/** 按钮判定区左上角的x坐标 */
+				this.x = x;
+				/** 按钮判定区左上角的y坐标 */
+				this.y = y;
+				/** 按钮判定区的宽度 */
+				this.w = w;
+				/** 按钮判定区的高度 */
+				this.h = h;
+				/** 点击按钮时触发的事件 */
+				this.event = event;
+			}
+		}
+
 		/** 生成按钮对象 
 		 * @param {Battle} battle
 		 * @returns {Map}
 		*/
 		function generateBtnList(battle) {
 			return new Map([
-				['btn1', new Button(20, 320, 32, 32, 52, 320, 32, 32, () => {
+				['btn1', new Button(52, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('b');
 					else if (core.hasItem('I327')) battle.execUserAction('M');
 				})],
-				['btn2', new Button(52, 320, 32, 32, 84, 320, 32, 32, () => {
+				['btn2', new Button(84, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('s');
 					else if (core.hasItem('I327')) battle.execUserAction('C');
-				}),],
-				['btn3', new Button(84, 320, 32, 32, 116, 320, 32, 32, () => {
+				})],
+				['btn3', new Button(116, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('d');
 					else if (core.hasItem('I327')) battle.execUserAction('R');
-				}),],
-				['btn4', new Button(116, 320, 32, 32, 148, 320, 32, 32, () => {
+				})],
+				['btn4', new Button(148, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('h');
 					else if (core.hasItem('I327')) battle.execUserAction('F');
-				}),],
-				['btn5', new Button(148, 320, 32, 32, 180, 320, 32, 32, () => {
+				})],
+				['btn5', new Button(180, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('k');
 					else if (core.hasItem('I327')) battle.execUserAction('E');
-				}),],
-				['sword', new Button(180, 320, 32, 32, 212, 320, 32, 32, () => {
+				})],
+				['sword', new Button(212, 320, 32, 32, () => {
 					if (!battle.hero.swordEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备剑技');
 					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
-				}),],
-				['shield', new Button(212, 320, 32, 32, 244, 320, 32, 32, () => {
+				})],
+				['shield', new Button(244, 320, 32, 32, () => {
 					if (!battle.hero.shieldEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备盾技');
 					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
-				}),],
-				['crit', new Button(244, 320, 32, 32, 276, 320, 32, 32, () => {
-					battle.execUserAction('c');
-				}),],
-				['breathe', new Button(276, 320, 32, 32, 308, 320, 32, 32, () => {
-					battle.execUserAction('v');
-				}),],
-				['quick', new Button(0, 0, 32, 32, 0, 0, 32, 32, () => {
-					battle.speed = 'quick';
-				}),],
-				['normal', new Button(32, 0, 32, 32, 32, 0, 32, 32, () => {
-					battle.speed = 'normal';
-				}),],
-				['slow', new Button(64, 0, 32, 32, 64, 0, 32, 32, () => {
-					battle.speed = 'slow';
-				}),],
+				})],
+				['crit', new Button(276, 320, 32, 32, () => battle.execUserAction('c'))],
+				['breathe', new Button(308, 320, 32, 32, () => battle.execUserAction('v'))],
+				['quick', new Button(0, 0, 32, 32, () => battle.speed = 'quick')],
+				['normal', new Button(32, 0, 32, 32, () => battle.speed = 'normal')],
+				['slow', new Button(64, 0, 32, 32, () => battle.speed = 'slow')],
 			]);
 		}
 
@@ -6601,8 +6591,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function listenClick(x, y, px, py, battle) {
 			const list = battle.btnList;
 			list.forEach((ele) => {
-				if (px >= ele.hitboxX && px <= ele.hitboxX + ele.hitboxW &&
-					py >= ele.hitboxY && py <= ele.hitboxY + ele.hitboxH
+				if (px >= ele.x && px <= ele.x + ele.w &&
+					py >= ele.y && py <= ele.y + ele.h
 				) {
 					ele.event(x, y, px, py);
 				}
