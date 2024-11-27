@@ -1,6 +1,6 @@
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
-    "init": function () {
+	"init": function () {
 
 		console.log("插件编写测试");
 
@@ -1303,7 +1303,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "drawLight": function () {
+	"drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1364,7 +1364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-    "shop": function () {
+	"shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1549,7 +1549,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-    "removeMap": function () {
+	"removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1636,7 +1636,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-    "fiveLayers": function () {
+	"fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1791,7 +1791,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-    "itemShop": function () {
+	"itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2097,7 +2097,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "enemyLevel": function () {
+	"enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2185,7 +2185,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-    "dynamicHp": function () {
+	"dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2217,7 +2217,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-    "multiHeros": function () {
+	"multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2362,7 +2362,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-    "itemCategory": function () {
+	"itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2500,7 +2500,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-    "heroFourFrames": function () {
+	"heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2555,7 +2555,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-    "startCanvas": function () {
+	"startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2641,7 +2641,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "动画": function () {
+	"动画": function () {
 		// 在此增加新插件
 
 		this.dice = function (x) {
@@ -2717,7 +2717,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.status.hero.hp -= damage;
 				let text = (Object.keys(core.status.checkBlock.type[loc] || {}).join("，")) || "伤害";
 				core.drawTip("受到" + text + damage + "点");
-				if (core.hasItem('snow')) core.drawHeroAnimate("gice"); 
+				if (core.hasItem('snow')) core.drawHeroAnimate("gice");
 				else core.drawHeroAnimate("gfire"); //岩浆动画效果
 				this._checkBlock_disableQuickShop();
 				core.status.hero.statistics.extraDamage += damage;
@@ -2734,7 +2734,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-    "自动拾取": function () {
+	"自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2867,7 +2867,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-    "修复装备Bug": function () {
+	"修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -3000,7 +3000,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "新版道具栏": function () {
+	"新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -3990,7 +3990,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "跳字插件": function () {
+	"跳字插件": function () {
 		// 在此增加新插件
 
 		let sTextList = new Set([]);
@@ -4080,7 +4080,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "切装事件": function () {
+	"切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4138,7 +4138,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "自定义设置": function () {
+	"自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4377,7 +4377,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4544,7 +4544,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "成就": function () {
+	"成就": function () {
 		// 在此增加新插件
 
 		const PX = core.__PIXELS__,
@@ -4796,169 +4796,169 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "动态火焰": function () {
-	// 在此增加新插件
+	"动态火焰": function () {
+		// 在此增加新插件
 
-	////// canvas创建 //////
-	this.createCanvasWithWidth = function (name, x, y, width, height, z) {
-		// 如果画布已存在则直接调用
-		if (core.dymCanvas[name]) {
-			core.ui.relocateCanvas(name, x, y);
-			core.ui.resizeCanvas(name, width, height);
-			core.dymCanvas[name].canvas.style.zIndex = z;
+		////// canvas创建 //////
+		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
+			// 如果画布已存在则直接调用
+			if (core.dymCanvas[name]) {
+				core.ui.relocateCanvas(name, x, y);
+				core.ui.resizeCanvas(name, width, height);
+				core.dymCanvas[name].canvas.style.zIndex = z;
+				return core.dymCanvas[name];
+			}
+			let newCanvas = document.createElement("canvas");
+			newCanvas.id = name;
+			newCanvas.style.display = 'block';
+			newCanvas.setAttribute("_left", x);
+			newCanvas.setAttribute("_top", y);
+			newCanvas.width = width;
+			newCanvas.height = height;
+			newCanvas.style.width = width * core.domStyle.scale + 'px';
+			newCanvas.style.height = height * core.domStyle.scale + 'px';
+			newCanvas.style.left = x * core.domStyle.scale + 'px';
+			newCanvas.style.top = y * core.domStyle.scale + 'px';
+			newCanvas.style.zIndex = z;
+			newCanvas.style.position = 'absolute';
+			newCanvas.style.pointerEvents = 'none';
+			core.dymCanvas[name] = newCanvas.getContext('2d');
+			core.dom.gameDraw.appendChild(newCanvas);
 			return core.dymCanvas[name];
 		}
-		let newCanvas = document.createElement("canvas");
-		newCanvas.id = name;
-		newCanvas.style.display = 'block';
-		newCanvas.setAttribute("_left", x);
-		newCanvas.setAttribute("_top", y);
-		newCanvas.width = width;
-		newCanvas.height = height;
-		newCanvas.style.width = width * core.domStyle.scale + 'px';
-		newCanvas.style.height = height * core.domStyle.scale + 'px';
-		newCanvas.style.left = x * core.domStyle.scale + 'px';
-		newCanvas.style.top = y * core.domStyle.scale + 'px';
-		newCanvas.style.zIndex = z;
-		newCanvas.style.position = 'absolute';
-		newCanvas.style.pointerEvents = 'none';
-		core.dymCanvas[name] = newCanvas.getContext('2d');
-		core.dom.gameDraw.appendChild(newCanvas);
-		return core.dymCanvas[name];
-	}
 
-	const ctx = core.dom.statusCanvasCtx;
+		const ctx = core.dom.statusCanvasCtx;
 
-	/**
-	 * 绘制了黑色火焰的画布的列表
-	 * @type {Array<CanvasRenderingContext2D>}
-	 */
-	let darkFireCanvasList = [undefined, undefined, undefined];
+		/**
+		 * 绘制了黑色火焰的画布的列表
+		 * @type {Array<CanvasRenderingContext2D>}
+		 */
+		let darkFireCanvasList = [undefined, undefined, undefined];
 
-	function darkFireInit(i) {
-		let w = 0,
-			h = 0;
-		switch (i) {
-		case 0:
-			w = 15;
-			h = 18;
-			break;
-		case 1:
-			w = 13;
-			h = 17;
-			break;
-		case 2:
-			w = 14;
-			h = 18;
-			break;
+		function darkFireInit(i) {
+			let w = 0,
+				h = 0;
+			switch (i) {
+				case 0:
+					w = 15;
+					h = 18;
+					break;
+				case 1:
+					w = 13;
+					h = 17;
+					break;
+				case 2:
+					w = 14;
+					h = 18;
+					break;
+			}
+			const tempName1 = 'temp_' + i,
+				tempName2 = 'temp2_' + i;
+			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
+			const tempCanvas = core.dymCanvas[tempName1];
+			core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
+			const fire = tempCanvas.getImageData(0, 0, w, h);
+			core.deleteCanvas(tempName1);
+			const darkFire = darkFireFilter(fire);
+			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+			const tempCanvas2 = core.dymCanvas[tempName2];
+			tempCanvas2.putImageData(darkFire, 0, 0);
+			darkFireCanvasList[i] = tempCanvas2;
 		}
-		const tempName1 = 'temp_' + i,
-			tempName2 = 'temp2_' + i;
-		core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
-		const tempCanvas = core.dymCanvas[tempName1];
-		core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
-		const fire = tempCanvas.getImageData(0, 0, w, h);
-		core.deleteCanvas(tempName1);
-		const darkFire = darkFireFilter(fire);
-		core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
-		const tempCanvas2 = core.dymCanvas[tempName2];
-		tempCanvas2.putImageData(darkFire, 0, 0);
-		darkFireCanvasList[i] = tempCanvas2;
-	}
 
-	/** 
-	 * @param {ImageData} imageData
-	 */
-	function darkFireFilter(imageData) {
-		const data = imageData.data,
-			w = imageData.width,
-			h = imageData.height;
-		const darkImageData = new ImageData(w, h),
-			darkData = darkImageData.data,
-			l = data.length;
-		for (let i = 0; i < l; i += 4) {
-			darkData[i] = data[i] - 130;
+		/** 
+		 * @param {ImageData} imageData
+		 */
+		function darkFireFilter(imageData) {
+			const data = imageData.data,
+				w = imageData.width,
+				h = imageData.height;
+			const darkImageData = new ImageData(w, h),
+				darkData = darkImageData.data,
+				l = data.length;
+			for (let i = 0; i < l; i += 4) {
+				darkData[i] = data[i] - 130;
+			}
+			for (let i = 1; i < l; i += 4) {
+				darkData[i] = data[i] - 177;
+			}
+			for (let i = 2; i < l; i += 4) {
+				darkData[i] = data[i] - 255;
+			}
+			for (let i = 3; i < l; i += 4) {
+				darkData[i] = Math.ceil(0.5 * data[i]);
+			}
+			return darkImageData;
 		}
-		for (let i = 1; i < l; i += 4) {
-			darkData[i] = data[i] - 177;
+
+		/**
+		 * 
+		 * @param {CanvasRenderingContext2D} ctx 
+		 * @param {number} index 绘制第几张火焰的图
+		 * @param {number} x 
+		 * @param {number} y
+		 * @param {boolean} light 是否绘制亮色火焰
+		 */
+		function drawFire(ctx, index, x, y, light) {
+			if (!light) {
+				const darkFire = darkFireCanvasList[index];
+				if (!darkFire) darkFireInit(index);
+				core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
+			} else
+				core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
 		}
-		for (let i = 2; i < l; i += 4) {
-			darkData[i] = data[i] - 255;
-		}
-		for (let i = 3; i < l; i += 4) {
-			darkData[i] = Math.ceil(0.5 * data[i]);
-		}
-		return darkImageData;
-	}
 
-	/**
-	 * 
-	 * @param {CanvasRenderingContext2D} ctx 
-	 * @param {number} index 绘制第几张火焰的图
-	 * @param {number} x 
-	 * @param {number} y
-	 * @param {boolean} light 是否绘制亮色火焰
-	 */
-	function drawFire(ctx, index, x, y, light) {
-		if (!light) {
-			const darkFire = darkFireCanvasList[index];
-			if (!darkFire) darkFireInit(index);
-			core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
-		} else
-			core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
-	}
-
-	let frame = 0;
-	this.drawOneFire = function () {
-		const hero = core.status.hero;
-		let mana = hero.mana;
-		permana = hero.manamax / 6;
-		let fireCount = (mana - mana % permana) / permana;
-
-		if (!core.domStyle.isVertical) {
-			ctx.clearRect(55, 178, 60, 15);
-			drawFire(ctx, frame, 53, 177, fireCount >= 1);
-			drawFire(ctx, frame, 65, 177, fireCount >= 2);
-			drawFire(ctx, frame, 77, 177, fireCount >= 3);
-			drawFire(ctx, frame, 89, 177, fireCount >= 4);
-			drawFire(ctx, frame, 101, 177, fireCount >= 5);
-		} else {
-			ctx.clearRect(333, 15, 65, 13);
-			drawFire(ctx, frame, 333, 13, fireCount >= 1);
-			drawFire(ctx, frame, 345, 13, fireCount >= 2);
-			drawFire(ctx, frame, 357, 13, fireCount >= 3);
-			drawFire(ctx, frame, 369, 13, fireCount >= 4);
-			drawFire(ctx, frame, 381, 13, fireCount >= 5);
-		}
-	}
-	core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
-		core.plugin.drawOneFire();
-		if (++frame > 2) frame = 0;
-	})
-
-	/**
-	 * 
-	 * @param {Hero} hero 
-	 * @param {string|CanvasRenderingContext2D} ctx 
-	 * @param {Array<number>} posList 
-	 * @param {number} frame 
-	 */
-	this.drawFireInBattle = function (hero, ctx, posList, frame) {
-
-		if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
-		const mana = hero.mana,
+		let frame = 0;
+		this.drawOneFire = function () {
+			const hero = core.status.hero;
+			let mana = hero.mana;
 			permana = hero.manamax / 6;
+			let fireCount = (mana - mana % permana) / permana;
 
-		const fireCount = (mana - mana % permana) / permana;
+			if (!core.domStyle.isVertical) {
+				ctx.clearRect(55, 178, 60, 15);
+				drawFire(ctx, frame, 53, 177, fireCount >= 1);
+				drawFire(ctx, frame, 65, 177, fireCount >= 2);
+				drawFire(ctx, frame, 77, 177, fireCount >= 3);
+				drawFire(ctx, frame, 89, 177, fireCount >= 4);
+				drawFire(ctx, frame, 101, 177, fireCount >= 5);
+			} else {
+				ctx.clearRect(333, 15, 65, 13);
+				drawFire(ctx, frame, 333, 13, fireCount >= 1);
+				drawFire(ctx, frame, 345, 13, fireCount >= 2);
+				drawFire(ctx, frame, 357, 13, fireCount >= 3);
+				drawFire(ctx, frame, 369, 13, fireCount >= 4);
+				drawFire(ctx, frame, 381, 13, fireCount >= 5);
+			}
+		}
+		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
+			core.plugin.drawOneFire();
+			if (++frame > 2) frame = 0;
+		})
 
-		drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
-		drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
-		drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
-		drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
-		drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
-	}
-},
-    "回合制战斗": function () {
+		/**
+		 * 
+		 * @param {Hero} hero 
+		 * @param {string|CanvasRenderingContext2D} ctx 
+		 * @param {Array<number>} posList 
+		 * @param {number} frame 
+		 */
+		this.drawFireInBattle = function (hero, ctx, posList, frame) {
+
+			if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
+			const mana = hero.mana,
+				permana = hero.manamax / 6;
+
+			const fireCount = (mana - mana % permana) / permana;
+
+			drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
+			drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
+			drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
+			drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
+			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
+		}
+	},
+	"回合制战斗": function () {
 
 		// #region 回合制战斗的执行 **************************************************
 
@@ -4975,6 +4975,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			beginListen(battle);
 			drawBattleUI(battle);
 			drawSkillButton(battle);
+			drawSpeedButton(battle);
 			let count = 0;
 			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
 				drawBattleIcon(battle, count++);
@@ -5006,8 +5007,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				drawSkillButton(battle); // 更新按钮的状态（技能释放完毕）
-
+				drawSkillButton(battle); // 每回合过后技能已释放，需要更新按钮的状态
 				battle.updateActor();
 				if (battle.status === 'quit') break;
 			}
@@ -5835,7 +5835,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			route = 'bs';
 
 			/** 按钮列表 
-			 * @type {Map<string,Button>}
+			 * @type {Array<Button>}
 			*/
 			btnList = generateBtnList(this);
 			/**
@@ -6212,22 +6212,223 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
+		 * 按钮，点击时触发特定事件
+		 */
+		class Button {
+			/**
+			 * @param {string} name 按钮名称
+			 * @param {number} x 按钮判定区左上角的x坐标
+			 * @param {number} y 按钮判定区左上角的y坐标
+			 * @param {number} w 按钮判定区的宽度
+			 * @param {number} h 按钮判定区的高度
+			 * @param {Function} event 点击按钮时触发的事件
+			 */
+			constructor(name, x, y, w, h, event) {
+				/** 按钮名称 */
+				this.name = name;
+				/** 按钮判定区左上角的x坐标 */
+				this.x = x;
+				/** 按钮判定区左上角的y坐标 */
+				this.y = y;
+				/** 按钮判定区的宽度 */
+				this.w = w;
+				/** 按钮判定区的高度 */
+				this.h = h;
+				/** 点击按钮时触发的事件 */
+				this.event = event;
+				/** 按钮状态,分为'unavailable','available','pending' */
+				this.status = 'available';
+			}
+		}
+
+		/** 生成按钮对象 
+		 * @param {Battle} battle
+		 * @returns {Array<Button>}
+		 */
+		function generateBtnList(battle) {
+			return [
+				new Button('btn1', 52, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('b');
+					else if (core.hasItem('I327')) battle.execUserAction('M');
+				}),
+				new Button('btn2', 52, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('b');
+					else if (core.hasItem('I327')) battle.execUserAction('M');
+				}),
+				new Button('btn3', 116, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('d');
+					else if (core.hasItem('I327')) battle.execUserAction('R');
+				}),
+				new Button('btn4', 148, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('h');
+					else if (core.hasItem('I327')) battle.execUserAction('F');
+				}),
+				new Button('btn5', 180, 320, 32, 32, () => {
+					if (core.hasItem('I325')) battle.execUserAction('k');
+					else if (core.hasItem('I327')) battle.execUserAction('E');
+				}),
+				new Button('sword', 212, 320, 32, 32, () => {
+					if (!battle.hero.swordEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备剑技');
+					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
+				}),
+				new Button('shield', 244, 320, 32, 32, () => {
+					if (!battle.hero.shieldEquiped) {
+						core.playSound('error.mp3');
+						core.drawTip('当前未装备盾技');
+					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
+				}),
+				new Button('crit', 276, 320, 32, 32, () => battle.execUserAction('c')),
+				new Button('breathe', 308, 320, 32, 32, () => battle.execUserAction('v')),
+				new Button('quick', 0, 0, 32, 32, () => battle.speed = 'quick'),
+				new Button('normal', 32, 0, 32, 32, () => battle.speed = 'normal'),
+				new Button('slow', 64, 0, 32, 32, () => battle.speed = 'slow'),
+			];
+		}
+
+		/**
 		 * @param {Battle} battleInfo 
 		 * 绘制技能图标
 		 */
 		function drawSkillButton(battleInfo) {
-			const swordSkill = battleInfo.hero.swordSkill,
-				shieldSkill = battleInfo.hero.shieldSkill,
-				crit = (swordSkill === 'c');
+			const hero = battleInfo.hero,
+				swordSkill = hero.swordSkill,
+				shieldSkill = hero.shieldSkill;
+				
+			// 更新按钮状态
+			const btnList = battleInfo.btnList;
+			btnList.forEach(btn => {
+				switch (btn.name) {
+					case 'btn1':
+						if (core.hasItem('I325')) {
+							if (swordSkill === 'b') btn.status = 'pending';
+							else if (battle.canExecAction('b')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						else if (core.hasItem('I327')) {
+							if (shieldSkill === 'M') btn.status = 'pending';
+							else if (battle.canExecAction('M')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						break;
+					case 'btn2':
+						if (core.hasItem('I325')) {
+							if (swordSkill === 's') btn.status = 'pending';
+							else if (battle.canExecAction('s')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						else if (core.hasItem('I327')) {
+							if (shieldSkill === 'C') btn.status = 'pending';
+							else if (battle.canExecAction('C')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						break;
+					case 'btn3':
+						if (core.hasItem('I325')) {
+							if (swordSkill === 'd') btn.status = 'pending';
+							else if (battle.canExecAction('d')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						else if (core.hasItem('I327')) {
+							if (shieldSkill === 'R') btn.status = 'pending';
+							else if (battle.canExecAction('R')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						break;
+					case 'btn4':
+						if (core.hasItem('I325')) {
+							if (swordSkill === 'h') btn.status = 'pending';
+							else if (battle.canExecAction('h')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						else if (core.hasItem('I327')) {
+							if (shieldSkill === 'F') btn.status = 'pending';
+							else if (battle.canExecAction('F')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						break;
+					case 'btn5':
+						if (core.hasItem('I325')) {
+							if (swordSkill === 'k') btn.status = 'pending';
+							else if (battle.canExecAction('k')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						else if (core.hasItem('I327')) {
+							if (shieldSkill === 'E') btn.status = 'pending';
+							else if (battle.canExecAction('E')) btn.status = 'available';
+							else btn.status = 'unavailable';
+						}
+						break;
+					case 'sword':
+						if (swordSkill !== '' && swordSkill !== 'c') btn.status = 'pending';
+						else if (battle.canExecAction(equipList[hero.swordEquiped])) 
+							btn.status = 'available';					
+						else btn.status = 'unavailable';
+						break;
+					case 'shield':
+						if (shieldSkill !== '') btn.status = 'pending';
+						else if (battle.canExecAction(equipList[hero.shieldEquiped]))
+							btn.status = 'available';
+						else btn.status = 'unavailable';
+						break;
+					case 'crit':
+						if (swordSkill === 'c') btn.status = 'pending';
+						else if (battle.canExecAction('c')) btn.status = 'available';
+						else btn.status = 'unavailable';
+						break;
+					case 'breathe':
+						if (battle.canExecAction('v')) btn.status = 'available';
+						else btn.status = 'unavailable';
+						break;
+				}
+			});
+			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
+			core.fillRect(ctx, 0, 0, 330, 32, 'gray');
+			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
+
+			const [start, interval] = [20, 32];
+
+			for (let i = 0; i <= 8; i++) {
+				const btn = btnList[i],
+					x = start + i * interval;
+				if (!core.hasItem('I325') && !core.hasItem('I327') && 0<=i && i<=4) continue;
+				let backGround = 'yellowBall.png';
+				if (btn.status === 'unavailable') backGround = 'grayBall.png';
+				else if (btn.status === 'pending') backGround = 'redBall.png';
+				core.drawImage(ctx, backGround, x, 0);
+
+				if (i>=5 && i<=8){
+					if (btn.status === 'unavailable') core.setAlpha(ctx,0.5);
+					switch (btn.name){
+						case 'sword':
+							core.drawImage(ctx, 'iconSword.png', x + 6, 6, 20, 20);
+							break;
+						case 'shield':
+							core.drawImage(ctx, 'iconShield.png', x + 6, 6, 20, 20);
+							break;
+						case 'crit':
+							core.drawImage(ctx, 'pong.png', x + 3, 2, 28, 28);
+							break;
+						case 'breathe':
+							core.drawImage(ctx, 'iconBreathe.png', x + 4, 4, 24, 24);
+							core.fillText(ctx, hero.deepBreath.toString(), 
+							x + 16, 19, 'blue', 'Bold 10px Arial');
+							break;
+					}
+					if (btn.status === 'unavailable') core.setAlpha(ctx,1);
+				}
+			}
+			return;
 			let offset = (core.hasItem('I325') || core.hasItem('I327')) ? 0 : 160;
-			const ctx = core.createCanvas("skillIcon", 40 + offset, 320, 330 - offset, 32, 68);
+			//const ctx = core.createCanvas("skillIcon", 40 + offset, 320, 330 - offset, 32, 68);
 			ctx.canvas.style.backgroundColor = "gray";
 			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
 			core.setTextAlign(ctx, "center");
 			core.strokeRect(ctx, 1, 1, 328 - offset, 30, strokeStyle, 2);
-			
-			const start = 20,
-				interval = 32;
+
+			//const start = 20,
+			//	interval = 32;
 			if (core.hasItem('I325') || core.hasItem('I327')) {
 				for (let i = 0; i <= 8; i++) {
 					core.drawImage(ctx, 'yellowBall.png', start + i * interval, 0);
@@ -6270,14 +6471,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.drawImage(ctx, 'iconBreathe.png', xList[3] + 4, 4, 24, 24);
 			core.fillText(ctx, core.getFlag('deepBreath', 5).toString(), xList[3] + 16, 19, 'blue', 'Bold 10px Arial');
 
+		}
+
+		/**
+		 * 绘制速度选择按钮
+		 * @param {Battle} battleInfo 
+		 */
+		function drawSpeedButton(battleInfo){
 			core.createCanvas('speedButton', 0, 0, 96, 30, 100);
 			core.fillRect('speedButton', 0, 0, 96, 30, 'gray');
-			core.strokeRect('speedButton',1,1,94,28,'blue');
+			core.strokeRect('speedButton', 1, 1, 94, 28, 'blue');
 			core.fillText('speedButton', '快  中  慢', 8, 20, 'white', '16px Verdana');
 			let rectPos = 4;
 			if (battleInfo.speed === 'normal') rectPos = 32;
 			else if (battleInfo.speed === 'slow') rectPos = 60;
-			core.strokeRect('speedButton',rectPos,4,24,22,'yellow');
+			core.strokeRect('speedButton', rectPos, 4, 24, 22, 'yellow');
 		}
 
 		/**
@@ -6326,14 +6534,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'grayPriest': { 'y': -20 },
 			'redPriest': { 'y': -20 },
 		},
-		/** 在公主图标上播放的动画的偏移量 */
-		princessOffsetList = {
+			/** 在公主图标上播放的动画的偏移量 */
+			princessOffsetList = {
 
-		},
-		/** 在敌人图标上播放的动画的偏移量 */
-		enemyOffsetList = {
-			'gsw1': { 'y': -40 },
-		};
+			},
+			/** 在敌人图标上播放的动画的偏移量 */
+			enemyOffsetList = {
+				'gsw1': { 'y': -40 },
+			};
 
 		/**
 		 * 解析当前atkStatus信息，播放动画
@@ -6355,12 +6563,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
 						break;
 					}
-					let oex = 0,
-						oey = 0;
+					let [oex, oey] = [0, 0];
 					const hAnimate = atkStatusH.animate;
 					if (enemyOffsetList.hasOwnProperty(hAnimate)) {
-						oex = enemyOffsetList[hAnimate].x || 0;
-						oey = enemyOffsetList[hAnimate].y || 0;
+						currOffset = enemyOffsetList[hAnimate];
+						[oex, oey] = [currOffset.x || 0, currOffset.y || 0];
 					}
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
@@ -6413,7 +6620,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px, py);
-						let shieldAnimate = (()=>{
+						let shieldAnimate = (() => {
 							if (core.hasItem('I325')) return 'gprin1';
 							else if (core.hasItem('I326')) return 'gprin2';
 							else if (core.hasItem('I327')) return 'gprin3';
@@ -6508,78 +6715,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
-
-		/**
-		 * 一个点击时触发对应事件的按钮
-		 */
-		class Button {
-		/**
-		 * @param {number} x 按钮判定区左上角的x坐标
-		 * @param {number} y 按钮判定区左上角的y坐标
-		 * @param {number} w 按钮判定区的宽度
-		 * @param {number} h 按钮判定区的高度
-		 * @param {Function} event 点击按钮时触发的事件
-		 */
-			constructor(x, y, w, h, event) {
-				/** 按钮判定区左上角的x坐标 */
-				this.x = x;
-				/** 按钮判定区左上角的y坐标 */
-				this.y = y;
-				/** 按钮判定区的宽度 */
-				this.w = w;
-				/** 按钮判定区的高度 */
-				this.h = h;
-				/** 点击按钮时触发的事件 */
-				this.event = event;
-			}
-		}
-
-		/** 生成按钮对象 
-		 * @param {Battle} battle
-		 * @returns {Map}
-		*/
-		function generateBtnList(battle) {
-			return new Map([
-				['btn1', new Button(52, 320, 32, 32, () => {
-					if (core.hasItem('I325')) battle.execUserAction('b');
-					else if (core.hasItem('I327')) battle.execUserAction('M');
-				})],
-				['btn2', new Button(84, 320, 32, 32, () => {
-					if (core.hasItem('I325')) battle.execUserAction('s');
-					else if (core.hasItem('I327')) battle.execUserAction('C');
-				})],
-				['btn3', new Button(116, 320, 32, 32, () => {
-					if (core.hasItem('I325')) battle.execUserAction('d');
-					else if (core.hasItem('I327')) battle.execUserAction('R');
-				})],
-				['btn4', new Button(148, 320, 32, 32, () => {
-					if (core.hasItem('I325')) battle.execUserAction('h');
-					else if (core.hasItem('I327')) battle.execUserAction('F');
-				})],
-				['btn5', new Button(180, 320, 32, 32, () => {
-					if (core.hasItem('I325')) battle.execUserAction('k');
-					else if (core.hasItem('I327')) battle.execUserAction('E');
-				})],
-				['sword', new Button(212, 320, 32, 32, () => {
-					if (!battle.hero.swordEquiped) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备剑技');
-					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
-				})],
-				['shield', new Button(244, 320, 32, 32, () => {
-					if (!battle.hero.shieldEquiped) {
-						core.playSound('error.mp3');
-						core.drawTip('当前未装备盾技');
-					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
-				})],
-				['crit', new Button(276, 320, 32, 32, () => battle.execUserAction('c'))],
-				['breathe', new Button(308, 320, 32, 32, () => battle.execUserAction('v'))],
-				['quick', new Button(0, 0, 32, 32, () => battle.speed = 'quick')],
-				['normal', new Button(32, 0, 32, 32, () => battle.speed = 'normal')],
-				['slow', new Button(64, 0, 32, 32, () => battle.speed = 'slow')],
-			]);
-		}
-
 		/**
 		 * 监听用户点击事件
 		 * @param {number} x 
@@ -6589,25 +6724,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battle 
 		 */
 		function listenClick(x, y, px, py, battle) {
-			const list = battle.btnList;
-			list.forEach((ele) => {
-				if (px >= ele.x && px <= ele.x + ele.w &&
-					py >= ele.y && py <= ele.y + ele.h
+			battle.btnList.forEach((button) => {
+				if (px >= button.x && px <= button.x + button.w &&
+					py >= button.y && py <= button.y + button.h
 				) {
-					ele.event(x, y, px, py);
+					button.event(x, y, px, py);
 				}
 			});
 			drawSkillButton(battle); //每次点击重绘所有按钮
+			drawSpeedButton(battle);
 		}
 
 		/**
-		 * 注册按键监听事件
+		 * 注册按键和点击的监听事件
 		 * @param {Battle} battle 
 		 */
 		function beginListen(battle) {
-			core.registerAction('keyDown', 'battleSkill', (keyCode) => {
-				listenKey(keyCode, battle);
-			}, 100);
+			core.registerAction('keyDown', 'battleSkill', keyCode => listenKey(keyCode, battle), 100);
 			core.registerAction('ondown', 'battleClick', (x, y, px, py) => {
 				listenClick(x, y, px, py, battle);
 			}, 100);
@@ -6617,16 +6750,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function clearCanvasAndEvent() {
 			core.unregisterAction('keyDown', 'battleSkill');
 			core.unregisterAction('ondown', 'battleClick');
+
 			core.unregisterAction('keyDown', 'quit');
 			core.unregisterAction('ondown', 'quit');
 
-			['drawDamage', 'showBottomBar', 'battleIcon'].forEach((x) => {
-				core.unregisterAnimationFrame(x);
-			});
+			['drawDamage', 'showBottomBar', 'battleIcon'].forEach(x => core.unregisterAnimationFrame(x));
 			['battleUI', 'battleIcon', 'battleBottomBar',
-				'skillIcon', 'quit', 'speedButton'].forEach((x) => {
-					core.deleteCanvas(x);
-				});
+				'skillIcon', 'quit', 'speedButton'].forEach(x => core.deleteCanvas(x));
 		}
 		// #endregion
 
@@ -6807,7 +6937,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 	},
-    "弹幕插件": function () {
+	"弹幕插件": function () {
 		// 在此增加新插件
 		if (core.isReplaying()) return;
 
