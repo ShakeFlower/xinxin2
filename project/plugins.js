@@ -5946,6 +5946,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			/** 检查用户输入的行为能否执行
 			 * @param {string} action
+			 * @returns {{success: boolean, reason: string}} 执行结果
 			 */
 			canExecAction(action) {
 				if (this.status !== 'pending') return { success: false, reason: '战斗已结束' };
@@ -6288,97 +6289,97 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * @param {Battle} battleInfo 
+		 * @param {Battle} battle 
 		 * 绘制技能图标
 		 */
-		function drawSkillButton(battleInfo) {
-			const hero = battleInfo.hero,
+		function drawSkillButton(battle) {
+			const hero = battle.hero,
 				swordSkill = hero.swordSkill,
 				shieldSkill = hero.shieldSkill;
 				
 			// 更新按钮状态
-			const btnList = battleInfo.btnList;
+			const btnList = battle.btnList;
 			btnList.forEach(btn => {
 				switch (btn.name) {
 					case 'btn1':
 						if (core.hasItem('I325')) {
 							if (swordSkill === 'b') btn.status = 'pending';
-							else if (battle.canExecAction('b')) btn.status = 'available';
+							else if (battle.canExecAction('b').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						else if (core.hasItem('I327')) {
 							if (shieldSkill === 'M') btn.status = 'pending';
-							else if (battle.canExecAction('M')) btn.status = 'available';
+							else if (battle.canExecAction('M').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						break;
 					case 'btn2':
 						if (core.hasItem('I325')) {
 							if (swordSkill === 's') btn.status = 'pending';
-							else if (battle.canExecAction('s')) btn.status = 'available';
+							else if (battle.canExecAction('s').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						else if (core.hasItem('I327')) {
 							if (shieldSkill === 'C') btn.status = 'pending';
-							else if (battle.canExecAction('C')) btn.status = 'available';
+							else if (battle.canExecAction('C').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						break;
 					case 'btn3':
 						if (core.hasItem('I325')) {
 							if (swordSkill === 'd') btn.status = 'pending';
-							else if (battle.canExecAction('d')) btn.status = 'available';
+							else if (battle.canExecAction('d').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						else if (core.hasItem('I327')) {
 							if (shieldSkill === 'R') btn.status = 'pending';
-							else if (battle.canExecAction('R')) btn.status = 'available';
+							else if (battle.canExecAction('R').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						break;
 					case 'btn4':
 						if (core.hasItem('I325')) {
 							if (swordSkill === 'h') btn.status = 'pending';
-							else if (battle.canExecAction('h')) btn.status = 'available';
+							else if (battle.canExecAction('h').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						else if (core.hasItem('I327')) {
 							if (shieldSkill === 'F') btn.status = 'pending';
-							else if (battle.canExecAction('F')) btn.status = 'available';
+							else if (battle.canExecAction('F').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						break;
 					case 'btn5':
 						if (core.hasItem('I325')) {
 							if (swordSkill === 'k') btn.status = 'pending';
-							else if (battle.canExecAction('k')) btn.status = 'available';
+							else if (battle.canExecAction('k').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						else if (core.hasItem('I327')) {
 							if (shieldSkill === 'E') btn.status = 'pending';
-							else if (battle.canExecAction('E')) btn.status = 'available';
+							else if (battle.canExecAction('E').success) btn.status = 'available';
 							else btn.status = 'unavailable';
 						}
 						break;
 					case 'sword':
 						if (swordSkill !== '' && swordSkill !== 'c') btn.status = 'pending';
-						else if (battle.canExecAction(equipList[hero.swordEquiped])) 
+						else if (battle.canExecAction(equipList[hero.swordEquiped]).success) 
 							btn.status = 'available';					
 						else btn.status = 'unavailable';
 						break;
 					case 'shield':
 						if (shieldSkill !== '') btn.status = 'pending';
-						else if (battle.canExecAction(equipList[hero.shieldEquiped]))
+						else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
 							btn.status = 'available';
 						else btn.status = 'unavailable';
 						break;
 					case 'crit':
 						if (swordSkill === 'c') btn.status = 'pending';
-						else if (battle.canExecAction('c')) btn.status = 'available';
+						else if (battle.canExecAction('c').success) btn.status = 'available';
 						else btn.status = 'unavailable';
 						break;
 					case 'breathe':
-						if (battle.canExecAction('v')) btn.status = 'available';
+						if (battle.canExecAction('v').success) btn.status = 'available';
 						else btn.status = 'unavailable';
 						break;
 				}
