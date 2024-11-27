@@ -6042,12 +6042,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * 绘制战斗界面
-		 * @param {Battle} battleInfo 
+		 * @param {Battle} battle 
 		 */
-		function drawBattleUI(battleInfo) {
+		function drawBattleUI(battle) {
 
-			const hero = battleInfo.hero,
-				enemy = battleInfo.enemy;
+			const hero = battle.hero,
+				enemy = battle.enemy;
 			const width = core.__PIXELS__ - 16,
 				height = 192,
 				x = 8,
@@ -6152,11 +6152,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/** 
 		 * 绘制敌人动态图像和动态的火焰图标
-		 * @param {Battle} battleInfo 
+		 * @param {Battle} battle 
 		 * @param {number} count // 敌人图像一共2帧，火焰一共3帧
 		 */
-		function drawBattleIcon(battleInfo, count) {
-			if (!battleInfo) return;
+		function drawBattleIcon(battle, count) {
+			if (!battle) return;
 			const width = core.__PIXELS__ - 16,
 				height = 192,
 				x = 8,
@@ -6173,8 +6173,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.drawImage(ctx, heroImage, 0, 0, h_width, h_height, bx2, by, size, size); // 绘制勇者图像
 			core.strokeRect(ctx, bx2, by, size, size, strokeStyle, 2); // 绘制右侧勇者图像的边框
 
-			const hero = battleInfo.hero,
-				enemy = battleInfo.enemy;
+			const hero = battle.hero,
+				enemy = battle.enemy;
 			const textFontSize = 14,
 				tx = bx + size + 8,
 				ty = by + 10 + textFontSize * 3 / 4,
@@ -6289,6 +6289,100 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
+		 * 更新按钮状态
+		 * @param {Button} btn 
+		 * @param {Battle} battle 
+		 */
+		function updateButtonStatus(btn, battle) {
+			const hero = battle.hero,
+				swordSkill = hero.swordSkill,
+				shieldSkill = hero.shieldSkill;
+			switch (btn.name) {
+				case 'btn1':
+					if (core.hasItem('I325')) {
+						if (swordSkill === 'b') btn.status = 'pending';
+						else if (battle.canExecAction('b').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					else if (core.hasItem('I327')) {
+						if (shieldSkill === 'M') btn.status = 'pending';
+						else if (battle.canExecAction('M').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					break;
+				case 'btn2':
+					if (core.hasItem('I325')) {
+						if (swordSkill === 's') btn.status = 'pending';
+						else if (battle.canExecAction('s').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					else if (core.hasItem('I327')) {
+						if (shieldSkill === 'C') btn.status = 'pending';
+						else if (battle.canExecAction('C').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					break;
+				case 'btn3':
+					if (core.hasItem('I325')) {
+						if (swordSkill === 'd') btn.status = 'pending';
+						else if (battle.canExecAction('d').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					else if (core.hasItem('I327')) {
+						if (shieldSkill === 'R') btn.status = 'pending';
+						else if (battle.canExecAction('R').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					break;
+				case 'btn4':
+					if (core.hasItem('I325')) {
+						if (swordSkill === 'h') btn.status = 'pending';
+						else if (battle.canExecAction('h').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					else if (core.hasItem('I327')) {
+						if (shieldSkill === 'F') btn.status = 'pending';
+						else if (battle.canExecAction('F').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					break;
+				case 'btn5':
+					if (core.hasItem('I325')) {
+						if (swordSkill === 'k') btn.status = 'pending';
+						else if (battle.canExecAction('k').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					else if (core.hasItem('I327')) {
+						if (shieldSkill === 'E') btn.status = 'pending';
+						else if (battle.canExecAction('E').success) btn.status = 'available';
+						else btn.status = 'unavailable';
+					}
+					break;
+				case 'sword':
+					if (swordSkill !== '' && swordSkill !== 'c') btn.status = 'pending';
+					else if (battle.canExecAction(equipList[hero.swordEquiped]).success) 
+						btn.status = 'available';					
+					else btn.status = 'unavailable';
+					break;
+				case 'shield':
+					if (shieldSkill !== '') btn.status = 'pending';
+					else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
+						btn.status = 'available';
+					else btn.status = 'unavailable';
+					break;
+				case 'crit':
+					if (swordSkill === 'c') btn.status = 'pending';
+					else if (battle.canExecAction('c').success) btn.status = 'available';
+					else btn.status = 'unavailable';
+					break;
+				case 'breathe':
+					if (battle.canExecAction('v').success) btn.status = 'available';
+					else btn.status = 'unavailable';
+					break;
+			}
+		}
+
+		/**
 		 * @param {Battle} battle 
 		 * 绘制技能图标
 		 */
@@ -6297,136 +6391,75 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				swordSkill = hero.swordSkill,
 				shieldSkill = hero.shieldSkill;
 				
-			// 更新按钮状态
-			const btnList = battle.btnList;
-			btnList.forEach(btn => {
-				switch (btn.name) {
-					case 'btn1':
-						if (core.hasItem('I325')) {
-							if (swordSkill === 'b') btn.status = 'pending';
-							else if (battle.canExecAction('b').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						else if (core.hasItem('I327')) {
-							if (shieldSkill === 'M') btn.status = 'pending';
-							else if (battle.canExecAction('M').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						break;
-					case 'btn2':
-						if (core.hasItem('I325')) {
-							if (swordSkill === 's') btn.status = 'pending';
-							else if (battle.canExecAction('s').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						else if (core.hasItem('I327')) {
-							if (shieldSkill === 'C') btn.status = 'pending';
-							else if (battle.canExecAction('C').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						break;
-					case 'btn3':
-						if (core.hasItem('I325')) {
-							if (swordSkill === 'd') btn.status = 'pending';
-							else if (battle.canExecAction('d').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						else if (core.hasItem('I327')) {
-							if (shieldSkill === 'R') btn.status = 'pending';
-							else if (battle.canExecAction('R').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						break;
-					case 'btn4':
-						if (core.hasItem('I325')) {
-							if (swordSkill === 'h') btn.status = 'pending';
-							else if (battle.canExecAction('h').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						else if (core.hasItem('I327')) {
-							if (shieldSkill === 'F') btn.status = 'pending';
-							else if (battle.canExecAction('F').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						break;
-					case 'btn5':
-						if (core.hasItem('I325')) {
-							if (swordSkill === 'k') btn.status = 'pending';
-							else if (battle.canExecAction('k').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						else if (core.hasItem('I327')) {
-							if (shieldSkill === 'E') btn.status = 'pending';
-							else if (battle.canExecAction('E').success) btn.status = 'available';
-							else btn.status = 'unavailable';
-						}
-						break;
-					case 'sword':
-						if (swordSkill !== '' && swordSkill !== 'c') btn.status = 'pending';
-						else if (battle.canExecAction(equipList[hero.swordEquiped]).success) 
-							btn.status = 'available';					
-						else btn.status = 'unavailable';
-						break;
-					case 'shield':
-						if (shieldSkill !== '') btn.status = 'pending';
-						else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
-							btn.status = 'available';
-						else btn.status = 'unavailable';
-						break;
-					case 'crit':
-						if (swordSkill === 'c') btn.status = 'pending';
-						else if (battle.canExecAction('c').success) btn.status = 'available';
-						else btn.status = 'unavailable';
-						break;
-					case 'breathe':
-						if (battle.canExecAction('v').success) btn.status = 'available';
-						else btn.status = 'unavailable';
-						break;
-				}
-			});
 			const ctx = core.createCanvas("skillIcon", 40, 320, 330, 32, 68);
-			core.fillRect(ctx, 0, 0, 330, 32, 'gray');
-			core.strokeRect(ctx, 1, 1, 328, 30, strokeStyle, 2);
+			const hasOrb = core.hasItem('I325') || core.hasItem('I327');
+			const offsetX = hasOrb ? 160 : 0;
+			core.fillRect(ctx, offsetX, 0, 330 - offsetX, 32, 'gray');
+			core.strokeRect(ctx, offsetX + 1, 1, 328 - offsetX, 30, strokeStyle, 2);
+		
+			const btnList = battle.btnList;
 
 			const [start, interval] = [20, 32];
 
 			for (let i = 0; i <= 8; i++) {
+				if (!hasOrb  && 0<=i && i<=4) continue;
+				
 				const btn = btnList[i],
-					x = start + i * interval;
-				if (!core.hasItem('I325') && !core.hasItem('I327') && 0<=i && i<=4) continue;
+				x = start + i * interval;
+
+				updateButtonStatus(btn, battle); // 更新按钮状态
+
 				let backGround = 'yellowBall.png';
 				if (btn.status === 'unavailable') backGround = 'grayBall.png';
 				else if (btn.status === 'pending') backGround = 'redBall.png';
 				core.drawImage(ctx, backGround, x, 0);
 
-				if (i>=5 && i<=8){
-					if (btn.status === 'unavailable') core.setAlpha(ctx,0.5);
-					switch (btn.name){
-						case 'sword':
-							core.drawImage(ctx, 'iconSword.png', x + 6, 6, 20, 20);
-							break;
-						case 'shield':
-							core.drawImage(ctx, 'iconShield.png', x + 6, 6, 20, 20);
-							break;
-						case 'crit':
-							core.drawImage(ctx, 'pong.png', x + 3, 2, 28, 28);
-							break;
-						case 'breathe':
-							core.drawImage(ctx, 'iconBreathe.png', x + 4, 4, 24, 24);
-							core.fillText(ctx, hero.deepBreath.toString(), 
+				if (btn.status === 'unavailable') core.setAlpha(ctx, 0.5);
+				switch (btn.name) {
+					case 'btn1':
+						if (core.hasItem('I325')) core.drawImage(ctx, 'I315.png', x + 5, 0, 20, 20);
+						else if (core.hasItem('I327')) core.drawImage(ctx, 'I339.png', x + 5, 0, 20, 20);
+						break;
+					case 'btn2':
+						if (core.hasItem('I325')) core.drawImage(ctx, 'I319.png', x + 5, 0, 20, 20);
+						else if (core.hasItem('I327')) core.drawImage(ctx, 'I321.png', x + 5, 0, 20, 20);
+						break;
+					case 'btn3':
+						if (core.hasItem('I325')) core.drawImage(ctx, 'I318.png', x + 5, 0, 20, 20);
+						else if (core.hasItem('I327')) core.drawImage(ctx, 'I375.png', x + 5, 0, 20, 20);
+						break;
+					case 'btn4':
+						if (core.hasItem('I325')) core.drawImage(ctx, 'I317.png', x + 5, 0, 20, 20);
+						else if (core.hasItem('I327')) core.drawImage(ctx, 'I322.png', x + 5, 0, 20, 20);
+						break;
+					case 'btn5':
+						if (core.hasItem('I325')) core.drawImage(ctx, 'I316.png', x + 5, 0, 20, 20);
+						else if (core.hasItem('I327')) core.drawImage(ctx, 'I320.png', x + 5, 0, 20, 20);
+						break;
+					case 'sword':
+						core.drawImage(ctx, 'iconSword.png', x + 6, 6, 20, 20);
+						break;
+					case 'shield':
+						core.drawImage(ctx, 'iconShield.png', x + 6, 6, 20, 20);
+						break;
+					case 'crit':
+						core.drawImage(ctx, 'pong.png', x + 3, 2, 28, 28);
+						break;
+					case 'breathe':
+						core.drawImage(ctx, 'iconBreathe.png', x + 4, 4, 24, 24);
+						core.fillText(ctx, hero.deepBreath.toString(),
 							x + 16, 19, 'blue', 'Bold 10px Arial');
-							break;
-					}
-					if (btn.status === 'unavailable') core.setAlpha(ctx,1);
+						break;
 				}
+				if (btn.status === 'unavailable') core.setAlpha(ctx, 1);		
 			}
 			return;
-			let offset = (core.hasItem('I325') || core.hasItem('I327')) ? 0 : 160;
+			//let offset = (core.hasItem('I325') || core.hasItem('I327')) ? 0 : 160;
 			//const ctx = core.createCanvas("skillIcon", 40 + offset, 320, 330 - offset, 32, 68);
 			ctx.canvas.style.backgroundColor = "gray";
 			ctx.canvas.style.backgroundImage = "url(project/images/ground.png)";
 			core.setTextAlign(ctx, "center");
-			core.strokeRect(ctx, 1, 1, 328 - offset, 30, strokeStyle, 2);
+			core.strokeRect(ctx, 1, 1, 328 - offsetX, 30, strokeStyle, 2);
 
 			//const start = 20,
 			//	interval = 32;
@@ -6476,25 +6509,25 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * 绘制速度选择按钮
-		 * @param {Battle} battleInfo 
+		 * @param {Battle} battle 
 		 */
-		function drawSpeedButton(battleInfo){
+		function drawSpeedButton(battle){
 			core.createCanvas('speedButton', 0, 0, 96, 30, 100);
 			core.fillRect('speedButton', 0, 0, 96, 30, 'gray');
 			core.strokeRect('speedButton', 1, 1, 94, 28, 'blue');
 			core.fillText('speedButton', '快  中  慢', 8, 20, 'white', '16px Verdana');
 			let rectPos = 4;
-			if (battleInfo.speed === 'normal') rectPos = 32;
-			else if (battleInfo.speed === 'slow') rectPos = 60;
+			if (battle.speed === 'normal') rectPos = 32;
+			else if (battle.speed === 'slow') rectPos = 60;
 			core.strokeRect('speedButton', rectPos, 4, 24, 22, 'yellow');
 		}
 
 		/**
 		 * 绘制底边栏
-		 * @param {Battle} battleInfo
+		 * @param {Battle} battle
 		 * @param {number} h 底边栏的宽度
 		 */
-		function drawBattleBottomBar(battleInfo, h) {
+		function drawBattleBottomBar(battle, h) {
 			const width = core.__PIXELS__ - 16,
 				height = h || 40,
 				x = 8,
@@ -6511,8 +6544,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.fillText(ctx, "金币：", 100, 26, "white", "20px hkbdt");
 				core.fillText(ctx, "经验值：", 200, 26, "white", "20px hkbdt");
 				core.setTextAlign(ctx, "left");
-				core.fillText(ctx, battleInfo.enemy.data.money.toString(), 150, 26, "gold", "20px Verdana");
-				core.fillText(ctx, battleInfo.enemy.data.exp.toString(), 270, 26, "cyan", "20px Verdana");
+				core.fillText(ctx, battle.enemy.data.money.toString(), 150, 26, "gold", "20px Verdana");
+				core.fillText(ctx, battle.enemy.data.exp.toString(), 270, 26, "cyan", "20px Verdana");
 			}
 		}
 
