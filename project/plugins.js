@@ -5891,10 +5891,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.waitTime = isEnemyCombo ? 5 : 50;
 						break;
 					case 'normal':
-						this.waitTime = isEnemyCombo ? 150 : 300;
+						this.waitTime = isEnemyCombo ? 200 : 400;
 						break;
 					case 'slow':
-						this.waitTime = isEnemyCombo ? 300 : 600;
+						this.waitTime = isEnemyCombo ? 400 : 800;
 						break;
 				}
 				if (++this.actIndex >= this.order.length) this.actIndex = 0;
