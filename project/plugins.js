@@ -5887,13 +5887,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const isEnemyCombo = this.actIndex > 0 && this.actIndex < this.order.length - 1;
 				switch (this.speed) {
 					case 'quick':
-						this.waitTime = isEnemyCombo ? 2 : 20;
+						this.waitTime = isEnemyCombo ? 5 : 50;
 						break;
 					case 'normal':
-						this.waitTime = isEnemyCombo ? 200 : 400;
+						this.waitTime = isEnemyCombo ? 150 : 300;
 						break;
 					case 'slow':
-						this.waitTime = isEnemyCombo ? 400 : 800;
+						this.waitTime = isEnemyCombo ? 300 : 600;
 						break;
 				}
 				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
@@ -5904,9 +5904,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 检查战斗是否满足结束条件*/
 			checkEnd() {
 				if (this.hero.hp <= 0 || this.hero.hpmax <= 0) {
+					if (this.hero.hp < 0) this.hero.hp = 0;
+					if (this.hero.hpmax < 0) this.hero.hpmax = 0;
 					this.status = 'lose';
 				}
 				else if (this.enemy.hp <= 0) {
+					this.enemy.hp = 0;
 					this.status = 'win';
 				}
 			}
