@@ -5897,7 +5897,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.waitTime = isEnemyCombo ? 300 : 600;
 						break;
 				}
-				if (this.actIndex++ >= this.order.length) this.actIndex = 0;
+				if (++this.actIndex >= this.order.length) this.actIndex = 0;
 				this.actor = this.order[this.actIndex];
 				this.turn++;
 			}
