@@ -5002,6 +5002,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						}, 100);
 					})
 				]);
+				battle.recordDelayedAction();
 				battle.nextTurn();
 				battle.checkEnd();
 				// 此处更新动画
@@ -5380,7 +5381,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					atkStatus.skill = this.swordSkill;
 					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
 					this.fatigue += getSkill(this.swordSkill, 'fatigue');
-					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + this.swordSkill;
 				}
 				switch (this.swordSkill) {
 					case 'c':
@@ -5681,7 +5681,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (hero.shieldSkill.length > 0) {
 					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
 					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
-					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + hero.shieldSkill;
 				} else return reflectInfo;
 				switch (hero.shieldSkill) { //盾技
 					case 'M': //镜膜盾
@@ -5949,6 +5948,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.hero.shieldEquiped = aimShield;
 					this.hero.shieldSkill = action;
 					if (action === 'F') this.hero.addFairy();
+				}
+			}
+
+			/**
+			 * 将延时执行的行为的最终结果写入录像
+			 */
+			recordDelayedAction() {
+				if (core.isReplaying()) return;
+				switch (this.actor) {
+					case 'hero':
+						const sword = this.hero.swordSkill;
+						if (sword.length > 0) this.route += ':' + this.turn.toString() + sword;
+						break;
+					case 'enemy':
+						const shield = this.hero.shieldSkill;
+						if (shield.length > 0) this.route += ':' + this.turn.toString() + shield;
+						break;
 				}
 			}
 
