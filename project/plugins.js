@@ -5380,6 +5380,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					atkStatus.skill = this.swordSkill;
 					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
 					this.fatigue += getSkill(this.swordSkill, 'fatigue');
+					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + this.swordSkill;
 				}
 				switch (this.swordSkill) {
 					case 'c':
@@ -5680,6 +5681,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (hero.shieldSkill.length > 0) {
 					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
 					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
+					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + hero.shieldSkill;
 				} else return reflectInfo;
 				switch (hero.shieldSkill) { //盾技
 					case 'M': //镜膜盾
@@ -5927,11 +5929,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					return;
 				}
-				if (action === 'q') this.status = 'quit';
+				if (action === 'q') {
+					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'q';
+					this.status = 'quit';}
 				else if (action === 'v') {
 					this.hero.mana -= this.hero.permana;
 					this.hero.fatigue -= this.hero.deepBreath;
 					if (this.hero.fatigue < 0) this.hero.fatigue = 0;
+					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'v';
 				}
 				else if (action === 'c') this.hero.swordSkill = 'c';
 
@@ -5945,7 +5950,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.hero.shieldSkill = action;
 					if (action === 'F') this.hero.addFairy();
 				}
-				if (!core.isReplaying()) this.route += ':' + this.turn.toString() + action;
 			}
 
 			/** 检查用户输入的行为能否执行
