@@ -4644,10 +4644,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setTextAlign(canvas, "center");
 			core.drawWindowSkin("winskin.png", canvas,
 				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-			core.drawImage(canvas, list[index][3], 126, 80) // 换成各自的图标
-			core.fillText(canvas, "获得成就", 250 * 13 / 15, 120 * 13 / 15,
+			core.drawImage(canvas, list[index][3].toString()+'.png', 126, 80); // 换成各自的图标
+			core.fillText(canvas, "获得成就", 230, 120 * 13 / 15,
 				"cyan", "24px " + core.status.globalAttribute.font);
-			core.fillText(canvas, list[index][1], 240 * 13 / 15, 160 * 13 / 15,
+			core.fillText(canvas, list[index][1], 220, 160 * 13 / 15,
 				"#FFFFFF", "20px " + core.status.globalAttribute.font);
 			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
 				delete core.animateFrame.asyncId[fade];
@@ -5503,7 +5503,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			constructor(info, data) {
 				super(info.hp, info.atk, info.def,
-					data.value, (data.id === 'E437') ? 0 : 10, data.damage || 0);
+					data.value, (data.id === 'E437') ? 10 : 0, data.damage || 0);
 				/** getEnemyInfo获得的敌人info */
 				this.info = info;
 				/** core.material.enemys中的敌人数据 */
