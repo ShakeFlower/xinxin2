@@ -15,7 +15,7 @@ var enemys_fcae963b_31c9_42b4_b48c_bb48d09f3f80 =
 	"zombie": {"name":"丧尸","hp":110,"atk":90,"def":30,"money":8,"exp":1,"point":0,"special":[],"value":28},
 	"zombieKnight": {"name":"丧尸剑士","hp":535,"atk":305,"def":180,"money":41,"exp":5,"point":0,"special":[],"value":30},
 	"rock": {"name":"石头怪","hp":10,"atk":70,"def":110,"money":12,"exp":2,"point":0,"special":[],"value":35},
-	"slimeMan": {"name":"史莱姆人","hp":176,"atk":98,"def":66,"money":12,"exp":2,"point":0,"special":[],"atkValue":2,"defValue":3,"value":31,"n":20},
+	"slimeMan": {"name":"史莱姆人","hp":176,"atk":98,"def":66,"money":12,"exp":2,"point":0,"special":[52],"atkValue":2,"defValue":3,"value":31,"n":20},
 	"bluePriest": {"name":"魔术师","hp":50,"atk":18,"def":4,"money":3,"exp":1,"point":0,"special":[2],"value":35},
 	"redPriest": {"name":"炎术士","hp":330,"atk":90,"def":170,"money":38,"exp":4,"point":0,"special":[2],"value":90},
 	"brownWizard": {"name":"大法师","hp":496,"atk":112,"def":182,"money":43,"exp":5,"point":0,"special":[2],"value":90,"range":2},

@@ -5678,6 +5678,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					oriDamage: 0,
 					reflect: false,
 				}
+				let damage = this.atkStatus.damage;
 				if (hero.shieldSkill.length > 0) {
 					hero.mana -= getSkill(hero.shieldSkill, 'cost') * hero.permana;
 					hero.fatigue += getSkill(hero.shieldSkill, 'fatigue');
@@ -5711,6 +5712,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					default:
 						break;
 				}
+				this.atkStatus.damage = damage;
 				hero.shieldSkill = '';
 				return reflectInfo;
 			}
