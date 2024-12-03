@@ -1,1309 +1,1310 @@
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+/// <reference path = "../runtime.d.ts" />
+ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 
-		console.log("插件编写测试");
+	console.log("插件编写测试");
 
-		// 可以写一些直接执行的代码
-		// 在这里写的代码将会在【资源加载前】被执行，此时图片等资源尚未被加载。
-		// 请勿在这里对包括bgm，图片等资源进行操作。
+	// 可以写一些直接执行的代码
+	// 在这里写的代码将会在【资源加载前】被执行，此时图片等资源尚未被加载。
+	// 请勿在这里对包括bgm，图片等资源进行操作。
 
-		this._afterLoadResources = function () {
-			// 本函数将在所有资源加载完毕后，游戏开启前被执行
-			// 可以在这个函数里面对资源进行一些操作，比如切分图片等。
+	this._afterLoadResources = function () {
+		// 本函数将在所有资源加载完毕后，游戏开启前被执行
+		// 可以在这个函数里面对资源进行一些操作，比如切分图片等。
 
-			// 这是一个将assets.png拆分成若干个32x32像素的小图片并保存的样例。
-			// var arr = core.splitImage("assets.png", 32, 32);
-			// for (var i = 0; i < arr.length; i++) {
-			//     core.material.images.images["asset"+i+".png"] = arr[i];
-			// }
+		// 这是一个将assets.png拆分成若干个32x32像素的小图片并保存的样例。
+		// var arr = core.splitImage("assets.png", 32, 32);
+		// for (var i = 0; i < arr.length; i++) {
+		//     core.material.images.images["asset"+i+".png"] = arr[i];
+		// }
 
-		}
+	}
 
-		// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为 core.plugin.xxx();
-		// 从V2.6开始，插件中用this.XXX方式定义的函数也会被转发到core中，详见文档-脚本-函数的转发。
+	// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为 core.plugin.xxx();
+	// 从V2.6开始，插件中用this.XXX方式定义的函数也会被转发到core中，详见文档-脚本-函数的转发。
 
-		core.actions._keyDownAction = function (keycode) {
-			if (core.status.event.data.type == 'choices') {
-				this._keyDownChoices(keycode);
-				if (flags.keyDown) {
-					var data = core.status.event.data.current;
-					var choices = data.choices;
-					if (choices.length > 0) {
-						this._selectChoices(choices.length, keycode, this._clickAction);
-					}
+	core.actions._keyDownAction = function (keycode) {
+		if (core.status.event.data.type == 'choices') {
+			this._keyDownChoices(keycode);
+			if (flags.keyDown) {
+				var data = core.status.event.data.current;
+				var choices = data.choices;
+				if (choices.length > 0) {
+					this._selectChoices(choices.length, keycode, this._clickAction);
 				}
-				return;
-			}
-			if (core.status.event.data.type == 'confirm' && (keycode == 37 || keycode == 39)) {
-				core.status.event.selection = 1 - core.status.event.selection;
-				core.playSound('光标移动');
-				core.drawConfirmBox(core.status.event.ui.text);
-				return;
-			}
-		}
-
-		////// 自定义事件时，放开某个键的操作 //////
-		core.actions._keyUpAction = function (keycode) {
-			if (core.status.event.data.type == 'text' && (keycode == 13 || keycode == 32 || keycode == 67)) {
-				return this._clickAction_text();
-			}
-			if (core.status.event.data.type == 'wait') {
-				var timeout = Math.max(0, core.status.event.timeout - new Date().getTime()) || 0;
-				core.setFlag('type', 0);
-				core.setFlag('keycode', keycode);
-				core.setFlag('timeout', timeout);
-				var executed = core.events.__action_wait_afterGet(core.status.event.data.current);
-				if (executed || !core.status.event.data.current.forceChild) {
-					core.status.route.push("input:" + (1e8 * timeout + keycode));
-					clearTimeout(core.status.event.interval);
-					delete core.status.event.timeout;
-					core.doAction();
-				}
-				return;
-			}
-			if (core.status.event.data.type == 'choices') {
-				if (!flags.keyDown) {
-					var data = core.status.event.data.current;
-					var choices = data.choices;
-					if (choices.length > 0) {
-						this._selectChoices(choices.length, keycode, this._clickAction);
-					}
-				}
-				return;
-			}
-			if (core.status.event.data.type == 'confirm' && (keycode == 13 || keycode == 32 || keycode == 67)) {
-				var timeout = Math.max(0, core.status.event.timeout - new Date().getTime()) || 0;
-				delete core.status.event.timeout;
-				core.setFlag('timeout', timeout);
-				core.status.route.push("choices:" + (100 * timeout + core.status.event.selection));
-				if (core.status.event.selection == 0)
-					core.insertAction(core.status.event.ui.yes);
-				else core.insertAction(core.status.event.ui.no);
-				core.doAction();
-				return;
-			}
-		}
-
-		core.actions._clickEquipboxIndex = function (index) {
-			if (index < this.LAST) {
-				if (index >= core.status.globalAttribute.equipName.length) return;
-				if (index == core.status.event.selection && core.status.hero.equipment[index]) {
-					if (core.isReplaying()) return;
-					return; // 新新2不允许卸下剑技/盾技
-					core.unloadEquip(index);
-					core.status.route.push("unEquip:" + index);
-				} else core.playSound('光标移动');
-			} else {
-				var equips = core.getToolboxItems('equips');
-				if (index == core.status.event.selection) {
-					if (core.isReplaying()) return;
-					var equipId = equips[index - this.LAST + (core.status.event.data.page - 1) * this.LAST];
-					core.loadEquip(equipId);
-					core.status.route.push("equip:" + equipId);
-				} else core.playSound('光标移动');
-			}
-			core.ui._drawEquipbox(index);
-		}
-
-		core.maps._drawFg_draw = function (floorId, toDrawCtx, cacheCtx, config) {
-			config.ctx = cacheCtx;
-			// ------ 调整这两行的顺序来控制是先绘制贴图还是先绘制前景图块；后绘制的覆盖先绘制的。
-			core.maps._drawFloorImages(floorId, config.ctx, 'fg', null, null, config.onMap);
-			core.maps._drawBgFgMap(floorId, 'fg', config);
-			if (config.onMap) core.drawImage(toDrawCtx, cacheCtx.canvas, core.bigmap.v2 ? -32 : 0, core.bigmap.v2 ? -32 : 0);
-			config.ctx = toDrawCtx;
-
-			var ctx = config.ctx;
-			core.drawIcon(ctx, 340, 160, 0);
-			core.drawIcon(ctx, 340, 192, 0);
-			core.drawIcon(ctx, 340, 224, 0);
-			if (core.hasItem('I325')) core.drawIcon(ctx, 325, 150, 389, 24, 24);
-			if (core.hasItem('I326')) core.drawIcon(ctx, 326, 150, 389, 24, 24);
-			if (core.hasItem('I327')) core.drawIcon(ctx, 327, 150, 389, 24, 24);
-			if (core.hasItem('skill1')) core.drawIcon(ctx, 72, 220, 389, 24, 24);
-			if (core.hasItem('I307')) core.drawIcon(ctx, 307, 244, 389, 24, 24);
-			if (core.hasItem('I309')) core.drawIcon(ctx, 309, 268, 389, 24, 24);
-			core.strokeRect(ctx, 30.5, 30.5, 355, 355, "rgb(205,0,154)", 3);
-			var t = ctx.textAlign;
-			ctx.textAlign = "left";
-			var s = core.floors[floorId].title;
-			core.fillText(ctx, s.substr(0, 2), 168, 20, "white", "bold 15px Arial");
-			core.fillText(ctx, s.substr(3), 244 - 4 * s.length, 20, "white", "bold 15px Arial");
-			core.drawImage(ctx, "circle.png", 268, 384, 180, 40);
-			// core.fillEllipse(ctx, 360, 408, 45, 5, 0, "#5bdb62");
-			core.fillText(ctx, !core.flags.leftHandPrefer ? "-Press L-" : "-Press Y-", 316, 410, "white", "bold 20px Arial");
-			ctx.textAlign = t;
-		}
-
-		this.triggerAchieve = function (id) {
-			if (!flags.bugFix) return;
-			var a = flags.achieves;
-			if (typeof a != 'object') return;
-			id--;
-			a = a[id];
-			if (typeof a != 'object') return;
-			if (a[4]) {
-				return;
-			} else {
-				a[4] = 1;
-				core.addFlag('achieveScore', a[3]);
-				core.playSound('achievement.mp3');
-				core.insertAction("\t[恭喜获得「" + a[0] + "」,N" + (454 + id) + "]" + a[2] + "\n\n\r[yellow]成就点数+" + a[3]);
-				return;
-			}
-		}
-
-		// 开启技能
-		this.useSkill = function (skillid) {
-			var preskill = core.getFlag('skill', 0);
-			if (skillid == preskill) skillid = 0;
-			core.setFlag('skill', skillid);
-			var name = "";
-			if (/[0-5]/.test(skillid)) name = core.getFlag('skill_' + skillid, '');
-			else name = skillid;
-			name = this.myFormatSkill(name);
-			core.setFlag('skillName', name);
-			core.setFlag('battleTipsFlow', 0);
-		};
-
-		this.myReplaceAll = function (str, s1, s2) { // Android不能用replaceAll
-			str = str.replace(s1, s2);
-			if (str.indexOf(s1) >= 0) str = this.myReplaceAll(str, s1, s2);
-			return str;
-		}
-
-		this.myFormatSkill = function (str, intoHouse, noReduce) {
-			str = str.toUpperCase();
-			var check = str;
-			var sword = ['I315', 'I319', 'I318', 'I317', 'I316'],
-				shield = ['I339', 'I321', 'I375', 'I322', 'I320'];
-			while (check.indexOf('*') >= 0) {
-				var i = check.indexOf('*'),
-					j = i - 1;
-				if (check.charAt(j) != ')') {
-					if (/[1-5]/.test(check.charAt(j))) j--;
-					if (check.charAt(j - 1) == '-') j--;
-					check = check.substr(0, j) + '(' + check.substr(j, i - j) + ')' + check.substr(i);
-				}
-				i = check.indexOf('*');
-				j = check.substr(0, i - 1).lastIndexOf('(');
-				var t = (check.substr(i + 1).match(/\d+/g) || [])[0];
-				if (check.substr(i + 1).indexOf(t) != 0) t = '';
-				var x = check.substr(0, j);
-				for (var k = 1; k <= (t || 1); k++) x += check.substr(j + 1, i - j - 2);
-				check = x + check.substr(i + 1 + t.length);
-			}
-			if (!intoHouse) str = check;
-			check = this.removeStopper(str, 1e8);
-			var Zi, Xi, n;
-			n = str.indexOf('Z');
-			if (n >= 0) {
-				n = str.charAt(n + 1);
-				if (/[1-5]/.test(n)) Zi = n;
-			}
-			n = str.indexOf('X');
-			if (n >= 0) {
-				n = str.charAt(n + 1);
-				if (/[1-5]/.test(n)) Xi = n;
-			}
-			for (var i = 1; i <= 5; i++) {
-				if (intoHouse) {
-					check = core.myReplaceAll(check, 'Z' + i, '');
-					check = core.myReplaceAll(check, 'X' + i, '');
-				} else {
-					if (core.getEquip(0) == sword[i - 1]) {
-						check = this.myReplaceAll(check, 'Z' + i, 'Z');
-						str = this.myReplaceAll(str, 'Z' + i, 'Z');
-					} else if (core.hasItem('I325') && core.canEquip(sword[i - 1], false)) {
-						check = this.myReplaceAll(check, 'Z' + i, 'Z');
-					} else if (core.hasItem('I326') && i == Zi && core.canEquip(sword[i - 1], false)) {
-						check = this.myReplaceAll(check, 'Z' + i, 'Z');
-						str = this.myReplaceAll(str, 'Z' + i, 'Z');
-						str = str.replace('Z', 'Z' + i);
-					} else {
-						check = this.myReplaceAll(check, 'Z' + i, 'Q');
-					}
-					if (core.getEquip(1) == shield[i - 1]) {
-						check = this.myReplaceAll(check, 'X' + i, 'X');
-						str = this.myReplaceAll(str, 'X' + i, 'X');
-					} else if (core.hasItem('I327') && core.canEquip(shield[i - 1], false)) {
-						check = this.myReplaceAll(check, 'X' + i, 'X');
-					} else if (core.hasItem('I326') && i == Xi && core.canEquip(shield[i - 1], false)) {
-						check = this.myReplaceAll(check, 'X' + i, 'X');
-						str = this.myReplaceAll(str, 'X' + i, 'X');
-						str = str.replace('X', 'X' + i);
-					} else {
-						check = this.myReplaceAll(check, 'X' + i, 'Q');
-					}
-				}
-			}
-			if (!intoHouse && !(core.getEquip(0) || core.hasItem('I325') || core.hasItem('I326'))) str = this.myReplaceAll(str, 'Z', '');
-			if (!intoHouse && !(core.getEquip(1) || core.hasItem('I327') || core.hasItem('I326'))) str = this.myReplaceAll(str, 'X', '');
-			['-C', '-V', 'A', 'D', 'Z', 'X', 'C', 'V'].forEach(function (e) {
-				check = core.myReplaceAll(check, e, '');
-			})
-			if (check == '') {
-				if (!noReduce) str = this.myReduceSkill(str);
-				return str;
-			} else return '';
-		}
-
-		this.myReduceSkill = function (str) {
-			var x = ['-C', '-V'];
-			for (var i = 1; i <= 5; i++) x.push('Z' + i, 'X' + i);
-			for (var i = 1; i <= str.length / 2; i++) {
-				for (var j = 0; j + i - 1 <= str.length - 1; j++) {
-					var k = 1;
-					if (x.indexOf(str.substr(j - 1, i + 1)) > -1) continue;
-					while (str.substr(j, i) == str.substr(j + k * i, i) && x.indexOf(str.substr(j + k * i, i + 1)) == -1) k++;
-					if (k >= 3 || (k == 2 && i > 3)) {
-						if (i == 1 || x.indexOf(str.substr(j, i)) > -1) str = str.substr(0, j) + str.substr(j, i) + '*' + k + str.substr(j + i * k);
-						else str = str.substr(0, j) + '(' + str.substr(j, i) + ')*' + k + str.substr(j + i * k);
-					}
-				}
-			}
-			return str;
-		}
-
-		this.getSkillPerform = function (enemy, setMana, x, y, floorId, fullList) {
-			if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			var res = [],
-				nowSkill = core.getFlag('skillName', ''),
-				mana = core.status.hero.mana,
-				skillHouse = core.getFlag('skillHouse', []),
-				info = core.getDamageInfo(enemy, null, x, y, floorId),
-				mon_def = core.enemys.getEnemyInfo(enemy, hero, x, y, floorId).def;
-			if (core.hasSpecial(enemy.special, 20) || (info && info.damage <= 0)) return res;
-			if (info && info.turn > core.getFlag('recomTurnMax', 10) && (core.hasSpecial(enemy.special, 57) || core.hasSpecial(enemy.special, 65) || core.hasSpecial(enemy.special, 66))) {
-				skillHouse = ['C', 'CC', 'CX', 'XC', 'CXC'];
-			} else if (!info && hero.atk > mon_def && (core.hasSpecial(enemy.special, 53) || core.hasSpecial(enemy.special, 54) || core.hasSpecial(enemy.special, 56) || core.hasSpecial(enemy.special, 83) || core.hasSpecial(enemy.special, 86))) {
-				skillHouse = ['-V*999'];
-			} else if (!info || info.turn > core.getFlag('recomTurnMax', 10)) {
-				if (core.getEquip(1) == 'I375' || (core.hasItem('I327') && core.canEquip('I375', false))) {
-					skillHouse = ['X3*9'];
-				} else skillHouse = [];
-			}
-			if (skillHouse.length == 0) return res;
-			skillHouse = [''].concat(skillHouse);
-			if (setMana > 1 + core.status.hero.manamax) mana = core.status.hero.manamax;
-			else if (setMana > 0) mana = setMana - 1;
-			skillHouse.forEach(function (s) {
-				if (s != '') {
-					s = core.myFormatSkill(s);
-					if (s == '') return;
-				}
-				core.setFlag('skillName', s);
-				var info = core.getDamageInfo(enemy, { "mana": mana }, x, y, floorId);
-				if (info) res.push([info.skill, info.damage, info.mana, 0]);
-			});
-			core.setFlag('skillName', nowSkill);
-			for (var i = 0; i < res.length - 1; i++) {
-				for (var j = 0; j < res.length - 1 - i; j++) {
-					if (res[j][2] < res[j + 1][2] || (res[j][2] == res[j + 1][2] && res[j][1] > res[j + 1][1])) {
-						var temp = res[j + 1];
-						res[j + 1] = res[j];
-						res[j] = temp;
-					}
-				}
-			}
-			for (var i = 1; i < res.length; i++) {
-				if (res[i][2] == res[i - 1][2] && res[i][1] >= res[i - 1][1]) {
-					res.splice(i, 1);
-					i--;
-				} else {
-					res[i][3] = (res[i][1] - res[i - 1][1]) / (res[i][2] - res[i - 1][2]);
-					if (res[i][3] <= 0) {
-						res.splice(i, 1);
-						i--;
-					} else if (!fullList) {
-						while (i > 1) {
-							if (res[i][3] <= res[i - 1][3]) break;
-							else {
-								res.splice(i - 1, 1);
-								i--;
-								res[i][3] = (res[i][1] - res[i - 1][1]) / (res[i][2] - res[i - 1][2]);
-							}
-						}
-					}
-				}
-			}
-			for (var i = res.length - 1; i > 0; i--) {
-				res[i][1] = res[i - 1][1] - res[i][1];
-				res[i][2] = res[i - 1][2] - res[i][2];
-				if (res[i][3] < 100) res[i][3] = res[i][3].toFixed(2);
-				else res[i][3] = core.formatBigNumber(res[i][3], true);
-			}
-			if (res.length) {
-				res[0][1] = null;
-				res[0][2] = null;
-				res[0][3] = null;
-			}
-			return res;
-		}
-
-		this.getRecomSkill = function (enemy, x, y, floorId) {
-			// return { "skill": 'C', "ratio": "max" };
-			var res = this.getSkillPerform(enemy, 0, x, y, floorId),
-				ratio,
-				i = 0;
-			if (!res || res.length == 0) return null;
-			try { ratio = core.calValue(flags.hpManaRatio) } catch (e) { }
-			if (typeof ratio != 'number') ratio = 0;
-			res.forEach(function (r) {
-				if (r[3] >= ratio) i++;
-			})
-			//if (i > 0) return { "skill": res[i][0], "ratio": res[i][3] };
-			if (i > 0) return { "skill": ((res[i]) || [])[0], "ratio": ((res[i]) || [])[3] };
-			else return { "skill": res[0][0], "ratio": "max" };
-		}
-
-		// 战斗计算
-		this.atkMana = function (atk, def, isMon) {
-			var now = Math.round(def / atk * 10),
-				cri = 0;
-			if (!isMon && atk <= def) now = 0;
-			if (!isMon && now > 1) cri = Math.floor(def * 10 / (now - 0.5) + 1) - atk;
-			if (isMon) cri = Math.ceil((now + 0.5) * atk / 10) - def;
-			return {
-				"now": now,
-				"cri": cri
-			};
-		}
-
-		this.setKiMana = function (h) {
-			if (h.ki == null) {
-				h.ki = Math.min(5, Math.ceil((h.mana - core.getFlag('overCharge', 0)) / h.mmm) - 1);
-				h.charge = Math.floor(h.mana - h.ki * h.mmm);
-				if (h.ki == 5) h.charge = Math.min(h.charge, h.mmm + core.getFlag('overCharge', 0));
-			} else {
-				h.mana = h.ki * h.mmm + h.charge;
-				if (h.charge == 0) h.mana += 0.1;
 			}
 			return;
 		}
-
-		this.useKi = function (h, n, isBug) {
-			if (h.ki >= n || isBug) {
-				h.ki -= n;
-				return true;
-			} else return false;
+		if (core.status.event.data.type == 'confirm' && (keycode == 37 || keycode == 39)) {
+			core.status.event.selection = 1 - core.status.event.selection;
+			core.playSound('光标移动');
+			core.drawConfirmBox(core.status.event.ui.text);
+			return;
 		}
+	}
 
-		this.chargeKi = function (h, n) {
-			h.charge += n;
-			if (n < 0) h.overCharge = Math.max(0, n + h.overCharge);
-			while (h.charge > h.mmm && h.ki < 5 && n >= 0) {
-				h.charge -= h.mmm;
-				h.ki++;
-				h.overCharge = 0;
-			}
-			while (h.charge < 0 && h.ki > 0) {
-				h.charge += h.mmm;
-				h.ki--;
-			}
-			if (h.charge < 0) h.charge = 0;
-			if (h.ki == 5 && h.charge > h.mmm) {
-				h.fmana += h.charge - h.mmm;
-				h.charge = h.mmm;
-			}
+	////// 自定义事件时，放开某个键的操作 //////
+	core.actions._keyUpAction = function (keycode) {
+		if (core.status.event.data.type == 'text' && (keycode == 13 || keycode == 32 || keycode == 67)) {
+			return this._clickAction_text();
 		}
-
-		this.heroAtk = function (s, skill) {
-			skill = skill || '';
-			var h = s.h,
-				p = s.p,
-				m = s.m,
-				sp = m.sp;
-			var dmg = h.atk - m.def,
-				tmax = core.getFlag('tiredMax', 20),
-				bugFix = flags.bugFix;
-
-			var lsbug, lv = core.status.hero.lv;
-
-			if (h.tired >= 100) dmg = 0;
-			else {
-				if (dmg < -core.getFlag("atkm", 10)) dmg = 0;
-				else if (dmg < 1) dmg = 1;
-				if (h.atk > m.def) {
-					if ((skill == 'C' || h.tempZi == 6) && this.useKi(h, 1, s.bug)) { // 使用C无疲劳限制
-						dmg *= 2;
-						h.tired += 2;
-						if (core.getEquip(0) == 'I319') lsbug = true;
-					} else if ((skill == 'Z1' || h.tempZi == 1) && h.tired < tmax && this.useKi(h, 1)) {
-						dmg *= 1.5;
-						dmg = Math.round(dmg);
-						h.tired += 10;
-						if (dmg > lv && (h.def > Math.round(lv * 1.5)) || (bugFix && h.def >= lv)) {
-							h.def -= lv;
-							h.atk += Math.round(lv * 1.5);
-						}
-						if (core.hasSpecial(sp, 2)) s.znsf = true;
-					} else if ((skill == 'Z2' || h.tempZi == 2) && h.tired < tmax && h.ki > 0) {
-						if (bugFix) this.useKi(h, 1);
-						if (!bugFix || !core.hasSpecial(sp, 64)) this.chargeKi(h, Math.round(m.mana / 2));
-						m.mana = 0;
-						if (!bugFix) this.useKi(h, 1);
-						dmg *= 1.3;
-						h.tired += 4;
-						lsbug = true;
-					} else if ((skill == 'Z3' || h.tempZi == 3) && h.tired < tmax && this.useKi(h, 1)) {
-						dmg *= 0.8;
-						dmg = Math.round(dmg);
-						h.tired += 4;
-						if (dmg >= m.hp) {
-							dmg = m.hp - 1;
-						}
-						h.hp += Math.floor((bugFix ? 0 : 0.5) + dmg * 0.3);
-					} else if ((skill == 'Z4' || h.tempZi == 4) && h.tired < tmax && this.useKi(h, 2)) {
-						dmg *= 1.8;
-						h.tired += 8;
-						m.tired += 15;
-					} else if ((skill == 'Z5' || h.tempZi == 5) && h.tired < tmax && this.useKi(h, 2)) {
-						dmg *= 5;
-						h.tired += 30;
-						if (dmg >= m.hp) {
-							dmg = m.hp - 1;
-							s.znsf = true;
-						}
-						if (h.atk > m.def) h.atk = m.def;
-					} else {
-						if (!bugFix || !core.hasSpecial(sp, 64)) this.chargeKi(h, this.atkMana(h.atk, m.def).now);
-						if (skill == "C" || skill.substr(0, 1) == "Z") skill = "A";
-					}
-					dmg = Math.round(dmg);
-				} else if (skill == "C" || skill.substr(0, 1) == "Z") skill = "A";
-				if (core.hasSpecial(sp, 92)) {
-					if (!m.sp2) {
-						dmg = Math.round(dmg / 2);
-						m.sp2 = 1;
-					} else if (m.sp2 == 1) {
-						h.freeze = 1;
-						m.sp2 = 2;
-					} else if (m.sp2 == 2) {
-						h.hp -= Math.round(dmg / 4);
-						m.sp2 = 0;
-					}
-				}
-				h.res += (',hero:' + h.ki + '+' + h.charge);
-				m.hp -= dmg;
-				if (core.hasSpecial(sp, 86)) h.tired += 10;
-				if (m.hp < 0) m.hp = 0;
-				if (!lsbug || bugFix) m.mana += Math.round(dmg / 3); // 流石Bug
-				if (m.mana > m.mmax) m.mana = m.mmax;
+		if (core.status.event.data.type == 'wait') {
+			var timeout = Math.max(0, core.status.event.timeout - new Date().getTime()) || 0;
+			core.setFlag('type', 0);
+			core.setFlag('keycode', keycode);
+			core.setFlag('timeout', timeout);
+			var executed = core.events.__action_wait_afterGet(core.status.event.data.current);
+			if (executed || !core.status.event.data.current.forceChild) {
+				core.status.route.push("input:" + (1e8 * timeout + keycode));
+				clearTimeout(core.status.event.interval);
+				delete core.status.event.timeout;
+				core.doAction();
 			}
-			s.mdmg = dmg;
-			s.skillBar += skill;
-			if (!flags.swordUsed && h.ki > 0) s.bug = true;
-			else s.bug = false;
-			h.tempZi = 0;
-			return s;
+			return;
 		}
-		this.monAtk = function (s, skill) {
-			skill = skill || '';
-			var h = s.h,
-				p = s.p,
-				m = s.m,
-				sp = m.sp,
-				tmax = core.getFlag('tiredMax', 20),
-				moyan = core.hasSpecial(sp, 80),
-				bugFix = flags.bugFix,
-				lv = core.status.hero.lv,
-				jlz, selfNormalHit;
-			if (core.hasSpecial(sp, 93) && m.sp2 && m.sp2 < 4) {
-				if (m.sp2 == 1 && !bugFix) { // 原作Bug，未考虑使用盾技减伤的情况
-					s.hdmg = m.atk - h.def;
-					if (s.hdmg < -core.getFlag("defm", 40)) s.hdmg = 0;
-					else if (s.hdmg < 1) s.hdmg = 1;
+		if (core.status.event.data.type == 'choices') {
+			if (!flags.keyDown) {
+				var data = core.status.event.data.current;
+				var choices = data.choices;
+				if (choices.length > 0) {
+					this._selectChoices(choices.length, keycode, this._clickAction);
 				}
-				if (m.sp2 == 2) { // 弹射给勇士
-					s.hdmg = Math.round(s.pdmg * 0.8);
-					s.pdmg = 0;
-					h.hp -= s.hdmg;
-				} else { // 弹射给公主
-					s.pdmg = Math.round(s.hdmg * 0.8);
-					s.hdmg = 0;
-					if (core.hasItem('I325')) m.hp = Math.max(0, m.hp - Math.round(s.pdmg / 2));
-					if (core.hasItem('I326') && (!bugFix || !core.hasSpecial(sp, 64))) this.chargeKi(h, Math.round(s.pdmg / 3));
-					if (core.hasItem('I327')) m.tired += 5;
-					p.hp -= s.pdmg;
-					if (m.hp <= 0) m.sp2 = 9;
-				}
-				m.sp2++;
-				return s;
 			}
-			if (skill == 'X4' && h.tired < tmax && (bugFix || h.defBuff.length < 1) && this.useKi(h, bugFix ? 1 : 2)) {
-				h.tired += 9;
-				var addDef = Math.round(core.status.hero.def / 50) + core.status.hero.hp % lv;
-				h.defBuff.push([addDef, 3]);
-				if (!bugFix) addDef = (core.status.hero.def + core.status.hero.hp) % lv;
-				h.def += addDef;
-				jlz = true;
+			return;
+		}
+		if (core.status.event.data.type == 'confirm' && (keycode == 13 || keycode == 32 || keycode == 67)) {
+			var timeout = Math.max(0, core.status.event.timeout - new Date().getTime()) || 0;
+			delete core.status.event.timeout;
+			core.setFlag('timeout', timeout);
+			core.status.route.push("choices:" + (100 * timeout + core.status.event.selection));
+			if (core.status.event.selection == 0)
+				core.insertAction(core.status.event.ui.yes);
+			else core.insertAction(core.status.event.ui.no);
+			core.doAction();
+			return;
+		}
+	}
+
+	core.actions._clickEquipboxIndex = function (index) {
+		if (index < this.LAST) {
+			if (index >= core.status.globalAttribute.equipName.length) return;
+			if (index == core.status.event.selection && core.status.hero.equipment[index]) {
+				if (core.isReplaying()) return;
+				return; // 新新2不允许卸下剑技/盾技
+				core.unloadEquip(index);
+				core.status.route.push("unEquip:" + index);
+			} else core.playSound('光标移动');
+		} else {
+			var equips = core.getToolboxItems('equips');
+			if (index == core.status.event.selection) {
+				if (core.isReplaying()) return;
+				var equipId = equips[index - this.LAST + (core.status.event.data.page - 1) * this.LAST];
+				core.loadEquip(equipId);
+				core.status.route.push("equip:" + equipId);
+			} else core.playSound('光标移动');
+		}
+		core.ui._drawEquipbox(index);
+	}
+
+	core.maps._drawFg_draw = function (floorId, toDrawCtx, cacheCtx, config) {
+		config.ctx = cacheCtx;
+		// ------ 调整这两行的顺序来控制是先绘制贴图还是先绘制前景图块；后绘制的覆盖先绘制的。
+		core.maps._drawFloorImages(floorId, config.ctx, 'fg', null, null, config.onMap);
+		core.maps._drawBgFgMap(floorId, 'fg', config);
+		if (config.onMap) core.drawImage(toDrawCtx, cacheCtx.canvas, core.bigmap.v2 ? -32 : 0, core.bigmap.v2 ? -32 : 0);
+		config.ctx = toDrawCtx;
+
+		var ctx = config.ctx;
+		core.drawIcon(ctx, 340, 160, 0);
+		core.drawIcon(ctx, 340, 192, 0);
+		core.drawIcon(ctx, 340, 224, 0);
+		if (core.hasItem('I325')) core.drawIcon(ctx, 325, 150, 389, 24, 24);
+		if (core.hasItem('I326')) core.drawIcon(ctx, 326, 150, 389, 24, 24);
+		if (core.hasItem('I327')) core.drawIcon(ctx, 327, 150, 389, 24, 24);
+		if (core.hasItem('skill1')) core.drawIcon(ctx, 72, 220, 389, 24, 24);
+		if (core.hasItem('I307')) core.drawIcon(ctx, 307, 244, 389, 24, 24);
+		if (core.hasItem('I309')) core.drawIcon(ctx, 309, 268, 389, 24, 24);
+		core.strokeRect(ctx, 30.5, 30.5, 355, 355, "rgb(205,0,154)", 3);
+		var t = ctx.textAlign;
+		ctx.textAlign = "left";
+		var s = core.floors[floorId].title;
+		core.fillText(ctx, s.substr(0, 2), 168, 20, "white", "bold 15px Arial");
+		core.fillText(ctx, s.substr(3), 244 - 4 * s.length, 20, "white", "bold 15px Arial");
+		core.drawImage(ctx, "circle.png", 268, 384, 180, 40);
+		// core.fillEllipse(ctx, 360, 408, 45, 5, 0, "#5bdb62");
+		core.fillText(ctx, !core.flags.leftHandPrefer ? "-Press L-" : "-Press Y-", 316, 410, "white", "bold 20px Arial");
+		ctx.textAlign = t;
+	}
+
+	this.triggerAchieve = function (id) {
+		if (!flags.bugFix) return;
+		var a = flags.achieves;
+		if (typeof a != 'object') return;
+		id--;
+		a = a[id];
+		if (typeof a != 'object') return;
+		if (a[4]) {
+			return;
+		} else {
+			a[4] = 1;
+			core.addFlag('achieveScore', a[3]);
+			core.playSound('achievement.mp3');
+			core.insertAction("\t[恭喜获得「" + a[0] + "」,N" + (454 + id) + "]" + a[2] + "\n\n\r[yellow]成就点数+" + a[3]);
+			return;
+		}
+	}
+
+	// 开启技能
+	this.useSkill = function (skillid) {
+		var preskill = core.getFlag('skill', 0);
+		if (skillid == preskill) skillid = 0;
+		core.setFlag('skill', skillid);
+		var name = "";
+		if (/[0-5]/.test(skillid)) name = core.getFlag('skill_' + skillid, '');
+		else name = skillid;
+		name = this.myFormatSkill(name);
+		core.setFlag('skillName', name);
+		core.setFlag('battleTipsFlow', 0);
+	};
+
+	this.myReplaceAll = function (str, s1, s2) { // Android不能用replaceAll
+		str = str.replace(s1, s2);
+		if (str.indexOf(s1) >= 0) str = this.myReplaceAll(str, s1, s2);
+		return str;
+	}
+
+	this.myFormatSkill = function (str, intoHouse, noReduce) {
+		str = str.toUpperCase();
+		var check = str;
+		var sword = ['I315', 'I319', 'I318', 'I317', 'I316'],
+			shield = ['I339', 'I321', 'I375', 'I322', 'I320'];
+		while (check.indexOf('*') >= 0) {
+			var i = check.indexOf('*'),
+				j = i - 1;
+			if (check.charAt(j) != ')') {
+				if (/[1-5]/.test(check.charAt(j))) j--;
+				if (check.charAt(j - 1) == '-') j--;
+				check = check.substr(0, j) + '(' + check.substr(j, i - j) + ')' + check.substr(i);
 			}
-			var dmg = m.atk - h.def,
-				pdmg = 0;
-			if (m.tired >= 100 && !moyan) {
-				dmg = 0;
-				if (m.mana >= m.mmax) m.mana = 0;
+			i = check.indexOf('*');
+			j = check.substr(0, i - 1).lastIndexOf('(');
+			var t = (check.substr(i + 1).match(/\d+/g) || [])[0];
+			if (check.substr(i + 1).indexOf(t) != 0) t = '';
+			var x = check.substr(0, j);
+			for (var k = 1; k <= (t || 1); k++) x += check.substr(j + 1, i - j - 2);
+			check = x + check.substr(i + 1 + t.length);
+		}
+		if (!intoHouse) str = check;
+		check = this.removeStopper(str, 1e8);
+		var Zi, Xi, n;
+		n = str.indexOf('Z');
+		if (n >= 0) {
+			n = str.charAt(n + 1);
+			if (/[1-5]/.test(n)) Zi = n;
+		}
+		n = str.indexOf('X');
+		if (n >= 0) {
+			n = str.charAt(n + 1);
+			if (/[1-5]/.test(n)) Xi = n;
+		}
+		for (var i = 1; i <= 5; i++) {
+			if (intoHouse) {
+				check = core.myReplaceAll(check, 'Z' + i, '');
+				check = core.myReplaceAll(check, 'X' + i, '');
 			} else {
-				if (dmg < -core.getFlag("defm", 40)) dmg = 0;
-				else if (dmg < 1) dmg = 1;
-				if (moyan) {
-					if (h.tired >= 100) dmg = 0;
-					else {
-						dmg = h.atk - h.def;
-						if (dmg < -core.getFlag("atkm", 10)) dmg = 0;
-						else if (dmg < 1) dmg = 1;
-						var selfSkill, selfSkillKi = [1, 1, 1, 1, 2, 2][h.Zi || 0];
-						if (!m.sp2) {
-							if (h.tired < tmax && h.ki >= selfSkillKi) selfSkill = true;
-							m.sp2 = 2;
-						} else m.sp2--;
-						if (selfSkill && h.atk > h.def) {
-							this.useKi(h, selfSkillKi);
-							switch (h.Zi) {
-								case 1:
-									if (bugFix) dmg *= 1.5;
-									else dmg *= 1.8;
-									dmg = Math.round(dmg);
-									h.tired += 10;
-									if (dmg > lv && (h.def > Math.round(lv * 1.5)) || (bugFix && h.def >= lv)) {
-										h.def -= lv;
-										h.atk += Math.round(lv * 1.5);
-									}
-									break;
-								case 2:
-									if (bugFix) {
-										h.charge = Math.round(h.charge / 2);
-										dmg *= 1.3;
-									} else h.charge = 0;
-									h.tired += 4;
-									break;
-								case 3:
-									if (bugFix) {
-										dmg *= 0.8;
-										dmg = Math.round(dmg);
-										h.tired += 4;
-										if (dmg >= m.hp) {
-											dmg = m.hp - 1;
-										}
-										h.hp += Math.floor(dmg * 0.3);
-									} else dmg = 100;
-									break;
-								case 4:
-									if (bugFix) dmg *= 1.8;
-									else dmg *= 1.5;
-									h.tired += 8;
-									h.tired += 15;
-									break;
-								case 5:
-									dmg *= 5;
-									h.tired += 30;
-									if (dmg >= h.hp) {
-										dmg = h.hp - 1;
-									}
-									if (h.atk > h.def) h.atk = h.def;
-									break;
-								default:
-									dmg *= 2;
-									h.tired += 2;
-							}
-							dmg = Math.round(dmg);
-						} else {
-							selfNormalHit = true;
-							if (selfSkill && !bugFix) h.tempZi = h.Zi || 6;
-						}
-					}
+				if (core.getEquip(0) == sword[i - 1]) {
+					check = this.myReplaceAll(check, 'Z' + i, 'Z');
+					str = this.myReplaceAll(str, 'Z' + i, 'Z');
+				} else if (core.hasItem('I325') && core.canEquip(sword[i - 1], false)) {
+					check = this.myReplaceAll(check, 'Z' + i, 'Z');
+				} else if (core.hasItem('I326') && i == Zi && core.canEquip(sword[i - 1], false)) {
+					check = this.myReplaceAll(check, 'Z' + i, 'Z');
+					str = this.myReplaceAll(str, 'Z' + i, 'Z');
+					str = str.replace('Z', 'Z' + i);
+				} else {
+					check = this.myReplaceAll(check, 'Z' + i, 'Q');
 				}
-				if (core.hasSpecial(sp, 55)) {
-					dmg = 0;
-					pdmg = m.atk;
+				if (core.getEquip(1) == shield[i - 1]) {
+					check = this.myReplaceAll(check, 'X' + i, 'X');
+					str = this.myReplaceAll(str, 'X' + i, 'X');
+				} else if (core.hasItem('I327') && core.canEquip(shield[i - 1], false)) {
+					check = this.myReplaceAll(check, 'X' + i, 'X');
+				} else if (core.hasItem('I326') && i == Xi && core.canEquip(shield[i - 1], false)) {
+					check = this.myReplaceAll(check, 'X' + i, 'X');
+					str = this.myReplaceAll(str, 'X' + i, 'X');
+					str = str.replace('X', 'X' + i);
+				} else {
+					check = this.myReplaceAll(check, 'X' + i, 'Q');
 				}
-				if (core.hasSpecial(sp, 2)) dmg = m.atk;
-				if (core.hasSpecial(sp, 63)) pdmg = Math.max(1, m.atk - p.def);
-				if (core.hasSpecial(sp, 84)) dmg += 100;
-				if (dmg >= 1) {
-					// if (core.hasSpecial(sp, 60) && m.atk >= h.def) dmg *= 3;
-					if (m.mana >= m.mmax && !moyan && m.mmax > 0) {
-						if (core.hasSpecial(sp, 51)) dmg = Math.round(dmg * 2.5);
-						else if (core.hasSpecial(sp, 59)) dmg *= 4;
-						else dmg *= 2;
-					}
-					if (core.hasSpecial(sp, 93) && (bugFix || m.mana < m.mmax)) {
-						m.sp2 = 1; //开启弹射
-					}
-				}
-				if (!core.hasSpecial(sp, 55)) { // 0伤也能用盾技
-					if (h.tired < tmax && (bugFix || h.defBuff.length < 1)) { // 精灵罩效果持续时不能使用其它盾技
-						if (skill == 'X1' && this.useKi(h, 1)) {
-							dmg /= 2.5;
-							h.tired += 3;
-						} else if (skill == 'X2' && this.useKi(h, 2)) {
-							dmg /= 1.5;
-							h.tired += 12;
-							if (moyan) {
-								if (bugFix) h.freeze = 1;
-							} else {
-								m.freeze = 1;
-								s.ic = true;
-							}
-						} else if (skill == 'X3' && this.useKi(h, bugFix ? 2 : 1)) {
-							if (moyan) {
-								if (dmg > 0) {
-									if (bugFix) h.hp -= (Math.round(dmg / 2.6) + Math.round(h.atk / 10));
-									else h.hp -= Math.round(dmg / 2.6);
-								}
-							} else {
-								if (dmg > 0) m.hp -= (Math.round(dmg / 2.6) + Math.round(h.atk / 10)); // 有伤害时才能弹伤害，分开取四舍五入
-								// 特殊效果亦能反弹
-								if (m.poi) m.hp -= 25;
-								if (m.weakPt) {
-									m.atk = Math.max(0, m.atk - m.weakPt);
-									m.def = Math.max(0, m.def - m.weakPt);
-								}
-								if (core.hasSpecial(sp, 81)) m.def = Math.max(0, m.def - 12);
-								if (core.hasSpecial(sp, 89)) {
-									m.atk = Math.max(0, m.atk - 20);
-									if (bugFix) m.def = Math.max(0, m.def - 5);
-								}
-								if (bugFix) {
-									if (core.hasSpecial(sp, 52)) m.tired += 1;
-									if (core.hasSpecial(sp, 53)) m.tired += 1;
-									if (core.hasSpecial(sp, 54)) m.tired += 3;
-									if (core.hasSpecial(sp, 56)) m.tired += 4;
-									if (core.hasSpecial(sp, 83)) m.tired += 4;
-								}
-								if (m.hp < 0) m.hp = 0;
-								if (m.rock) s.znsf = true;
-							}
-							dmg /= 1.3;
-							h.tired += 3;
-						} else if (skill == 'X5' && this.useKi(h, 2)) {
-							h.tired += 2;
-							p.hp += Math.floor((bugFix ? 0 : 0.5) + dmg * 1.5);
-							if (core.hasSpecial(sp, 2)) s.znsf = true;
-						} else if (skill.substr(0, 1) == "X" && !jlz) skill = "D";
-						dmg = Math.ceil(dmg); // 盾技减伤效果向上取整
-					}
-					for (var i = 0; i < h.defBuff.length; i++) {
-						h.defBuff[i][1]--;
-						if (h.defBuff[i][1] <= 0) {
-							if (bugFix || !moyan) h.def -= h.defBuff[i][0];
-							else h.def -= (core.status.hero.def + core.status.hero.exp) % core.status.hero.lv;
-							h.defBuff.splice(i, 1);
-							i--;
-						}
-					}
-				}
-				if (pdmg >= 1) {
-					if (m.mana >= m.mmax) {
-						if (bugFix && core.hasSpecial(sp, 67)) pdmg *= 3;
-						else pdmg *= 2;
-					}
-					if (core.hasItem('I325')) m.hp = Math.max(0, m.hp - Math.round(pdmg / 2));
-					if (core.hasItem('I326') && (!bugFix || !core.hasSpecial(sp, 64))) this.chargeKi(h, Math.round(pdmg / 3));
-					if (core.hasItem('I327')) m.tired += 5;
-				}
-				if (!core.hasSpecial(sp, 60) && (!bugFix || !core.hasSpecial(sp, 64)) && (!moyan || bugFix)) this.chargeKi(h, Math.round(dmg / 10));
-				if (core.hasSpecial(sp, 58) && ((bugFix && m.mana >= m.mmax && dmg > 0) || (!bugFix && dmg > m.atk - h.def)) && !this.useKi(h, 1)) h.charge = 0; // 神气合一bug
-				if (m.mana >= m.mmax && dmg + pdmg > 0 && !moyan && m.mmax > 0) {
-					m.mana = 0;
-					m.tired += 1;
-				} else if (!moyan && m.mmax > 0) {
-					if (!core.hasSpecial(sp, 55)) m.mana += this.atkMana(m.atk, h.def, 1).now;
-					if (pdmg >= 1) m.mana += this.atkMana(m.atk, p.def, 1).now;
-					if (m.mana > m.mmax) m.mana = m.mmax;
-				} else if (moyan && selfNormalHit) this.chargeKi(h, this.atkMana(h.atk, h.def).now);
-				h.hp -= dmg;
-				p.hp -= pdmg;
-				if (core.hasSpecial(sp, 52)) h.tired += 1;
-				if (core.hasSpecial(sp, 53)) h.tired += 1;
-				if (core.hasSpecial(sp, 54)) h.tired += 3;
-				if (core.hasSpecial(sp, 56) && dmg > 0) h.tired += 4;
-				if (core.hasSpecial(sp, 83)) h.tired += 4;
-				if (core.hasSpecial(sp, 57)) m.hp += Math.round((dmg + pdmg) / m.vampireRate);
-				if (core.hasSpecial(sp, 62)) m.tired = Math.max(0, m.tired - 1);
-				if (core.hasSpecial(sp, 81)) {
-					if (!m.sp2) {
-						h.def = Math.max(0, h.def - 12);
-						m.sp2 = 2;
-					} else m.sp2--;
-				}
-				if (core.hasSpecial(sp, 89)) {
-					if (!m.sp2) {
-						h.atk = Math.max(0, h.atk - 20);
-						h.def = Math.max(0, h.def - 5);
-						m.sp2 = 1;
-					} else m.sp2--;
-				}
-				if (core.hasSpecial(sp, 82) && (core.hasFlag("poison") || s.turn > 4)) {
-					if (!m.sp2) {
-						m.atk += 10;
-						m.def += 10;
-						m.sp2 = 1;
-					} else m.sp2--;
-				}
-				if (core.hasSpecial(sp, 88)) {
-					this.chargeKi(h, -40);
-					m.mana = Math.min(m.mmax, m.mana + 40);
-				}
-				if (core.hasSpecial(sp, 91) && dmg > 0) {
-					if (!m.sp2) {
-						h.tired += 8;
-						m.sp2 = 1;
-					} else if (m.sp2 == 1) {
-						this.chargeKi(h, -30);
-						m.sp2 = 2;
-					} else if (m.sp2 == 2) {
-						m.hp += Math.round(dmg / 5);
-						m.sp2 = 0;
-					}
-				}
-				h.res += (',mon:' + h.ki + '+' + h.charge);
 			}
-			s.hdmg = dmg;
-			s.pdmg = pdmg;
-			s.skillBar += skill;
-			if (!flags.swordUsed && h.ki > 0) s.bug = true;
+		}
+		if (!intoHouse && !(core.getEquip(0) || core.hasItem('I325') || core.hasItem('I326'))) str = this.myReplaceAll(str, 'Z', '');
+		if (!intoHouse && !(core.getEquip(1) || core.hasItem('I327') || core.hasItem('I326'))) str = this.myReplaceAll(str, 'X', '');
+		['-C', '-V', 'A', 'D', 'Z', 'X', 'C', 'V'].forEach(function (e) {
+			check = core.myReplaceAll(check, e, '');
+		})
+		if (check == '') {
+			if (!noReduce) str = this.myReduceSkill(str);
+			return str;
+		} else return '';
+	}
+
+	this.myReduceSkill = function (str) {
+		var x = ['-C', '-V'];
+		for (var i = 1; i <= 5; i++) x.push('Z' + i, 'X' + i);
+		for (var i = 1; i <= str.length / 2; i++) {
+			for (var j = 0; j + i - 1 <= str.length - 1; j++) {
+				var k = 1;
+				if (x.indexOf(str.substr(j - 1, i + 1)) > -1) continue;
+				while (str.substr(j, i) == str.substr(j + k * i, i) && x.indexOf(str.substr(j + k * i, i + 1)) == -1) k++;
+				if (k >= 3 || (k == 2 && i > 3)) {
+					if (i == 1 || x.indexOf(str.substr(j, i)) > -1) str = str.substr(0, j) + str.substr(j, i) + '*' + k + str.substr(j + i * k);
+					else str = str.substr(0, j) + '(' + str.substr(j, i) + ')*' + k + str.substr(j + i * k);
+				}
+			}
+		}
+		return str;
+	}
+
+	this.getSkillPerform = function (enemy, setMana, x, y, floorId, fullList) {
+		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		var res = [],
+			nowSkill = core.getFlag('skillName', ''),
+			mana = core.status.hero.mana,
+			skillHouse = core.getFlag('skillHouse', []),
+			info = core.getDamageInfo(enemy, null, x, y, floorId),
+			mon_def = core.enemys.getEnemyInfo(enemy, hero, x, y, floorId).def;
+		if (core.hasSpecial(enemy.special, 20) || (info && info.damage <= 0)) return res;
+		if (info && info.turn > core.getFlag('recomTurnMax', 10) && (core.hasSpecial(enemy.special, 57) || core.hasSpecial(enemy.special, 65) || core.hasSpecial(enemy.special, 66))) {
+			skillHouse = ['C', 'CC', 'CX', 'XC', 'CXC'];
+		} else if (!info && hero.atk > mon_def && (core.hasSpecial(enemy.special, 53) || core.hasSpecial(enemy.special, 54) || core.hasSpecial(enemy.special, 56) || core.hasSpecial(enemy.special, 83) || core.hasSpecial(enemy.special, 86))) {
+			skillHouse = ['-V*999'];
+		} else if (!info || info.turn > core.getFlag('recomTurnMax', 10)) {
+			if (core.getEquip(1) == 'I375' || (core.hasItem('I327') && core.canEquip('I375', false))) {
+				skillHouse = ['X3*9'];
+			} else skillHouse = [];
+		}
+		if (skillHouse.length == 0) return res;
+		skillHouse = [''].concat(skillHouse);
+		if (setMana > 1 + core.status.hero.manamax) mana = core.status.hero.manamax;
+		else if (setMana > 0) mana = setMana - 1;
+		skillHouse.forEach(function (s) {
+			if (s != '') {
+				s = core.myFormatSkill(s);
+				if (s == '') return;
+			}
+			core.setFlag('skillName', s);
+			var info = core.getDamageInfo(enemy, { "mana": mana }, x, y, floorId);
+			if (info) res.push([info.skill, info.damage, info.mana, 0]);
+		});
+		core.setFlag('skillName', nowSkill);
+		for (var i = 0; i < res.length - 1; i++) {
+			for (var j = 0; j < res.length - 1 - i; j++) {
+				if (res[j][2] < res[j + 1][2] || (res[j][2] == res[j + 1][2] && res[j][1] > res[j + 1][1])) {
+					var temp = res[j + 1];
+					res[j + 1] = res[j];
+					res[j] = temp;
+				}
+			}
+		}
+		for (var i = 1; i < res.length; i++) {
+			if (res[i][2] == res[i - 1][2] && res[i][1] >= res[i - 1][1]) {
+				res.splice(i, 1);
+				i--;
+			} else {
+				res[i][3] = (res[i][1] - res[i - 1][1]) / (res[i][2] - res[i - 1][2]);
+				if (res[i][3] <= 0) {
+					res.splice(i, 1);
+					i--;
+				} else if (!fullList) {
+					while (i > 1) {
+						if (res[i][3] <= res[i - 1][3]) break;
+						else {
+							res.splice(i - 1, 1);
+							i--;
+							res[i][3] = (res[i][1] - res[i - 1][1]) / (res[i][2] - res[i - 1][2]);
+						}
+					}
+				}
+			}
+		}
+		for (var i = res.length - 1; i > 0; i--) {
+			res[i][1] = res[i - 1][1] - res[i][1];
+			res[i][2] = res[i - 1][2] - res[i][2];
+			if (res[i][3] < 100) res[i][3] = res[i][3].toFixed(2);
+			else res[i][3] = core.formatBigNumber(res[i][3], true);
+		}
+		if (res.length) {
+			res[0][1] = null;
+			res[0][2] = null;
+			res[0][3] = null;
+		}
+		return res;
+	}
+
+	this.getRecomSkill = function (enemy, x, y, floorId) {
+		// return { "skill": 'C', "ratio": "max" };
+		var res = this.getSkillPerform(enemy, 0, x, y, floorId),
+			ratio,
+			i = 0;
+		if (!res || res.length == 0) return null;
+		try { ratio = core.calValue(flags.hpManaRatio) } catch (e) {}
+		if (typeof ratio != 'number') ratio = 0;
+		res.forEach(function (r) {
+			if (r[3] >= ratio) i++;
+		})
+		//if (i > 0) return { "skill": res[i][0], "ratio": res[i][3] };
+		if (i > 0) return { "skill": ((res[i]) || [])[0], "ratio": ((res[i]) || [])[3] };
+		else return { "skill": res[0][0], "ratio": "max" };
+	}
+
+	// 战斗计算
+	this.atkMana = function (atk, def, isMon) {
+		var now = Math.round(def / atk * 10),
+			cri = 0;
+		if (!isMon && atk <= def) now = 0;
+		if (!isMon && now > 1) cri = Math.floor(def * 10 / (now - 0.5) + 1) - atk;
+		if (isMon) cri = Math.ceil((now + 0.5) * atk / 10) - def;
+		return {
+			"now": now,
+			"cri": cri
+		};
+	}
+
+	this.setKiMana = function (h) {
+		if (h.ki == null) {
+			h.ki = Math.min(5, Math.ceil((h.mana - core.getFlag('overCharge', 0)) / h.mmm) - 1);
+			h.charge = Math.floor(h.mana - h.ki * h.mmm);
+			if (h.ki == 5) h.charge = Math.min(h.charge, h.mmm + core.getFlag('overCharge', 0));
+		} else {
+			h.mana = h.ki * h.mmm + h.charge;
+			if (h.charge == 0) h.mana += 0.1;
+		}
+		return;
+	}
+
+	this.useKi = function (h, n, isBug) {
+		if (h.ki >= n || isBug) {
+			h.ki -= n;
+			return true;
+		} else return false;
+	}
+
+	this.chargeKi = function (h, n) {
+		h.charge += n;
+		if (n < 0) h.overCharge = Math.max(0, n + h.overCharge);
+		while (h.charge > h.mmm && h.ki < 5 && n >= 0) {
+			h.charge -= h.mmm;
+			h.ki++;
+			h.overCharge = 0;
+		}
+		while (h.charge < 0 && h.ki > 0) {
+			h.charge += h.mmm;
+			h.ki--;
+		}
+		if (h.charge < 0) h.charge = 0;
+		if (h.ki == 5 && h.charge > h.mmm) {
+			h.fmana += h.charge - h.mmm;
+			h.charge = h.mmm;
+		}
+	}
+
+	this.heroAtk = function (s, skill) {
+		skill = skill || '';
+		var h = s.h,
+			p = s.p,
+			m = s.m,
+			sp = m.sp;
+		var dmg = h.atk - m.def,
+			tmax = core.getFlag('tiredMax', 20),
+			bugFix = flags.bugFix;
+
+		var lsbug, lv = core.status.hero.lv;
+
+		if (h.tired >= 100) dmg = 0;
+		else {
+			if (dmg < -core.getFlag("atkm", 10)) dmg = 0;
+			else if (dmg < 1) dmg = 1;
+			if (h.atk > m.def) {
+				if ((skill == 'C' || h.tempZi == 6) && this.useKi(h, 1, s.bug)) { // 使用C无疲劳限制
+					dmg *= 2;
+					h.tired += 2;
+					if (core.getEquip(0) == 'I319') lsbug = true;
+				} else if ((skill == 'Z1' || h.tempZi == 1) && h.tired < tmax && this.useKi(h, 1)) {
+					dmg *= 1.5;
+					dmg = Math.round(dmg);
+					h.tired += 10;
+					if (dmg > lv && (h.def > Math.round(lv * 1.5)) || (bugFix && h.def >= lv)) {
+						h.def -= lv;
+						h.atk += Math.round(lv * 1.5);
+					}
+					if (core.hasSpecial(sp, 2)) s.znsf = true;
+				} else if ((skill == 'Z2' || h.tempZi == 2) && h.tired < tmax && h.ki > 0) {
+					if (bugFix) this.useKi(h, 1);
+					if (!bugFix || !core.hasSpecial(sp, 64)) this.chargeKi(h, Math.round(m.mana / 2));
+					m.mana = 0;
+					if (!bugFix) this.useKi(h, 1);
+					dmg *= 1.3;
+					h.tired += 4;
+					lsbug = true;
+				} else if ((skill == 'Z3' || h.tempZi == 3) && h.tired < tmax && this.useKi(h, 1)) {
+					dmg *= 0.8;
+					dmg = Math.round(dmg);
+					h.tired += 4;
+					if (dmg >= m.hp) {
+						dmg = m.hp - 1;
+					}
+					h.hp += Math.floor((bugFix ? 0 : 0.5) + dmg * 0.3);
+				} else if ((skill == 'Z4' || h.tempZi == 4) && h.tired < tmax && this.useKi(h, 2)) {
+					dmg *= 1.8;
+					h.tired += 8;
+					m.tired += 15;
+				} else if ((skill == 'Z5' || h.tempZi == 5) && h.tired < tmax && this.useKi(h, 2)) {
+					dmg *= 5;
+					h.tired += 30;
+					if (dmg >= m.hp) {
+						dmg = m.hp - 1;
+						s.znsf = true;
+					}
+					if (h.atk > m.def) h.atk = m.def;
+				} else {
+					if (!bugFix || !core.hasSpecial(sp, 64)) this.chargeKi(h, this.atkMana(h.atk, m.def).now);
+					if (skill == "C" || skill.substr(0, 1) == "Z") skill = "A";
+				}
+				dmg = Math.round(dmg);
+			} else if (skill == "C" || skill.substr(0, 1) == "Z") skill = "A";
+			if (core.hasSpecial(sp, 92)) {
+				if (!m.sp2) {
+					dmg = Math.round(dmg / 2);
+					m.sp2 = 1;
+				} else if (m.sp2 == 1) {
+					h.freeze = 1;
+					m.sp2 = 2;
+				} else if (m.sp2 == 2) {
+					h.hp -= Math.round(dmg / 4);
+					m.sp2 = 0;
+				}
+			}
+			h.res += (',hero:' + h.ki + '+' + h.charge);
+			m.hp -= dmg;
+			if (core.hasSpecial(sp, 86)) h.tired += 10;
+			if (m.hp < 0) m.hp = 0;
+			if (!lsbug || bugFix) m.mana += Math.round(dmg / 3); // 流石Bug
+			if (m.mana > m.mmax) m.mana = m.mmax;
+		}
+		s.mdmg = dmg;
+		s.skillBar += skill;
+		if (!flags.swordUsed && h.ki > 0) s.bug = true;
+		else s.bug = false;
+		h.tempZi = 0;
+		return s;
+	}
+	this.monAtk = function (s, skill) {
+		skill = skill || '';
+		var h = s.h,
+			p = s.p,
+			m = s.m,
+			sp = m.sp,
+			tmax = core.getFlag('tiredMax', 20),
+			moyan = core.hasSpecial(sp, 80),
+			bugFix = flags.bugFix,
+			lv = core.status.hero.lv,
+			jlz, selfNormalHit;
+		if (core.hasSpecial(sp, 93) && m.sp2 && m.sp2 < 4) {
+			if (m.sp2 == 1 && !bugFix) { // 原作Bug，未考虑使用盾技减伤的情况
+				s.hdmg = m.atk - h.def;
+				if (s.hdmg < -core.getFlag("defm", 40)) s.hdmg = 0;
+				else if (s.hdmg < 1) s.hdmg = 1;
+			}
+			if (m.sp2 == 2) { // 弹射给勇士
+				s.hdmg = Math.round(s.pdmg * 0.8);
+				s.pdmg = 0;
+				h.hp -= s.hdmg;
+			} else { // 弹射给公主
+				s.pdmg = Math.round(s.hdmg * 0.8);
+				s.hdmg = 0;
+				if (core.hasItem('I325')) m.hp = Math.max(0, m.hp - Math.round(s.pdmg / 2));
+				if (core.hasItem('I326') && (!bugFix || !core.hasSpecial(sp, 64))) this.chargeKi(h, Math.round(s.pdmg / 3));
+				if (core.hasItem('I327')) m.tired += 5;
+				p.hp -= s.pdmg;
+				if (m.hp <= 0) m.sp2 = 9;
+			}
+			m.sp2++;
 			return s;
 		}
-		this.deepBreath = function (s, str) {
-			var h = s.h;
-			if (str.substr(0, 2) == '-V' && h.tired >= core.getFlag('deepBreath', 5) && h.ki > 0) {
-				str = str.substr(1);
-				s.skillBar += '-';
-			}
-			if (str.substr(0, 1) == 'V') {
-				str = str.substr(1);
-				if (h.tired > 0 && this.useKi(h, 1)) {
-					h.tired = Math.max(0, h.tired - core.getFlag('deepBreath', 5));
-				}
-				s.skillBar += 'V';
-				this.deepBreath(s, str);
-			}
-			return str;
+		if (skill == 'X4' && h.tired < tmax && (bugFix || h.defBuff.length < 1) && this.useKi(h, bugFix ? 1 : 2)) {
+			h.tired += 9;
+			var addDef = Math.round(core.status.hero.def / 50) + core.status.hero.hp % lv;
+			h.defBuff.push([addDef, 3]);
+			if (!bugFix) addDef = (core.status.hero.def + core.status.hero.hp) % lv;
+			h.def += addDef;
+			jlz = true;
 		}
-		this.removeStopper = function (str, turn, stat) {
-			var s = str.indexOf('@');
-			stat = stat || [];
-			if (s >= 0 && /[1-5]/.test(str.substr(s + 1))) {
-				var t = (str.substr(s + 1).match(/\d+/g) || [])[0];
-				if (str.substr(s + 1).indexOf(t) != 0) return str;
-				if (turn >= t) {
-					if (s == 0) stat.skillBar += str.substr(0, t.length + 1);
-					str = this.removeStopper(str.substr(0, s) + str.substr(s + t.length + 1), turn, stat);
-				}
-			}
-			return str;
-		}
-
-
-		// 机关门开门条件：左下右下无物品
-		core.events._openDoor_check = function (block, x, y, needKey) {
-			var clearAndReturn = function () {
-				core.clearContinueAutomaticRoute();
-				return false;
-			}
-
-			if (block == null || block.event == null) return clearAndReturn();
-			var id = block.event.id;
-
-			// 是否存在门或暗墙
-			if (core.material.icons.animates[id] == null && core.material.icons.npc48[id] == null) {
-				return clearAndReturn();
-			}
-
-			if (id == 'steelDoor')
-				needKey = false;
-			if (id == 'specialDoor' && !core.getBlock(x - 1, y + 1) && !core.getBlock(x + 1, y + 1))
-				needKey = false;
-			var doorInfo = core.getBlockById(id).event;
-			if (doorInfo == null || doorInfo.doorInfo == null)
-				return clearAndReturn();
-			doorInfo = doorInfo.doorInfo;
-			// Check all keys
-			var keyInfo = doorInfo.keys || {};
-			if (needKey) {
-				for (var keyName in keyInfo) {
-					var keyValue = keyInfo[keyName];
-					if (keyName.endsWith(':o')) keyName = keyName.substring(0, keyName.length - 2);
-
-					// --- 如果是一个不存在的道具，则直接认为无法开启
-					if (!core.material.items[keyName]) {
-						core.stopSound();
-						core.playSound('操作失败');
-						if (id == 'specialDoor') core.drawTip("机关门开启条件为：门的左下以及右下必须为空地");
-						else core.drawTip("无法开启此门");
-						return clearAndReturn();
+		var dmg = m.atk - h.def,
+			pdmg = 0;
+		if (m.tired >= 100 && !moyan) {
+			dmg = 0;
+			if (m.mana >= m.mmax) m.mana = 0;
+		} else {
+			if (dmg < -core.getFlag("defm", 40)) dmg = 0;
+			else if (dmg < 1) dmg = 1;
+			if (moyan) {
+				if (h.tired >= 100) dmg = 0;
+				else {
+					dmg = h.atk - h.def;
+					if (dmg < -core.getFlag("atkm", 10)) dmg = 0;
+					else if (dmg < 1) dmg = 1;
+					var selfSkill, selfSkillKi = [1, 1, 1, 1, 2, 2][h.Zi || 0];
+					if (!m.sp2) {
+						if (h.tired < tmax && h.ki >= selfSkillKi) selfSkill = true;
+						m.sp2 = 2;
+					} else m.sp2--;
+					if (selfSkill && h.atk > h.def) {
+						this.useKi(h, selfSkillKi);
+						switch (h.Zi) {
+						case 1:
+							if (bugFix) dmg *= 1.5;
+							else dmg *= 1.8;
+							dmg = Math.round(dmg);
+							h.tired += 10;
+							if (dmg > lv && (h.def > Math.round(lv * 1.5)) || (bugFix && h.def >= lv)) {
+								h.def -= lv;
+								h.atk += Math.round(lv * 1.5);
+							}
+							break;
+						case 2:
+							if (bugFix) {
+								h.charge = Math.round(h.charge / 2);
+								dmg *= 1.3;
+							} else h.charge = 0;
+							h.tired += 4;
+							break;
+						case 3:
+							if (bugFix) {
+								dmg *= 0.8;
+								dmg = Math.round(dmg);
+								h.tired += 4;
+								if (dmg >= m.hp) {
+									dmg = m.hp - 1;
+								}
+								h.hp += Math.floor(dmg * 0.3);
+							} else dmg = 100;
+							break;
+						case 4:
+							if (bugFix) dmg *= 1.8;
+							else dmg *= 1.5;
+							h.tired += 8;
+							h.tired += 15;
+							break;
+						case 5:
+							dmg *= 5;
+							h.tired += 30;
+							if (dmg >= h.hp) {
+								dmg = h.hp - 1;
+							}
+							if (h.atk > h.def) h.atk = h.def;
+							break;
+						default:
+							dmg *= 2;
+							h.tired += 2;
+						}
+						dmg = Math.round(dmg);
+					} else {
+						selfNormalHit = true;
+						if (selfSkill && !bugFix) h.tempZi = h.Zi || 6;
 					}
-					if (core.itemCount(keyName) < keyValue) {
-						core.stopSound();
-						core.playSound('操作失败');
-						core.drawTip("你的" + ((core.material.items[keyName] || {}).name || "钥匙") + "不足！", null, true);
-						return false;
+				}
+			}
+			if (core.hasSpecial(sp, 55)) {
+				dmg = 0;
+				pdmg = m.atk;
+			}
+			if (core.hasSpecial(sp, 2)) dmg = m.atk;
+			if (core.hasSpecial(sp, 63)) pdmg = Math.max(1, m.atk - p.def);
+			if (core.hasSpecial(sp, 84)) dmg += 100;
+			if (dmg >= 1) {
+				// if (core.hasSpecial(sp, 60) && m.atk >= h.def) dmg *= 3;
+				if (m.mana >= m.mmax && !moyan && m.mmax > 0) {
+					if (core.hasSpecial(sp, 51)) dmg = Math.round(dmg * 2.5);
+					else if (core.hasSpecial(sp, 59)) dmg *= 4;
+					else dmg *= 2;
+				}
+				if (core.hasSpecial(sp, 93) && (bugFix || m.mana < m.mmax)) {
+					m.sp2 = 1; //开启弹射
+				}
+			}
+			if (!core.hasSpecial(sp, 55)) { // 0伤也能用盾技
+				if (h.tired < tmax && (bugFix || h.defBuff.length < 1)) { // 精灵罩效果持续时不能使用其它盾技
+					if (skill == 'X1' && this.useKi(h, 1)) {
+						dmg /= 2.5;
+						h.tired += 3;
+					} else if (skill == 'X2' && this.useKi(h, 2)) {
+						dmg /= 1.5;
+						h.tired += 12;
+						if (moyan) {
+							if (bugFix) h.freeze = 1;
+						} else {
+							m.freeze = 1;
+							s.ic = true;
+						}
+					} else if (skill == 'X3' && this.useKi(h, bugFix ? 2 : 1)) {
+						if (moyan) {
+							if (dmg > 0) {
+								if (bugFix) h.hp -= (Math.round(dmg / 2.6) + Math.round(h.atk / 10));
+								else h.hp -= Math.round(dmg / 2.6);
+							}
+						} else {
+							if (dmg > 0) m.hp -= (Math.round(dmg / 2.6) + Math.round(h.atk / 10)); // 有伤害时才能弹伤害，分开取四舍五入
+							// 特殊效果亦能反弹
+							if (m.poi) m.hp -= 25;
+							if (m.weakPt) {
+								m.atk = Math.max(0, m.atk - m.weakPt);
+								m.def = Math.max(0, m.def - m.weakPt);
+							}
+							if (core.hasSpecial(sp, 81)) m.def = Math.max(0, m.def - 12);
+							if (core.hasSpecial(sp, 89)) {
+								m.atk = Math.max(0, m.atk - 20);
+								if (bugFix) m.def = Math.max(0, m.def - 5);
+							}
+							if (bugFix) {
+								if (core.hasSpecial(sp, 52)) m.tired += 1;
+								if (core.hasSpecial(sp, 53)) m.tired += 1;
+								if (core.hasSpecial(sp, 54)) m.tired += 3;
+								if (core.hasSpecial(sp, 56)) m.tired += 4;
+								if (core.hasSpecial(sp, 83)) m.tired += 4;
+							}
+							if (m.hp < 0) m.hp = 0;
+							if (m.rock) s.znsf = true;
+						}
+						dmg /= 1.3;
+						h.tired += 3;
+					} else if (skill == 'X5' && this.useKi(h, 2)) {
+						h.tired += 2;
+						p.hp += Math.floor((bugFix ? 0 : 0.5) + dmg * 1.5);
+						if (core.hasSpecial(sp, 2)) s.znsf = true;
+					} else if (skill.substr(0, 1) == "X" && !jlz) skill = "D";
+					dmg = Math.ceil(dmg); // 盾技减伤效果向上取整
+				}
+				for (var i = 0; i < h.defBuff.length; i++) {
+					h.defBuff[i][1]--;
+					if (h.defBuff[i][1] <= 0) {
+						if (bugFix || !moyan) h.def -= h.defBuff[i][0];
+						else h.def -= (core.status.hero.def + core.status.hero.exp) % core.status.hero.lv;
+						h.defBuff.splice(i, 1);
+						i--;
 					}
 				}
-				if (!core.status.event.id) core.autosave(true);
-				for (var keyName in keyInfo) {
-					if (!keyName.endsWith(':o')) core.removeItem(keyName, keyInfo[keyName]);
+			}
+			if (pdmg >= 1) {
+				if (m.mana >= m.mmax) {
+					if (bugFix && core.hasSpecial(sp, 67)) pdmg *= 3;
+					else pdmg *= 2;
+				}
+				if (core.hasItem('I325')) m.hp = Math.max(0, m.hp - Math.round(pdmg / 2));
+				if (core.hasItem('I326') && (!bugFix || !core.hasSpecial(sp, 64))) this.chargeKi(h, Math.round(pdmg / 3));
+				if (core.hasItem('I327')) m.tired += 5;
+			}
+			if (!core.hasSpecial(sp, 60) && (!bugFix || !core.hasSpecial(sp, 64)) && (!moyan || bugFix)) this.chargeKi(h, Math.round(dmg / 10));
+			if (core.hasSpecial(sp, 58) && ((bugFix && m.mana >= m.mmax && dmg > 0) || (!bugFix && dmg > m.atk - h.def)) && !this.useKi(h, 1)) h.charge = 0; // 神气合一bug
+			if (m.mana >= m.mmax && dmg + pdmg > 0 && !moyan && m.mmax > 0) {
+				m.mana = 0;
+				m.tired += 1;
+			} else if (!moyan && m.mmax > 0) {
+				if (!core.hasSpecial(sp, 55)) m.mana += this.atkMana(m.atk, h.def, 1).now;
+				if (pdmg >= 1) m.mana += this.atkMana(m.atk, p.def, 1).now;
+				if (m.mana > m.mmax) m.mana = m.mmax;
+			} else if (moyan && selfNormalHit) this.chargeKi(h, this.atkMana(h.atk, h.def).now);
+			h.hp -= dmg;
+			p.hp -= pdmg;
+			if (core.hasSpecial(sp, 52)) h.tired += 1;
+			if (core.hasSpecial(sp, 53)) h.tired += 1;
+			if (core.hasSpecial(sp, 54)) h.tired += 3;
+			if (core.hasSpecial(sp, 56) && dmg > 0) h.tired += 4;
+			if (core.hasSpecial(sp, 83)) h.tired += 4;
+			if (core.hasSpecial(sp, 57)) m.hp += Math.round((dmg + pdmg) / m.vampireRate);
+			if (core.hasSpecial(sp, 62)) m.tired = Math.max(0, m.tired - 1);
+			if (core.hasSpecial(sp, 81)) {
+				if (!m.sp2) {
+					h.def = Math.max(0, h.def - 12);
+					m.sp2 = 2;
+				} else m.sp2--;
+			}
+			if (core.hasSpecial(sp, 89)) {
+				if (!m.sp2) {
+					h.atk = Math.max(0, h.atk - 20);
+					h.def = Math.max(0, h.def - 5);
+					m.sp2 = 1;
+				} else m.sp2--;
+			}
+			if (core.hasSpecial(sp, 82) && (core.hasFlag("poison") || s.turn > 4)) {
+				if (!m.sp2) {
+					m.atk += 10;
+					m.def += 10;
+					m.sp2 = 1;
+				} else m.sp2--;
+			}
+			if (core.hasSpecial(sp, 88)) {
+				this.chargeKi(h, -40);
+				m.mana = Math.min(m.mmax, m.mana + 40);
+			}
+			if (core.hasSpecial(sp, 91) && dmg > 0) {
+				if (!m.sp2) {
+					h.tired += 8;
+					m.sp2 = 1;
+				} else if (m.sp2 == 1) {
+					this.chargeKi(h, -30);
+					m.sp2 = 2;
+				} else if (m.sp2 == 2) {
+					m.hp += Math.round(dmg / 5);
+					m.sp2 = 0;
 				}
 			}
-			core.playSound(doorInfo.openSound);
-			return true;
+			h.res += (',mon:' + h.ki + '+' + h.charge);
+		}
+		s.hdmg = dmg;
+		s.pdmg = pdmg;
+		s.skillBar += skill;
+		if (!flags.swordUsed && h.ki > 0) s.bug = true;
+		return s;
+	}
+	this.deepBreath = function (s, str) {
+		var h = s.h;
+		if (str.substr(0, 2) == '-V' && h.tired >= core.getFlag('deepBreath', 5) && h.ki > 0) {
+			str = str.substr(1);
+			s.skillBar += '-';
+		}
+		if (str.substr(0, 1) == 'V') {
+			str = str.substr(1);
+			if (h.tired > 0 && this.useKi(h, 1)) {
+				h.tired = Math.max(0, h.tired - core.getFlag('deepBreath', 5));
+			}
+			s.skillBar += 'V';
+			this.deepBreath(s, str);
+		}
+		return str;
+	}
+	this.removeStopper = function (str, turn, stat) {
+		var s = str.indexOf('@');
+		stat = stat || [];
+		if (s >= 0 && /[1-5]/.test(str.substr(s + 1))) {
+			var t = (str.substr(s + 1).match(/\d+/g) || [])[0];
+			if (str.substr(s + 1).indexOf(t) != 0) return str;
+			if (turn >= t) {
+				if (s == 0) stat.skillBar += str.substr(0, t.length + 1);
+				str = this.removeStopper(str.substr(0, s) + str.substr(s + t.length + 1), turn, stat);
+			}
+		}
+		return str;
+	}
+
+
+	// 机关门开门条件：左下右下无物品
+	core.events._openDoor_check = function (block, x, y, needKey) {
+		var clearAndReturn = function () {
+			core.clearContinueAutomaticRoute();
+			return false;
 		}
 
-		core.enemys.nextCriticals = function (enemy, number, x, y, floorId) {
-			if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			number = number || 1;
+		if (block == null || block.event == null) return clearAndReturn();
+		var id = block.event.id;
 
-			if (this.hasSpecial(enemy.special, 10)) return []; // 模仿怪物临界
-			var info = this.getDamageInfo(enemy, null, x, y, floorId);
-			if (info == null || this.hasSpecial(enemy.special, 3)) { // 未破防，或是坚固怪
-				info = this.getEnemyInfo(enemy, null, x, y, floorId);
-				if (core.status.hero.atk + core.getFlag('atkm', 10) < info.def) {
-					return [
-						[info.def - core.status.hero.atk - core.getFlag('atkm', 10), '?']
-					];
+		// 是否存在门或暗墙
+		if (core.material.icons.animates[id] == null && core.material.icons.npc48[id] == null) {
+			return clearAndReturn();
+		}
+
+		if (id == 'steelDoor')
+			needKey = false;
+		if (id == 'specialDoor' && !core.getBlock(x - 1, y + 1) && !core.getBlock(x + 1, y + 1))
+			needKey = false;
+		var doorInfo = core.getBlockById(id).event;
+		if (doorInfo == null || doorInfo.doorInfo == null)
+			return clearAndReturn();
+		doorInfo = doorInfo.doorInfo;
+		// Check all keys
+		var keyInfo = doorInfo.keys || {};
+		if (needKey) {
+			for (var keyName in keyInfo) {
+				var keyValue = keyInfo[keyName];
+				if (keyName.endsWith(':o')) keyName = keyName.substring(0, keyName.length - 2);
+
+				// --- 如果是一个不存在的道具，则直接认为无法开启
+				if (!core.material.items[keyName]) {
+					core.stopSound();
+					core.playSound('操作失败');
+					if (id == 'specialDoor') core.drawTip("机关门开启条件为：门的左下以及右下必须为空地");
+					else core.drawTip("无法开启此门");
+					return clearAndReturn();
 				}
-				return [];
+				if (core.itemCount(keyName) < keyValue) {
+					core.stopSound();
+					core.playSound('操作失败');
+					core.drawTip("你的" + ((core.material.items[keyName] || {}).name || "钥匙") + "不足！", null, true);
+					return false;
+				}
 			}
+			if (!core.status.event.id) core.autosave(true);
+			for (var keyName in keyInfo) {
+				if (!keyName.endsWith(':o')) core.removeItem(keyName, keyInfo[keyName]);
+			}
+		}
+		core.playSound(doorInfo.openSound);
+		return true;
+	}
 
-			// getDamageInfo直接返回数字；0伤且无负伤(此塔0伤不算临界)
-			if (typeof info == 'number' || (info.damage <= 0 && (1 || !core.flags.enableNegativeDamage))) {
+	core.enemys.nextCriticals = function (enemy, number, x, y, floorId) {
+		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		number = number || 1;
+
+		if (this.hasSpecial(enemy.special, 10)) return []; // 模仿怪物临界
+		var info = this.getDamageInfo(enemy, null, x, y, floorId);
+		if (info == null || this.hasSpecial(enemy.special, 3)) { // 未破防，或是坚固怪
+			info = this.getEnemyInfo(enemy, null, x, y, floorId);
+			if (core.status.hero.atk + core.getFlag('atkm', 10) < info.def) {
 				return [
-					[0, 0]
+					[info.def - core.status.hero.atk - core.getFlag('atkm', 10), '?']
 				];
 			}
-
-			if (core.flags.useLoop) {
-				var LOOP_MAX_VALUE = 5000;
-				if (core.status.hero.atk < LOOP_MAX_VALUE) {
-					return this._nextCriticals_useLoop(enemy, info, number, x, y, floorId);
-				} else {
-					return this._nextCriticals_useBinarySearch(enemy, info, number, x, y, floorId);
-				}
-			} else {
-				return this._nextCriticals_useTurn(enemy, info, number, x, y, floorId);
-			}
+			return [];
 		}
 
-		core.enemys._nextCriticals_useLoop = function (enemy, info, number, x, y, floorId) {
-			var mon_hp = info.mon_hp,
-				hero_atk = core.status.hero.atk,
-				mon_def = info.mon_def,
-				pre = info.damage;
-			var list = [];
-			for (var atk = hero_atk + 1; atk <= hero_atk + core.getFlag('criMax', 99); atk++) {
-				var nextInfo = this.getDamageInfo(enemy, { "atk": atk }, x, y, floorId);
-				if (nextInfo == null || (typeof nextInfo == 'number')) break;
-				if (pre != nextInfo.damage) {
-					pre = nextInfo.damage;
-					list.push([atk - hero_atk, info.damage - nextInfo.damage]);
-					if (nextInfo.damage <= 0 && !core.flags.enableNegativeDamage) break;
-					if (list.length >= number) break;
-				}
-			}
-			if (list.length == 0) list.push([1 + core.getFlag('criMax', 99), '?']);
-			return list;
-		}
-
-		core.ui._drawBook_drawRow3 = function (index, enemy, top, left, width, position) {
-			// 绘制第三行
-			core.setTextAlign('ui', 'left');
-			var b13 = this._buildFont(13, true),
-				f13 = this._buildFont(13, false);
-			var col1 = left,
-				col2 = left + width * 9 / 25,
-				col3 = left + width * 17 / 25;
-			var s = core.getRecomSkill(enemy.id);
-			core.fillText('ui', '气息容量', col1, position, '#DDDDDD', f13);
-			core.fillText('ui', core.formatBigNumber(enemy.value || 0), col1 + 56, position, null, b13);
-			if (s) {
-				core.fillText('ui', '推荐技能', col2, position, '#DDDDDD', f13);
-				core.fillText('ui', (!s) ? '无法战胜此怪物' : (s.skill == '' ? '无' : s.skill) + '/' + s.ratio, col2 + 56, position, null, b13);
-			} else {
-				if ((core.getDamageInfo(enemy) || []).damage <= 0) {
-					var info = core.atkMana(core.status.hero.atk, core.enemys.getEnemyInfo(enemy).def);
-					if (info && info.cri) {
-						core.fillText('ui', '勇者攻增气临界', col2, position, '#DDDDDD', f13);
-						core.fillText('ui', info.cri, col2 + 95, position, null, b13);
-					}
-				}
-
-			}
-			//core.fillText('ui', '减伤', col2, position, null, f13);
-			//core.fillText('ui', core.formatBigNumber(enemy.criticalDamage||0), col2 + 30, position, null, b13);
-			//core.fillText('ui', '加防', col3, position, null, f13);
-			//core.fillText('ui', core.formatBigNumber(enemy.defDamage||0), col3 + 30, position, null, b13);
-		}
-
-		core.ui._drawBook_drawDamage = function (index, enemy, offset, position) {
-			core.setTextAlign('ui', 'center');
-			var damageString = core.getDamageString(enemy);
-			if (enemy.notBomb) damage += "[b]";
-			if (damageString.damage == '???') damageString.damage = '无法战斗';
-			core.fillText('ui', damageString.damage, offset, position, damageString.color, this._buildFont(13, true));
-		}
-
-		core.enemys.canBattle = function (enemy, x, y, floorId) {
-			if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			// 		var damage = core.enemys.getDamage(enemy, x, y, floorId);
-			// 		if (enemy == null) return null;
-			// 		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			if (flags.autoRecomBattle && !core.isReplaying()) {
-				var skill = (core.getRecomSkill(enemy, x, y, floorId) || []).skill || "";
-				if (skill != flags.skillName) {
-					core.setFlag("skillName", skill);
-					core.status.route.splice(core.status.route.length - 1, 0, "key:57", "input2:" + core.encodeBase64(skill));
-				}
-			}
-			var info = this.getDamageInfo(enemy, hero, x, y, floorId);
-			if (info == null) return false;
-			var pdmg = info.pdmg || 0,
-				hdmg = info.damage - pdmg;
-			return hdmg < core.status.hero.hp && pdmg < core.status.hero.hpmax;
-		}
-
-		core.enemys.getDamageString = function (enemy, x, y, floorId) {
-			if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			var damage;
-			if (flags.autoRecomBattle) {
-				var nowSkill = flags.skillName;
-				core.setFlag("skillName", (core.getRecomSkill(enemy, x, y, floorId) || []).skill || "");
-				damage = this.getDamage(enemy, x, y, floorId);
-				core.setFlag("skillName", nowSkill);
-			} else damage = this.getDamage(enemy, x, y, floorId);
-			if (enemy == null) return null;
-			if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
-			var info = this.getDamageInfo(enemy, hero, x, y, floorId);
-			var pdmg = (info || {}).pdmg || 0,
-				hdmg = damage - pdmg;
-			var color = '#000000';
-
-			if (damage == null) {
-				damage = "???";
-				color = '#FF2222';
-			} else {
-				var ratio = Math.max(hdmg / core.status.hero.hp, pdmg / core.status.hero.hpmax);
-				if (ratio <= 0) color = '#1F1';
-				else if (ratio < 0.05) color = '#9F9';
-				else if (ratio < 0.1) color = '#CFC';
-				else if (ratio < 0.15) color = '#FFF';
-				else if (ratio < 0.2) color = '#FFC';
-				else if (ratio < 0.3) color = '#FF9';
-				else if (ratio < 0.4) color = '#FF0';
-				else if (ratio < 0.5) color = '#FC1';
-				else if (ratio < 1) color = '#F93';
-				else color = '#F22';
-
-				damage = core.formatBigNumber(damage, true);
-				if (core.enemys.hasSpecial(enemy, 19))
-					damage += "+";
-				if (core.enemys.hasSpecial(enemy, 21))
-					damage += "-";
-				if (core.enemys.hasSpecial(enemy, 11))
-					damage += "^";
-			}
-
-			return {
-				"damage": damage,
-				"color": color
-			};
-		}
-
-		core.ui._drawSLPanel_drawRecord = function (title, data, x, y, size, cho, highLight) {
-			var globalAttribute = core.status.globalAttribute || core.initStatus.globalAttribute;
-			var strokeColor = globalAttribute.selectColor;
-			if (core.status.event.selection) strokeColor = '#FF6A6A';
-			if (!data || !data.floorId) highLight = false;
-			if (data && data.__toReplay__) title = '[R]' + title;
-
-			core.fillText('ui', title, x, y, highLight ? globalAttribute.selectColor : '#FFFFFF', this._buildFont(17, true));
-			core.strokeRect('ui', x - size / 2, y + 15, size, size, cho ? strokeColor : '#FFFFFF', cho ? 6 : 2);
-			if (data && data.floorId) {
-				core.setTextAlign('ui', "center");
-				var map = core.maps.loadMap(data.maps, data.floorId);
-				core.extractBlocksForUI(map, data.hero.flags);
-				core.drawThumbnail(data.floorId, map.blocks, {
-					heroLoc: data.hero.loc,
-					heroIcon: data.hero.image,
-					flags: data.hero.flags,
-					ctx: 'ui',
-					x: x - size / 2,
-					y: y + 15,
-					size: size,
-					centerX: data.hero.loc.x,
-					centerY: data.hero.loc.y
-				});
-				if (core.isPlaying() && core.getFlag("hard") != data.hero.flags.hard) {
-					core.fillRect('ui', x - size / 2, y + 15, size, size, [0, 0, 0, 0.4]);
-					core.fillText('ui', data.hard, x, parseInt(y + 22 + size / 2), data.hero.flags.__hardColor__ || 'red', this._buildFont(30, true));
-				}
-				// 绘制存档笔记
-				if (data.hero.notes && data.hero.notes.length > 0) {
-					core.setTextAlign('ui', 'left');
-					if (data.hero.notes.length >= 2) {
-						core.fillRect('ui', x - size / 2, y + 15, size, 28, [0, 0, 0, 0.3]);
-						core.fillBoldText('ui', data.hero.notes.length - 1 + ". " + data.hero.notes[data.hero.notes.length - 2].substring(0, 10),
-							x - size / 2 + 2, y + 15 + 12, '#FFFFFF', null, this._buildFont(10, false));
-						core.fillBoldText('ui', data.hero.notes.length + ". " + data.hero.notes[data.hero.notes.length - 1].substring(0, 10),
-							x - size / 2 + 2, y + 15 + 24);
-					} else {
-						core.fillRect('ui', x - size / 2, y + 15, size, 16, [0, 0, 0, 0.3]);
-						core.fillBoldText('ui', data.hero.notes.length + ". " + data.hero.notes[data.hero.notes.length - 1].substring(0, 10),
-							x - size / 2 + 2, y + 15 + 12, '#FFFFFF', null, this._buildFont(10, false));
-					}
-				}
-				core.setTextAlign('ui', "center");
-				var v = core.formatBigNumber(data.hero.hp, true) + "/" + core.formatBigNumber(data.hero.atk, true) + "/" + core.formatBigNumber(data.hero.def, true);
-				var v2 = "/" + (data.hero.mana / data.hero.manamax * 6).toFixed(2);
-				if (core.calWidth('ui', v + v2, this._buildFont(10, false)) <= size) v += v2;
-				core.fillText('ui', v, x, y + 30 + size, globalAttribute.selectColor);
-				core.fillText('ui', core.formatDate(new Date(data.time)), x, y + 43 + size, data.hero.flags.debug ? '#FF6A6A' : '#FFFFFF');
-			} else {
-				core.fillRect('ui', x - size / 2, y + 15, size, size, '#333333');
-				core.fillText('ui', '空', x, parseInt(y + 22 + size / 2), '#FFFFFF', this._buildFont(30, true));
-			}
-		}
-		core.control._updateDamage_damage = function (floorId, onMap) {
-			core.status.damage.data = [];
-			if (!core.flags.displayEnemyDamage && !core.flags.displayExtraDamage) return;
-
-			core.extractBlocks(floorId);
-			core.status.maps[floorId].blocks.forEach(function (block) {
-				var x = block.x,
-					y = block.y;
-
-				// v2优化，只绘制范围内的部分
-				if (onMap && core.bigmap.v2) {
-					if (x < core.bigmap.posX - core.bigmap.extend || x > core.bigmap.posX + core.__SIZE__ + core.bigmap.extend || y < core.bigmap.posY - core.bigmap.extend || y > core.bigmap.posY + core.__SIZE__ + core.bigmap.extend) {
-						return;
-					}
-				}
-
-				if (!block.disable && block.event.cls.indexOf('enemy') == 0 && block.event.displayDamage !== false) {
-					var enemy = core.material.enemys[block.event.id];
-					var condition = hero.atk + '@' + hero.def + '@' + hero.mdef + '@' + flags.deepBreath + '@' + flags.tiredMax + '@' + flags.sxzl;
-					var battleInfo = enemy.id + '@' + core.getFlag('skillName', '') + '@' + core.getEquip(0) + '@' + core.getEquip(1) + '@' + core.hasItem('I325') + '@' + core.hasItem('I326') + '@' + core.hasItem('I327') + '@' + flags.swordUsed;
-					if (core.flags.displayCritical && !(core.isReplaying() && !flags.replayCriRecom)) {
-						var cache = core.getFlag('@@_critical__@' + battleInfo, [null, null]);
-						var critical;
-						if (cache[1] == condition && typeof critical == 'object') critical = cache[0];
-						else {
-							critical = core.enemys.nextCriticals(block.event.id, 1, x, y, floorId);
-							var color = '#FFFFFF';
-							if ((critical[0] || [])[1] < 0) color = '#F93';
-							if ((critical[0] || [])[0] > core.getFlag('criMax', 99)) critical = core.getFlag('criMax', 99) + '+';
-							else {
-								critical = core.formatBigNumber((critical[0] || [])[0], true);
-								if (critical == '???') critical = '?';
-							}
-							var info = core.getDamageInfo(block.event.id, null, x, y, floorId);
-							if (info && info.damage <= 0) {
-								info = core.atkMana(core.status.hero.atk, core.enemys.getEnemyInfo(block.event.id, null, x, y, floorId).def);
-								if (info && info.cri) {
-									critical = info.cri;
-									color = '#F93';
-								} else critical = '';
-							}
-							critical = { "cri": critical, "color": color };
-							core.setFlag('@@_critical__@' + battleInfo, [critical, condition]);
-						}
-						core.status.damage.data.push({ text: critical.cri, px: 32 * x + 1, py: 32 * (y + 1) - 11, color: critical.color });
-					}
-					condition += '@' + hero.mana + '@' + hero.manamax;
-					if (!flags.noRecomSkill && !(core.isReplaying() && !flags.replayCriRecom)) {
-						var cache = core.getFlag('@@_recomSkill__@' + battleInfo, [null, null]);
-						var skill;
-						if (cache[1] == condition) skill = cache[0];
-						else {
-							skill = (core.getRecomSkill(block.event.id, x, y, floorId) || []).skill || "";
-							core.setFlag('@@_recomSkill__@' + battleInfo, [skill, condition]);
-						}
-						core.status.damage.data.push({ text: skill.length > 4 ? skill.substr(0, 3) + ".." : skill, px: 32 * x + 1, py: 32 * (y + 1) - 21, color: '#FFFFFF' });
-					}
-					condition += '@' + hero.hp + '@' + hero.hpmax;
-					if (core.flags.displayEnemyDamage) {
-						var cache = core.getFlag('@@_damage__@' + battleInfo, [{}, null]);
-						var damageString;
-						if (cache[1] == condition) damageString = cache[0];
-						else {
-							damageString = core.enemys.getDamageString(block.event.id, x, y, floorId);
-							core.setFlag('@@_damage__@' + battleInfo, [damageString, condition]);
-						}
-						core.status.damage.data.push({ text: damageString.damage, px: 32 * x + 1, py: 32 * (y + 1) - 1, color: damageString.color });
-					}
-				}
-			});
-		}
-
-		this.clearMyCache = function (type) {
-			Object.keys(core.status.hero.flags).forEach(function (name) {
-				if ((type == 'all' && name.startsWith("@@_")) || name.startsWith("@@_" + type + "__@")) {
-					delete core.status.hero.flags[name];
-				}
-			});
-		}
-
-		core.ui._drawBookDetail_turnAndCriticals = function (enemy, floorId, texts) {
-			var damageInfo = core.getDamageInfo(enemy.id, null, enemy.x, enemy.y, floorId);
-			var hdmg = (damageInfo || {}).hdmg || 0,
-				pdmg = (damageInfo || {}).pdmg || 0;
-			if (hdmg > 0 && pdmg > 0) texts.push("\r[#FF6A6A]\\d伤害分布：\\d\r[]勇者" + hdmg + "，公主" + pdmg);
-			texts.push("\r[#FF6A6A]\\d战斗回合数：\\d\r[]" + ((damageInfo || {}).turn || 0));
-			// 临界表
-			var criticals = core.enemys.nextCriticals(enemy.id, 8, enemy.x, enemy.y, floorId).map(function (v) {
-				if (v[0] > core.getFlag('criMax', 99)) return core.getFlag('criMax', 99) + "+:???";
-				else return core.formatBigNumber(v[0]) + ":" + core.formatBigNumber(v[1]);
-			});
-			while (criticals[0] == '0:0') criticals.shift();
-			texts.push("\r[#FF6A6A]\\d临界表：\\d\r[]" + JSON.stringify(criticals));
-			var prevInfo = core.getDamageInfo(enemy.id, { atk: core.status.hero.atk - 1 }, null, null, floorId);
-			if (prevInfo != null && damageInfo != null) {
-				if (damageInfo.damage != null) damageInfo = damageInfo.damage;
-				if (prevInfo.damage != null) prevInfo = prevInfo.damage;
-				if (prevInfo > damageInfo) {
-					texts.push("（当前攻击力正位于临界点上）")
-				}
-			}
-			var skill = core.getSkillPerform(enemy.id, 0, enemy.x, enemy.y, floorId),
-				list = [];
-			if (skill && skill.length > 0) {
-				list.push((skill[0][0] == "" ? "无" : skill[0][0]) + ":气息max");
-				skill.splice(0, 1);
-				skill.forEach(function (s) {
-					list.push(s[0] + ":" + s[3] + "(" + s[2] + "气换" + s[1] + "血)");
-				})
-				texts.push("\r[#FF6A6A]\\d技能价值表：\\d\r[]" + JSON.stringify(list));
-			}
-			var enemyInfo = core.enemys.getEnemyInfo(enemy.id, null, enemy.x, enemy.y, floorId),
-				damageInfo = core.getDamageInfo(enemy.id, null, enemy.x, enemy.y, floorId);
-			var atkMana = core.atkMana(hero.atk, enemyInfo.def);
-			if (damageInfo) texts.push("\r[#FF6A6A]\\d勇者攻增气：\\d\r[]" + atkMana.now + (atkMana.cri ? "  \r[#FF6A6A]\\d临界：\\d\r[]攻击+" + atkMana.cri : ""));
-			atkMana = 0;
-			if (!core.hasSpecial(enemy.id, 55)) atkMana += core.atkMana(enemyInfo.atk, hero.def, 1).now;
-			if (core.hasSpecial(enemy.id, 55) || core.hasSpecial(enemy.id, 61) || core.hasSpecial(enemy.id, 62) || core.hasSpecial(enemy.id, 63) || core.hasSpecial(enemy.id, 64) || core.hasSpecial(enemy.id, 65)) atkMana += core.atkMana(enemyInfo.atk, hero.mdef, 1).now;
-			if (damageInfo && damageInfo.damage > 0) texts.push("\r[#FF6A6A]\\d怪物攻增气：\\d\r[]" + atkMana + "  \r[#FF6A6A]\\d防增气：\\d\r[]" + Math.max(0, Math.round((hero.atk - enemyInfo.def) / 3)));
-		}
-
-		core.enemys.getCurrentEnemys = function (floorId) {
-			floorId = floorId || core.status.floorId;
-			var enemys = [],
-				used = {};
-			core.extractBlocks(floorId);
-			core.status.maps[floorId].blocks.forEach(function (block) {
-				if (!block.disable && block.event.cls.indexOf('enemy') == 0) {
-					this._getCurrentEnemys_addEnemy(block.event.id, enemys, used, block.x, block.y, floorId);
-					if (block.event.id == 'darkKnight') this._getCurrentEnemys_addEnemy('soldier', enemys, used, block.x, block.y, floorId);
-					if (block.event.id == 'soldier' || block.event.id == 'darkKnight') this._getCurrentEnemys_addEnemy('ghostSkeleton', enemys, used, block.x, block.y, floorId);
-					if (block.event.id == 'E384') this._getCurrentEnemys_addEnemy('E385', enemys, used, block.x, block.y, floorId);
-				}
-			}, this);
-			return this._getCurrentEnemys_sort(enemys);
-		}
-
-		core.maps._canMoveDirectly_checkStartPoint = function (sx, sy) {
-			if (core.status.checkBlock.damage[sx + "," + sy]) return false;
-			var block = core.getBlock(sx, sy);
-			if (block != null) {
-				// 只有起点是传送点才是能无视
-				return !block.event.trigger || block.event.trigger == 'changeFloor' || ['A376'].indexOf(block.event.id) >= 0;
-			}
-			return true;
-		}
-
-		core.ui._drawSwitchs = function () {
-			core.status.event.id = 'switchs';
-			var choices = [
-				"音效设置",
-				"显示设置",
-				"操作设置",
-				"高级设置[U]",
-				"返回主菜单"
+		// getDamageInfo直接返回数字；0伤且无负伤(此塔0伤不算临界)
+		if (typeof info == 'number' || (info.damage <= 0 && (1 || !core.flags.enableNegativeDamage))) {
+			return [
+				[0, 0]
 			];
-			this.drawChoices(null, choices);
 		}
 
-		core.actions._clickSwitchs = function (x, y) {
-			var choices = core.status.event.ui.choices;
-			var topIndex = this._getChoicesTopIndex(choices.length);
-			var selection = y - topIndex;
-			if (x < this.CHOICES_LEFT || x > this.CHOICES_RIGHT) return;
-			if (selection >= 0 && selection < choices.length) {
-				core.status.event.selection = selection;
-				switch (selection) {
-					case 0:
-						core.status.event.selection = 0;
-						core.playSound('确定');
-						return core.ui._drawSwitchs_sounds();
-					case 1:
-						core.status.event.selection = 0;
-						core.playSound('确定');
-						return core.ui._drawSwitchs_display();
-					case 2:
-						core.status.event.selection = 0;
-						core.playSound('确定');
-						return core.ui._drawSwitchs_action();
-					case 3:
-						core.status.event.selection = 0;
-						core.playSound('确定');
-						core.status.route.push("key:85");
-						core.insertCommonEvent('高级设置');
-						return;
-					case 4:
-						core.status.event.selection = 0;
-						core.playSound('取消');
-						return core.ui._drawSettings();
-				}
+		if (core.flags.useLoop) {
+			var LOOP_MAX_VALUE = 5000;
+			if (core.status.hero.atk < LOOP_MAX_VALUE) {
+				return this._nextCriticals_useLoop(enemy, info, number, x, y, floorId);
+			} else {
+				return this._nextCriticals_useBinarySearch(enemy, info, number, x, y, floorId);
+			}
+		} else {
+			return this._nextCriticals_useTurn(enemy, info, number, x, y, floorId);
+		}
+	}
+
+	core.enemys._nextCriticals_useLoop = function (enemy, info, number, x, y, floorId) {
+		var mon_hp = info.mon_hp,
+			hero_atk = core.status.hero.atk,
+			mon_def = info.mon_def,
+			pre = info.damage;
+		var list = [];
+		for (var atk = hero_atk + 1; atk <= hero_atk + core.getFlag('criMax', 99); atk++) {
+			var nextInfo = this.getDamageInfo(enemy, { "atk": atk }, x, y, floorId);
+			if (nextInfo == null || (typeof nextInfo == 'number')) break;
+			if (pre != nextInfo.damage) {
+				pre = nextInfo.damage;
+				list.push([atk - hero_atk, info.damage - nextInfo.damage]);
+				if (nextInfo.damage <= 0 && !core.flags.enableNegativeDamage) break;
+				if (list.length >= number) break;
 			}
 		}
+		if (list.length == 0) list.push([1 + core.getFlag('criMax', 99), '?']);
+		return list;
+	}
 
-		core.actions._keyUpSL = function (keycode) {
-			var page = core.status.event.data.page,
-				offset = core.status.event.data.offset;
-			var index = page * 10 + offset;
-
-			if (keycode == 27 || keycode == 88 || (core.status.event.id == 'save' && (keycode == 83 || keycode == 219)) || (core.status.event.id == 'load' && (keycode == 68 || keycode == 221))) {
-				this._clickSL(this.LAST, this.LAST);
-				return;
-			}
-			if (keycode >= 48 && keycode <= 57) {
-				if (keycode == 48) keycode = 58;
-				core.ui._drawSLPanel((keycode - 49) * 1000 + 1);
-				return;
-			}
-			if (keycode == 13 || keycode == 32 || keycode == 67) {
-				if (offset == 0)
-					core.doSL("autoSave", core.status.event.id);
-				else {
-					var id = 5 * page + offset;
-					if (core.status.event.data.mode == 'fav') id = core.saves.favorite[id - 1];
-					core.doSL(id, core.status.event.id);
+	core.ui._drawBook_drawRow3 = function (index, enemy, top, left, width, position) {
+		// 绘制第三行
+		core.setTextAlign('ui', 'left');
+		var b13 = this._buildFont(13, true),
+			f13 = this._buildFont(13, false);
+		var col1 = left,
+			col2 = left + width * 9 / 25,
+			col3 = left + width * 17 / 25;
+		var s = core.getRecomSkill(enemy.id);
+		core.fillText('ui', '气息容量', col1, position, '#DDDDDD', f13);
+		core.fillText('ui', core.formatBigNumber(enemy.value || 0), col1 + 56, position, null, b13);
+		if (s) {
+			core.fillText('ui', '推荐技能', col2, position, '#DDDDDD', f13);
+			core.fillText('ui', (!s) ? '无法战胜此怪物' : (s.skill == '' ? '无' : s.skill) + '/' + s.ratio, col2 + 56, position, null, b13);
+		} else {
+			if ((core.getDamageInfo(enemy) || []).damage <= 0) {
+				var info = core.atkMana(core.status.hero.atk, core.enemys.getEnemyInfo(enemy).def);
+				if (info && info.cri) {
+					core.fillText('ui', '勇者攻增气临界', col2, position, '#DDDDDD', f13);
+					core.fillText('ui', info.cri, col2 + 95, position, null, b13);
 				}
-				return;
 			}
-			if (keycode == 69 && core.status.event.id != 'save') { // E 收藏切换
-				this._clickSL(0, this.LAST);
-				return;
+
+		}
+		//core.fillText('ui', '减伤', col2, position, null, f13);
+		//core.fillText('ui', core.formatBigNumber(enemy.criticalDamage||0), col2 + 30, position, null, b13);
+		//core.fillText('ui', '加防', col3, position, null, f13);
+		//core.fillText('ui', core.formatBigNumber(enemy.defDamage||0), col3 + 30, position, null, b13);
+	}
+
+	core.ui._drawBook_drawDamage = function (index, enemy, offset, position) {
+		core.setTextAlign('ui', 'center');
+		var damageString = core.getDamageString(enemy);
+		if (enemy.notBomb) damage += "[b]";
+		if (damageString.damage == '???') damageString.damage = '无法战斗';
+		core.fillText('ui', damageString.damage, offset, position, damageString.color, this._buildFont(13, true));
+	}
+
+	core.enemys.canBattle = function (enemy, x, y, floorId) {
+		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		// 		var damage = core.enemys.getDamage(enemy, x, y, floorId);
+		// 		if (enemy == null) return null;
+		// 		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		if (flags.autoRecomBattle && !core.isReplaying()) {
+			var skill = (core.getRecomSkill(enemy, x, y, floorId) || []).skill || "";
+			if (skill != flags.skillName) {
+				core.setFlag("skillName", skill);
+				core.status.route.splice(core.status.route.length - 1, 0, "key:57", "input2:" + core.encodeBase64(skill));
 			}
-			if (keycode == 46) {
-				if (offset == 0) {
-					core.playSound('操作失败');
-					core.drawTip("无法删除自动存档！");
+		}
+		var info = this.getDamageInfo(enemy, hero, x, y, floorId);
+		if (info == null) return false;
+		var pdmg = info.pdmg || 0,
+			hdmg = info.damage - pdmg;
+		return hdmg < core.status.hero.hp && pdmg < core.status.hero.hpmax;
+	}
+
+	core.enemys.getDamageString = function (enemy, x, y, floorId) {
+		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		var damage;
+		if (flags.autoRecomBattle) {
+			var nowSkill = flags.skillName;
+			core.setFlag("skillName", (core.getRecomSkill(enemy, x, y, floorId) || []).skill || "");
+			damage = this.getDamage(enemy, x, y, floorId);
+			core.setFlag("skillName", nowSkill);
+		} else damage = this.getDamage(enemy, x, y, floorId);
+		if (enemy == null) return null;
+		if (typeof enemy == 'string') enemy = core.material.enemys[enemy];
+		var info = this.getDamageInfo(enemy, hero, x, y, floorId);
+		var pdmg = (info || {}).pdmg || 0,
+			hdmg = damage - pdmg;
+		var color = '#000000';
+
+		if (damage == null) {
+			damage = "???";
+			color = '#FF2222';
+		} else {
+			var ratio = Math.max(hdmg / core.status.hero.hp, pdmg / core.status.hero.hpmax);
+			if (ratio <= 0) color = '#1F1';
+			else if (ratio < 0.05) color = '#9F9';
+			else if (ratio < 0.1) color = '#CFC';
+			else if (ratio < 0.15) color = '#FFF';
+			else if (ratio < 0.2) color = '#FFC';
+			else if (ratio < 0.3) color = '#FF9';
+			else if (ratio < 0.4) color = '#FF0';
+			else if (ratio < 0.5) color = '#FC1';
+			else if (ratio < 1) color = '#F93';
+			else color = '#F22';
+
+			damage = core.formatBigNumber(damage, true);
+			if (core.enemys.hasSpecial(enemy, 19))
+				damage += "+";
+			if (core.enemys.hasSpecial(enemy, 21))
+				damage += "-";
+			if (core.enemys.hasSpecial(enemy, 11))
+				damage += "^";
+		}
+
+		return {
+			"damage": damage,
+			"color": color
+		};
+	}
+
+	core.ui._drawSLPanel_drawRecord = function (title, data, x, y, size, cho, highLight) {
+		var globalAttribute = core.status.globalAttribute || core.initStatus.globalAttribute;
+		var strokeColor = globalAttribute.selectColor;
+		if (core.status.event.selection) strokeColor = '#FF6A6A';
+		if (!data || !data.floorId) highLight = false;
+		if (data && data.__toReplay__) title = '[R]' + title;
+
+		core.fillText('ui', title, x, y, highLight ? globalAttribute.selectColor : '#FFFFFF', this._buildFont(17, true));
+		core.strokeRect('ui', x - size / 2, y + 15, size, size, cho ? strokeColor : '#FFFFFF', cho ? 6 : 2);
+		if (data && data.floorId) {
+			core.setTextAlign('ui', "center");
+			var map = core.maps.loadMap(data.maps, data.floorId);
+			core.extractBlocksForUI(map, data.hero.flags);
+			core.drawThumbnail(data.floorId, map.blocks, {
+				heroLoc: data.hero.loc,
+				heroIcon: data.hero.image,
+				flags: data.hero.flags,
+				ctx: 'ui',
+				x: x - size / 2,
+				y: y + 15,
+				size: size,
+				centerX: data.hero.loc.x,
+				centerY: data.hero.loc.y
+			});
+			if (core.isPlaying() && core.getFlag("hard") != data.hero.flags.hard) {
+				core.fillRect('ui', x - size / 2, y + 15, size, size, [0, 0, 0, 0.4]);
+				core.fillText('ui', data.hard, x, parseInt(y + 22 + size / 2), data.hero.flags.__hardColor__ || 'red', this._buildFont(30, true));
+			}
+			// 绘制存档笔记
+			if (data.hero.notes && data.hero.notes.length > 0) {
+				core.setTextAlign('ui', 'left');
+				if (data.hero.notes.length >= 2) {
+					core.fillRect('ui', x - size / 2, y + 15, size, 28, [0, 0, 0, 0.3]);
+					core.fillBoldText('ui', data.hero.notes.length - 1 + ". " + data.hero.notes[data.hero.notes.length - 2].substring(0, 10),
+						x - size / 2 + 2, y + 15 + 12, '#FFFFFF', null, this._buildFont(10, false));
+					core.fillBoldText('ui', data.hero.notes.length + ". " + data.hero.notes[data.hero.notes.length - 1].substring(0, 10),
+						x - size / 2 + 2, y + 15 + 24);
 				} else {
-					var id = 5 * page + offset;
-					if (core.status.event.data.mode == 'fav') id = core.saves.favorite[id - 1];
-					core.removeSave(id, function () {
-						core.ui._drawSLPanel(index, true);
-					});
+					core.fillRect('ui', x - size / 2, y + 15, size, 16, [0, 0, 0, 0.3]);
+					core.fillBoldText('ui', data.hero.notes.length + ". " + data.hero.notes[data.hero.notes.length - 1].substring(0, 10),
+						x - size / 2 + 2, y + 15 + 12, '#FFFFFF', null, this._buildFont(10, false));
 				}
 			}
-			if (keycode == 70 && core.status.event.data.mode == 'all') { // F
-				this._clickSL_favorite(page, offset);
+			core.setTextAlign('ui', "center");
+			var v = core.formatBigNumber(data.hero.hp, true) + "/" + core.formatBigNumber(data.hero.atk, true) + "/" + core.formatBigNumber(data.hero.def, true);
+			var v2 = "/" + (data.hero.mana / data.hero.manamax * 6).toFixed(2);
+			if (core.calWidth('ui', v + v2, this._buildFont(10, false)) <= size) v += v2;
+			core.fillText('ui', v, x, y + 30 + size, globalAttribute.selectColor);
+			core.fillText('ui', core.formatDate(new Date(data.time)), x, y + 43 + size, data.hero.flags.debug ? '#FF6A6A' : '#FFFFFF');
+		} else {
+			core.fillRect('ui', x - size / 2, y + 15, size, size, '#333333');
+			core.fillText('ui', '空', x, parseInt(y + 22 + size / 2), '#FFFFFF', this._buildFont(30, true));
+		}
+	}
+	core.control._updateDamage_damage = function (floorId, onMap) {
+		core.status.damage.data = [];
+		if (!core.flags.displayEnemyDamage && !core.flags.displayExtraDamage) return;
+
+		core.extractBlocks(floorId);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			var x = block.x,
+				y = block.y;
+
+			// v2优化，只绘制范围内的部分
+			if (onMap && core.bigmap.v2) {
+				if (x < core.bigmap.posX - core.bigmap.extend || x > core.bigmap.posX + core.__SIZE__ + core.bigmap.extend || y < core.bigmap.posY - core.bigmap.extend || y > core.bigmap.posY + core.__SIZE__ + core.bigmap.extend) {
+					return;
+				}
+			}
+
+			if (!block.disable && block.event.cls.indexOf('enemy') == 0 && block.event.displayDamage !== false) {
+				var enemy = core.material.enemys[block.event.id];
+				var condition = hero.atk + '@' + hero.def + '@' + hero.mdef + '@' + flags.deepBreath + '@' + flags.tiredMax + '@' + flags.sxzl;
+				var battleInfo = enemy.id + '@' + core.getFlag('skillName', '') + '@' + core.getEquip(0) + '@' + core.getEquip(1) + '@' + core.hasItem('I325') + '@' + core.hasItem('I326') + '@' + core.hasItem('I327') + '@' + flags.swordUsed;
+				if (core.flags.displayCritical && !(core.isReplaying() && !flags.replayCriRecom)) {
+					var cache = core.getFlag('@@_critical__@' + battleInfo, [null, null]);
+					var critical;
+					if (cache[1] == condition && typeof critical == 'object') critical = cache[0];
+					else {
+						critical = core.enemys.nextCriticals(block.event.id, 1, x, y, floorId);
+						var color = '#FFFFFF';
+						if ((critical[0] || [])[1] < 0) color = '#F93';
+						if ((critical[0] || [])[0] > core.getFlag('criMax', 99)) critical = core.getFlag('criMax', 99) + '+';
+						else {
+							critical = core.formatBigNumber((critical[0] || [])[0], true);
+							if (critical == '???') critical = '?';
+						}
+						var info = core.getDamageInfo(block.event.id, null, x, y, floorId);
+						if (info && info.damage <= 0) {
+							info = core.atkMana(core.status.hero.atk, core.enemys.getEnemyInfo(block.event.id, null, x, y, floorId).def);
+							if (info && info.cri) {
+								critical = info.cri;
+								color = '#F93';
+							} else critical = '';
+						}
+						critical = { "cri": critical, "color": color };
+						core.setFlag('@@_critical__@' + battleInfo, [critical, condition]);
+					}
+					core.status.damage.data.push({ text: critical.cri, px: 32 * x + 1, py: 32 * (y + 1) - 11, color: critical.color });
+				}
+				condition += '@' + hero.mana + '@' + hero.manamax;
+				if (!flags.noRecomSkill && !(core.isReplaying() && !flags.replayCriRecom)) {
+					var cache = core.getFlag('@@_recomSkill__@' + battleInfo, [null, null]);
+					var skill;
+					if (cache[1] == condition) skill = cache[0];
+					else {
+						skill = (core.getRecomSkill(block.event.id, x, y, floorId) || []).skill || "";
+						core.setFlag('@@_recomSkill__@' + battleInfo, [skill, condition]);
+					}
+					core.status.damage.data.push({ text: skill.length > 4 ? skill.substr(0, 3) + ".." : skill, px: 32 * x + 1, py: 32 * (y + 1) - 21, color: '#FFFFFF' });
+				}
+				condition += '@' + hero.hp + '@' + hero.hpmax;
+				if (core.flags.displayEnemyDamage) {
+					var cache = core.getFlag('@@_damage__@' + battleInfo, [{}, null]);
+					var damageString;
+					if (cache[1] == condition) damageString = cache[0];
+					else {
+						damageString = core.enemys.getDamageString(block.event.id, x, y, floorId);
+						core.setFlag('@@_damage__@' + battleInfo, [damageString, condition]);
+					}
+					core.status.damage.data.push({ text: damageString.damage, px: 32 * x + 1, py: 32 * (y + 1) - 1, color: damageString.color });
+				}
+			}
+		});
+	}
+
+	this.clearMyCache = function (type) {
+		Object.keys(core.status.hero.flags).forEach(function (name) {
+			if ((type == 'all' && name.startsWith("@@_")) || name.startsWith("@@_" + type + "__@")) {
+				delete core.status.hero.flags[name];
+			}
+		});
+	}
+
+	core.ui._drawBookDetail_turnAndCriticals = function (enemy, floorId, texts) {
+		var damageInfo = core.getDamageInfo(enemy.id, null, enemy.x, enemy.y, floorId);
+		var hdmg = (damageInfo || {}).hdmg || 0,
+			pdmg = (damageInfo || {}).pdmg || 0;
+		if (hdmg > 0 && pdmg > 0) texts.push("\r[#FF6A6A]\\d伤害分布：\\d\r[]勇者" + hdmg + "，公主" + pdmg);
+		texts.push("\r[#FF6A6A]\\d战斗回合数：\\d\r[]" + ((damageInfo || {}).turn || 0));
+		// 临界表
+		var criticals = core.enemys.nextCriticals(enemy.id, 8, enemy.x, enemy.y, floorId).map(function (v) {
+			if (v[0] > core.getFlag('criMax', 99)) return core.getFlag('criMax', 99) + "+:???";
+			else return core.formatBigNumber(v[0]) + ":" + core.formatBigNumber(v[1]);
+		});
+		while (criticals[0] == '0:0') criticals.shift();
+		texts.push("\r[#FF6A6A]\\d临界表：\\d\r[]" + JSON.stringify(criticals));
+		var prevInfo = core.getDamageInfo(enemy.id, { atk: core.status.hero.atk - 1 }, null, null, floorId);
+		if (prevInfo != null && damageInfo != null) {
+			if (damageInfo.damage != null) damageInfo = damageInfo.damage;
+			if (prevInfo.damage != null) prevInfo = prevInfo.damage;
+			if (prevInfo > damageInfo) {
+				texts.push("（当前攻击力正位于临界点上）")
 			}
 		}
-	},
-	"drawLight": function () {
+		var skill = core.getSkillPerform(enemy.id, 0, enemy.x, enemy.y, floorId),
+			list = [];
+		if (skill && skill.length > 0) {
+			list.push((skill[0][0] == "" ? "无" : skill[0][0]) + ":气息max");
+			skill.splice(0, 1);
+			skill.forEach(function (s) {
+				list.push(s[0] + ":" + s[3] + "(" + s[2] + "气换" + s[1] + "血)");
+			})
+			texts.push("\r[#FF6A6A]\\d技能价值表：\\d\r[]" + JSON.stringify(list));
+		}
+		var enemyInfo = core.enemys.getEnemyInfo(enemy.id, null, enemy.x, enemy.y, floorId),
+			damageInfo = core.getDamageInfo(enemy.id, null, enemy.x, enemy.y, floorId);
+		var atkMana = core.atkMana(hero.atk, enemyInfo.def);
+		if (damageInfo) texts.push("\r[#FF6A6A]\\d勇者攻增气：\\d\r[]" + atkMana.now + (atkMana.cri ? "  \r[#FF6A6A]\\d临界：\\d\r[]攻击+" + atkMana.cri : ""));
+		atkMana = 0;
+		if (!core.hasSpecial(enemy.id, 55)) atkMana += core.atkMana(enemyInfo.atk, hero.def, 1).now;
+		if (core.hasSpecial(enemy.id, 55) || core.hasSpecial(enemy.id, 61) || core.hasSpecial(enemy.id, 62) || core.hasSpecial(enemy.id, 63) || core.hasSpecial(enemy.id, 64) || core.hasSpecial(enemy.id, 65)) atkMana += core.atkMana(enemyInfo.atk, hero.mdef, 1).now;
+		if (damageInfo && damageInfo.damage > 0) texts.push("\r[#FF6A6A]\\d怪物攻增气：\\d\r[]" + atkMana + "  \r[#FF6A6A]\\d防增气：\\d\r[]" + Math.max(0, Math.round((hero.atk - enemyInfo.def) / 3)));
+	}
+
+	core.enemys.getCurrentEnemys = function (floorId) {
+		floorId = floorId || core.status.floorId;
+		var enemys = [],
+			used = {};
+		core.extractBlocks(floorId);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			if (!block.disable && block.event.cls.indexOf('enemy') == 0) {
+				this._getCurrentEnemys_addEnemy(block.event.id, enemys, used, block.x, block.y, floorId);
+				if (block.event.id == 'darkKnight') this._getCurrentEnemys_addEnemy('soldier', enemys, used, block.x, block.y, floorId);
+				if (block.event.id == 'soldier' || block.event.id == 'darkKnight') this._getCurrentEnemys_addEnemy('ghostSkeleton', enemys, used, block.x, block.y, floorId);
+				if (block.event.id == 'E384') this._getCurrentEnemys_addEnemy('E385', enemys, used, block.x, block.y, floorId);
+			}
+		}, this);
+		return this._getCurrentEnemys_sort(enemys);
+	}
+
+	core.maps._canMoveDirectly_checkStartPoint = function (sx, sy) {
+		if (core.status.checkBlock.damage[sx + "," + sy]) return false;
+		var block = core.getBlock(sx, sy);
+		if (block != null) {
+			// 只有起点是传送点才是能无视
+			return !block.event.trigger || block.event.trigger == 'changeFloor' || ['A376'].indexOf(block.event.id) >= 0;
+		}
+		return true;
+	}
+
+	core.ui._drawSwitchs = function () {
+		core.status.event.id = 'switchs';
+		var choices = [
+			"音效设置",
+			"显示设置",
+			"操作设置",
+			"高级设置[U]",
+			"返回主菜单"
+		];
+		this.drawChoices(null, choices);
+	}
+
+	core.actions._clickSwitchs = function (x, y) {
+		var choices = core.status.event.ui.choices;
+		var topIndex = this._getChoicesTopIndex(choices.length);
+		var selection = y - topIndex;
+		if (x < this.CHOICES_LEFT || x > this.CHOICES_RIGHT) return;
+		if (selection >= 0 && selection < choices.length) {
+			core.status.event.selection = selection;
+			switch (selection) {
+			case 0:
+				core.status.event.selection = 0;
+				core.playSound('确定');
+				return core.ui._drawSwitchs_sounds();
+			case 1:
+				core.status.event.selection = 0;
+				core.playSound('确定');
+				return core.ui._drawSwitchs_display();
+			case 2:
+				core.status.event.selection = 0;
+				core.playSound('确定');
+				return core.ui._drawSwitchs_action();
+			case 3:
+				core.status.event.selection = 0;
+				core.playSound('确定');
+				core.status.route.push("key:85");
+				core.insertCommonEvent('高级设置');
+				return;
+			case 4:
+				core.status.event.selection = 0;
+				core.playSound('取消');
+				return core.ui._drawSettings();
+			}
+		}
+	}
+
+	core.actions._keyUpSL = function (keycode) {
+		var page = core.status.event.data.page,
+			offset = core.status.event.data.offset;
+		var index = page * 10 + offset;
+
+		if (keycode == 27 || keycode == 88 || (core.status.event.id == 'save' && (keycode == 83 || keycode == 219)) || (core.status.event.id == 'load' && (keycode == 68 || keycode == 221))) {
+			this._clickSL(this.LAST, this.LAST);
+			return;
+		}
+		if (keycode >= 48 && keycode <= 57) {
+			if (keycode == 48) keycode = 58;
+			core.ui._drawSLPanel((keycode - 49) * 1000 + 1);
+			return;
+		}
+		if (keycode == 13 || keycode == 32 || keycode == 67) {
+			if (offset == 0)
+				core.doSL("autoSave", core.status.event.id);
+			else {
+				var id = 5 * page + offset;
+				if (core.status.event.data.mode == 'fav') id = core.saves.favorite[id - 1];
+				core.doSL(id, core.status.event.id);
+			}
+			return;
+		}
+		if (keycode == 69 && core.status.event.id != 'save') { // E 收藏切换
+			this._clickSL(0, this.LAST);
+			return;
+		}
+		if (keycode == 46) {
+			if (offset == 0) {
+				core.playSound('操作失败');
+				core.drawTip("无法删除自动存档！");
+			} else {
+				var id = 5 * page + offset;
+				if (core.status.event.data.mode == 'fav') id = core.saves.favorite[id - 1];
+				core.removeSave(id, function () {
+					core.ui._drawSLPanel(index, true);
+				});
+			}
+		}
+		if (keycode == 70 && core.status.event.data.mode == 'all') { // F
+			this._clickSL_favorite(page, offset);
+		}
+	}
+},
+    "drawLight": function () {
 
 		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
 		// 【参数说明】
@@ -1364,7 +1365,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
 		}
 	},
-	"shop": function () {
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1549,7 +1550,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1636,7 +1637,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1791,7 +1792,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2097,7 +2098,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"enemyLevel": function () {
+    "enemyLevel": function () {
 		// 此插件将提供怪物手册中的怪物境界显示
 		// 使用此插件需要先给每个怪物定义境界，方法如下：
 		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
@@ -2185,7 +2186,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 
 	},
-	"dynamicHp": function () {
+    "dynamicHp": function () {
 		// 此插件允许人物血量动态进行变化
 		// 原作：Fux2（老黄鸡）
 
@@ -2217,7 +2218,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		});
 	},
-	"multiHeros": function () {
+    "multiHeros": function () {
 		// 多角色插件
 		// Step 1: 启用本插件
 		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
@@ -2362,7 +2363,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
 		}
 	},
-	"itemCategory": function () {
+    "itemCategory": function () {
 		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
 		// 使用方法：
 		// 1. 启用本插件
@@ -2500,7 +2501,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}, 100);
 
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2555,7 +2556,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"startCanvas": function () {
+    "startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2641,7 +2642,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-	"动画": function () {
+    "动画": function () {
 		// 在此增加新插件
 
 		this.dice = function (x) {
@@ -2734,7 +2735,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-	"自动拾取": function () {
+    "自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2867,7 +2868,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-	"修复装备Bug": function () {
+    "修复装备Bug": function () {
 		return;
 		// 修复以下两个关联Bug
 		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
@@ -3000,7 +3001,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.control.registerReplayAction("equip", core.control._replayAction_equip);
 		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"新版道具栏": function () {
+    "新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -3990,7 +3991,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"跳字插件": function () {
+    "跳字插件": function () {
 		// 在此增加新插件
 
 		let sTextList = new Set([]);
@@ -4080,7 +4081,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"切装事件": function () {
+    "切装事件": function () {
 		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
@@ -4138,7 +4139,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"自定义设置": function () {
+    "自定义设置": function () {
 		// 在此增加新插件
 
 		let settingIndex = 0;
@@ -4247,20 +4248,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		function drawSettingSelector() {
 			core.drawUIEventSelector(0, "winskin.png", settings[settingIndex].x, settings[settingIndex].y - 14, 150, 20, 181);
-		}
-
-		// 判断当前该选项是否可使用
-		function isSettingAvailable(i) {
-			if (i <= 10) return true;
-			switch (core.getFlag('specialEnd', 0)) {
-				case 2:
-					if (i === 11) return true;
-					break;
-				case 3:
-					if (i === 12) return true;
-					break;
-			}
-			return false;
 		}
 
 		function showSetting() {
@@ -4377,7 +4364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"血瓶宝石显示数据": function () {
+    "血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4544,7 +4531,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"成就": function () {
+    "成就": function () {
 		// 在此增加新插件
 
 		const PX = core.__PIXELS__,
@@ -4796,169 +4783,169 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"动态火焰": function () {
-		// 在此增加新插件
+    "动态火焰": function () {
+	// 在此增加新插件
 
-		////// canvas创建 //////
-		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
-			// 如果画布已存在则直接调用
-			if (core.dymCanvas[name]) {
-				core.ui.relocateCanvas(name, x, y);
-				core.ui.resizeCanvas(name, width, height);
-				core.dymCanvas[name].canvas.style.zIndex = z;
-				return core.dymCanvas[name];
-			}
-			let newCanvas = document.createElement("canvas");
-			newCanvas.id = name;
-			newCanvas.style.display = 'block';
-			newCanvas.setAttribute("_left", x);
-			newCanvas.setAttribute("_top", y);
-			newCanvas.width = width;
-			newCanvas.height = height;
-			newCanvas.style.width = width * core.domStyle.scale + 'px';
-			newCanvas.style.height = height * core.domStyle.scale + 'px';
-			newCanvas.style.left = x * core.domStyle.scale + 'px';
-			newCanvas.style.top = y * core.domStyle.scale + 'px';
-			newCanvas.style.zIndex = z;
-			newCanvas.style.position = 'absolute';
-			newCanvas.style.pointerEvents = 'none';
-			core.dymCanvas[name] = newCanvas.getContext('2d');
-			core.dom.gameDraw.appendChild(newCanvas);
+	////// canvas创建 //////
+	this.createCanvasWithWidth = function (name, x, y, width, height, z) {
+		// 如果画布已存在则直接调用
+		if (core.dymCanvas[name]) {
+			core.ui.relocateCanvas(name, x, y);
+			core.ui.resizeCanvas(name, width, height);
+			core.dymCanvas[name].canvas.style.zIndex = z;
 			return core.dymCanvas[name];
 		}
+		let newCanvas = document.createElement("canvas");
+		newCanvas.id = name;
+		newCanvas.style.display = 'block';
+		newCanvas.setAttribute("_left", x);
+		newCanvas.setAttribute("_top", y);
+		newCanvas.width = width;
+		newCanvas.height = height;
+		newCanvas.style.width = width * core.domStyle.scale + 'px';
+		newCanvas.style.height = height * core.domStyle.scale + 'px';
+		newCanvas.style.left = x * core.domStyle.scale + 'px';
+		newCanvas.style.top = y * core.domStyle.scale + 'px';
+		newCanvas.style.zIndex = z;
+		newCanvas.style.position = 'absolute';
+		newCanvas.style.pointerEvents = 'none';
+		core.dymCanvas[name] = newCanvas.getContext('2d');
+		core.dom.gameDraw.appendChild(newCanvas);
+		return core.dymCanvas[name];
+	}
 
-		const ctx = core.dom.statusCanvasCtx;
+	const ctx = core.dom.statusCanvasCtx;
 
-		/**
-		 * 绘制了黑色火焰的画布的列表
-		 * @type {Array<CanvasRenderingContext2D>}
-		 */
-		let darkFireCanvasList = [undefined, undefined, undefined];
+	/**
+	 * 绘制了黑色火焰的画布的列表
+	 * @type {Array<CanvasRenderingContext2D>}
+	 */
+	let darkFireCanvasList = [undefined, undefined, undefined];
 
-		function darkFireInit(i) {
-			let w = 0,
-				h = 0;
-			switch (i) {
-				case 0:
-					w = 15;
-					h = 18;
-					break;
-				case 1:
-					w = 13;
-					h = 17;
-					break;
-				case 2:
-					w = 14;
-					h = 18;
-					break;
-			}
-			const tempName1 = 'temp_' + i,
-				tempName2 = 'temp2_' + i;
-			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
-			const tempCanvas = core.dymCanvas[tempName1];
-			core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
-			const fire = tempCanvas.getImageData(0, 0, w, h);
-			core.deleteCanvas(tempName1);
-			const darkFire = darkFireFilter(fire);
-			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
-			const tempCanvas2 = core.dymCanvas[tempName2];
-			tempCanvas2.putImageData(darkFire, 0, 0);
-			darkFireCanvasList[i] = tempCanvas2;
+	function darkFireInit(i) {
+		let w = 0,
+			h = 0;
+		switch (i) {
+		case 0:
+			w = 15;
+			h = 18;
+			break;
+		case 1:
+			w = 13;
+			h = 17;
+			break;
+		case 2:
+			w = 14;
+			h = 18;
+			break;
 		}
+		const tempName1 = 'temp_' + i,
+			tempName2 = 'temp2_' + i;
+		core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
+		const tempCanvas = core.dymCanvas[tempName1];
+		core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
+		const fire = tempCanvas.getImageData(0, 0, w, h);
+		core.deleteCanvas(tempName1);
+		const darkFire = darkFireFilter(fire);
+		core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+		const tempCanvas2 = core.dymCanvas[tempName2];
+		tempCanvas2.putImageData(darkFire, 0, 0);
+		darkFireCanvasList[i] = tempCanvas2;
+	}
 
-		/** 
-		 * @param {ImageData} imageData
-		 */
-		function darkFireFilter(imageData) {
-			const data = imageData.data,
-				w = imageData.width,
-				h = imageData.height;
-			const darkImageData = new ImageData(w, h),
-				darkData = darkImageData.data,
-				l = data.length;
-			for (let i = 0; i < l; i += 4) {
-				darkData[i] = data[i] - 130;
-			}
-			for (let i = 1; i < l; i += 4) {
-				darkData[i] = data[i] - 177;
-			}
-			for (let i = 2; i < l; i += 4) {
-				darkData[i] = data[i] - 255;
-			}
-			for (let i = 3; i < l; i += 4) {
-				darkData[i] = Math.ceil(0.5 * data[i]);
-			}
-			return darkImageData;
+	/** 
+	 * @param {ImageData} imageData
+	 */
+	function darkFireFilter(imageData) {
+		const data = imageData.data,
+			w = imageData.width,
+			h = imageData.height;
+		const darkImageData = new ImageData(w, h),
+			darkData = darkImageData.data,
+			l = data.length;
+		for (let i = 0; i < l; i += 4) {
+			darkData[i] = data[i] - 130;
 		}
-
-		/**
-		 * 
-		 * @param {CanvasRenderingContext2D} ctx 
-		 * @param {number} index 绘制第几张火焰的图
-		 * @param {number} x 
-		 * @param {number} y
-		 * @param {boolean} light 是否绘制亮色火焰
-		 */
-		function drawFire(ctx, index, x, y, light) {
-			if (!light) {
-				const darkFire = darkFireCanvasList[index];
-				if (!darkFire) darkFireInit(index);
-				core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
-			} else
-				core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
+		for (let i = 1; i < l; i += 4) {
+			darkData[i] = data[i] - 177;
 		}
+		for (let i = 2; i < l; i += 4) {
+			darkData[i] = data[i] - 255;
+		}
+		for (let i = 3; i < l; i += 4) {
+			darkData[i] = Math.ceil(0.5 * data[i]);
+		}
+		return darkImageData;
+	}
 
-		let frame = 0;
-		this.drawOneFire = function () {
-			const hero = core.status.hero;
-			let mana = hero.mana;
+	/**
+	 * 
+	 * @param {CanvasRenderingContext2D} ctx 
+	 * @param {number} index 绘制第几张火焰的图
+	 * @param {number} x 
+	 * @param {number} y
+	 * @param {boolean} light 是否绘制亮色火焰
+	 */
+	function drawFire(ctx, index, x, y, light) {
+		if (!light) {
+			const darkFire = darkFireCanvasList[index];
+			if (!darkFire) darkFireInit(index);
+			core.drawImage(ctx, darkFireCanvasList[index].canvas, x, y);
+		} else
+			core.drawImage(ctx, 'tinyFire' + (index + 1).toString() + '.png', x, y);
+	}
+
+	let frame = 0;
+	this.drawOneFire = function () {
+		const hero = core.status.hero;
+		let mana = hero.mana;
+		permana = hero.manamax / 6;
+		let fireCount = (mana - mana % permana) / permana;
+
+		if (!core.domStyle.isVertical) {
+			ctx.clearRect(55, 178, 60, 15);
+			drawFire(ctx, frame, 53, 177, fireCount >= 1);
+			drawFire(ctx, frame, 65, 177, fireCount >= 2);
+			drawFire(ctx, frame, 77, 177, fireCount >= 3);
+			drawFire(ctx, frame, 89, 177, fireCount >= 4);
+			drawFire(ctx, frame, 101, 177, fireCount >= 5);
+		} else {
+			ctx.clearRect(333, 15, 65, 13);
+			drawFire(ctx, frame, 333, 13, fireCount >= 1);
+			drawFire(ctx, frame, 345, 13, fireCount >= 2);
+			drawFire(ctx, frame, 357, 13, fireCount >= 3);
+			drawFire(ctx, frame, 369, 13, fireCount >= 4);
+			drawFire(ctx, frame, 381, 13, fireCount >= 5);
+		}
+	}
+	core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
+		core.plugin.drawOneFire();
+		if (++frame > 2) frame = 0;
+	})
+
+	/**
+	 * 
+	 * @param {Hero} hero 
+	 * @param {string|CanvasRenderingContext2D} ctx 
+	 * @param {Array<number>} posList 
+	 * @param {number} frame 
+	 */
+	this.drawFireInBattle = function (hero, ctx, posList, frame) {
+
+		if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
+		const mana = hero.mana,
 			permana = hero.manamax / 6;
-			let fireCount = (mana - mana % permana) / permana;
 
-			if (!core.domStyle.isVertical) {
-				ctx.clearRect(55, 178, 60, 15);
-				drawFire(ctx, frame, 53, 177, fireCount >= 1);
-				drawFire(ctx, frame, 65, 177, fireCount >= 2);
-				drawFire(ctx, frame, 77, 177, fireCount >= 3);
-				drawFire(ctx, frame, 89, 177, fireCount >= 4);
-				drawFire(ctx, frame, 101, 177, fireCount >= 5);
-			} else {
-				ctx.clearRect(333, 15, 65, 13);
-				drawFire(ctx, frame, 333, 13, fireCount >= 1);
-				drawFire(ctx, frame, 345, 13, fireCount >= 2);
-				drawFire(ctx, frame, 357, 13, fireCount >= 3);
-				drawFire(ctx, frame, 369, 13, fireCount >= 4);
-				drawFire(ctx, frame, 381, 13, fireCount >= 5);
-			}
-		}
-		core.plugin.registerAnimationInterval('statusBarManaFire', 200, () => {
-			core.plugin.drawOneFire();
-			if (++frame > 2) frame = 0;
-		})
+		const fireCount = (mana - mana % permana) / permana;
 
-		/**
-		 * 
-		 * @param {Hero} hero 
-		 * @param {string|CanvasRenderingContext2D} ctx 
-		 * @param {Array<number>} posList 
-		 * @param {number} frame 
-		 */
-		this.drawFireInBattle = function (hero, ctx, posList, frame) {
-
-			if (typeof ctx === 'string') ctx = core.dymCanvas[ctx];
-			const mana = hero.mana,
-				permana = hero.manamax / 6;
-
-			const fireCount = (mana - mana % permana) / permana;
-
-			drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
-			drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
-			drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
-			drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
-			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
-		}
-	},
-	"回合制战斗": function () {
+		drawFire(ctx, frame, posList[0], posList[1], fireCount >= 1);
+		drawFire(ctx, frame, posList[2], posList[3], fireCount >= 2);
+		drawFire(ctx, frame, posList[4], posList[5], fireCount >= 3);
+		drawFire(ctx, frame, posList[6], posList[7], fireCount >= 4);
+		drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
+	}
+},
+    "回合制战斗": function () {
 
 		// #region 回合制战斗的执行 **************************************************
 
@@ -6567,12 +6554,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function drawBattleAnimate(battle) {
 			const atkStatusH = battle.hero.atkStatus,
 				atkStatusE = battle.enemy.atkStatus;
-			const hx = 355,
-				hy = 152,
-				ex = 60,
-				ey = 166,
-				px = 245,
-				py = 225;
+			const [hx, hy, ex, ey, px, py] = [355, 152, 60, 166, 245, 225];
 			switch (battle.actor) {
 				case 'hero':
 					if (atkStatusH.frozen) break;
@@ -6955,158 +6937,158 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 	},
-	"弹幕插件": function () {
-		// 在此增加新插件
+    "弹幕插件": function () {
+	// 在此增加新插件
+	if (core.isReplaying()) return;
+
+	axios
+		.post('/backend/tower/barrage.php', {})
+		.then(function (res) { })
+		.catch(function () { })
+
+	const towerName = "xinxin2";
+	const request = axios.create({
+		baseURL: 'https://h5mota.com',
+		timeout: 1000,
+		headers: {
+			"Content-Type": "application/x-www-form-urlencoded",
+			"Access-Control-Allow-Origin": "*",
+		}
+	})
+
+	//tags格式：[楼层名,x,y]
+
+	function reason(message) {
+		if (typeof (message) === 'string') return message;
+		else return '';
+	}
+
+	this.postComment = function (comment, tags) {
 		if (core.isReplaying()) return;
+		if (tags == null || tags == undefined) { tags = []; }
+		var form = new FormData();
+		form.append('type', 2);
+		form.append('towername', towerName);
+		form.append('comment', comment);
+		form.append('tags', tags);
 
-		axios
-			.post('/backend/tower/barrage.php', {})
-			.then(function (res) { })
-			.catch(function () { })
-
-		const towerName = "xinxin2";
-		const request = axios.create({
-			baseURL: 'https://h5mota.com',
-			timeout: 1000,
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-				"Access-Control-Allow-Origin": "*",
-			}
-		})
-
-		//tags格式：[楼层名,x,y]
-
-		function reason(message) {
-			if (typeof (message) === 'string') return message;
-			else return '';
-		}
-
-		this.postComment = function (comment, tags) {
-			if (core.isReplaying()) return;
-			if (tags == null || tags == undefined) { tags = []; }
-			var form = new FormData();
-			form.append('type', 2);
-			form.append('towername', towerName);
-			form.append('comment', comment);
-			form.append('tags', tags);
-
-			request({
+		request({
 				method: 'post',
 				url: '/backend/tower/barrage.php',
 				data: form
 			})
-				.then(res => {
-					if (res?.data?.code === 0) {
-						core.drawTip('提交成功！')
-						core.playSound('item.mp3');
-					} else {
-						core.drawTip('提交失败！' + reason(res?.data?.message));
-						core.playSound('error.mp3');
-					}
-				})
-				.catch(err => {
-					core.drawTip('提交失败！' + reason(err?.message));
-					core.playSound('error.mp3');
-				})
-		}
-
-		this.getComment = function () {
-			if (core.isReplaying()) return;
-			var form = new FormData();
-			form.append('type', 1);
-			form.append('towername', towerName);
-
-			request({
-				method: 'post',
-				url: '/backend/tower/barrage.php',
-				data: form
-			})
-				.then(res => {
-					console.log(res);
-					core.drawTip('接收成功！')
+			.then(res => {
+				if (res?.data?.code === 0) {
+					core.drawTip('提交成功！')
 					core.playSound('item.mp3');
-					let commentCollection = {};
-					const commentList = res?.data?.list;
-					for (let i = 0, l = commentList.length; i <= l - 1; i++) {
-						if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
-						const commentTags = commentList[i].tags;
-						const cFloorId = commentTags.split(',')[0],
-							cX = parseInt(commentTags.split(',')[1]),
-							cY = parseInt(commentTags.split(',')[2]);
-						if (0 <= cX && cX <= core._WIDTH_ - 1 && 0 <= cY && cY <= core._HEIGHT_ - 1 && core.floorIds.includes(cFloorId)) {
-							if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
-							const str = cX + ',' + cY;
-							if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
-							commentCollection[cFloorId][str].push(commentList[i]?.comment);
-						}
-					}
-					core.setFlag('commentCollection', commentCollection);
-				})
-				.catch(err => {
-					console.log(err);
-					core.drawTip('接收失败' + reason(err?.message));
+				} else {
+					core.drawTip('提交失败！' + reason(res?.data?.message));
 					core.playSound('error.mp3');
-				})
-		}
+				}
+			})
+			.catch(err => {
+				core.drawTip('提交失败！' + reason(err?.message));
+				core.playSound('error.mp3');
+			})
+	}
 
-		this.drawCommentSign = function () {
-			if (!core.getFlag('comment') || core.isReplaying()) return;
-			let commentCollection = core.getFlag('commentCollection', {}),
-				floorId = core.status.floorId;
-			core.createCanvas('sign', 0, 0, core._PX_, core._PY_, 120);
-			core.setOpacity('sign', 0.6);
-			if (commentCollection.hasOwnProperty(floorId)) {
-				for (let pos in commentCollection[floorId]) {
-					if (commentCollection[floorId][pos].length > 0) {
-						for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
-							if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
-								const x = pos.split(',')[0],
-									y = pos.split(',')[1];
-								core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
-								break;
-							}
+	this.getComment = function () {
+		if (core.isReplaying()) return;
+		var form = new FormData();
+		form.append('type', 1);
+		form.append('towername', towerName);
+
+		request({
+				method: 'post',
+				url: '/backend/tower/barrage.php',
+				data: form
+			})
+			.then(res => {
+				console.log(res);
+				core.drawTip('接收成功！')
+				core.playSound('item.mp3');
+				let commentCollection = {};
+				const commentList = res?.data?.list;
+				for (let i = 0, l = commentList.length; i <= l - 1; i++) {
+					if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
+					const commentTags = commentList[i].tags;
+					const cFloorId = commentTags.split(',')[0],
+						cX = parseInt(commentTags.split(',')[1]),
+						cY = parseInt(commentTags.split(',')[2]);
+					if (0 <= cX && cX <= core._WIDTH_ - 1 && 0 <= cY && cY <= core._HEIGHT_ - 1 && core.floorIds.includes(cFloorId)) {
+						if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
+						const str = cX + ',' + cY;
+						if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
+						commentCollection[cFloorId][str].push(commentList[i]?.comment);
+					}
+				}
+				core.setFlag('commentCollection', commentCollection);
+			})
+			.catch(err => {
+				console.log(err);
+				core.drawTip('接收失败' + reason(err?.message));
+				core.playSound('error.mp3');
+			})
+	}
+
+	this.drawCommentSign = function () {
+		if (!core.getFlag('comment') || core.isReplaying()) return;
+		let commentCollection = core.getFlag('commentCollection', {}),
+			floorId = core.status.floorId;
+		core.createCanvas('sign', 0, 0, core._PX_, core._PY_, 120);
+		core.setOpacity('sign', 0.6);
+		if (commentCollection.hasOwnProperty(floorId)) {
+			for (let pos in commentCollection[floorId]) {
+				if (commentCollection[floorId][pos].length > 0) {
+					for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
+						if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
+							const x = pos.split(',')[0],
+								y = pos.split(',')[1];
+							core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
+							break;
 						}
 					}
 				}
-			}
-		}
-
-		this.clearCommentSign = function () {
-			core.deleteCanvas('sign');
-		}
-
-		function pickComment(commentArr, showNum = 5) {
-			let showList = [];
-			if (commentArr.length <= showNum) { showList = commentArr; } else {
-				for (let i = 0; i <= showNum - 1; i++) {
-					const l = commentArr.length,
-						n = core.plugin.dice(l - 1);
-					showList.push(commentArr[n]);
-					commentArr.splice(n, 1);
-				}
-			}
-			return showList;
-		}
-
-		function drawComment(commentArr) {
-			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
-				core.events.popStr(commentArr[i], 'white', core._PX_ + 20 * Math.random(),
-					core.plugin.dice(i + 1) * core._PY_ / (l + 1) + 40 * Math.random(), -2 + Math.random());
-			}
-		}
-
-		this.showComment = function (x, y) {
-			if (!core.getFlag('comment') || core.isReplaying()) return;
-			const commentCollection = core.getFlag('commentCollection', {});
-			const floorId = core.status.floorId,
-				str = x + ',' + y;
-			if (commentCollection.hasOwnProperty(floorId) &&
-				commentCollection[floorId].hasOwnProperty(str)) {
-				let commentArr = commentCollection[floorId][str].concat();
-				const showNum = 5;
-				const commentArrPicked = pickComment(commentArr, showNum);
-				drawComment(commentArrPicked);
 			}
 		}
 	}
+
+	this.clearCommentSign = function () {
+		core.deleteCanvas('sign');
+	}
+
+	function pickComment(commentArr, showNum = 5) {
+		let showList = [];
+		if (commentArr.length <= showNum) { showList = commentArr; } else {
+			for (let i = 0; i <= showNum - 1; i++) {
+				const l = commentArr.length,
+					n = core.plugin.dice(l - 1);
+				showList.push(commentArr[n]);
+				commentArr.splice(n, 1);
+			}
+		}
+		return showList;
+	}
+
+	function drawComment(commentArr) {
+		for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
+			core.events.popStr(commentArr[i], 'white', core._PX_ + 20 * Math.random(),
+				core.plugin.dice(i + 1) * core._PY_ / (l + 1) + 40 * Math.random(), -2 + Math.random());
+		}
+	}
+
+	this.showComment = function (x, y) {
+		if (!core.getFlag('comment') || core.isReplaying()) return;
+		const commentCollection = core.getFlag('commentCollection', {});
+		const floorId = core.status.floorId,
+			str = x + ',' + y;
+		if (commentCollection.hasOwnProperty(floorId) &&
+			commentCollection[floorId].hasOwnProperty(str)) {
+			let commentArr = commentCollection[floorId][str].concat();
+			const showNum = 5;
+			const commentArrPicked = pickComment(commentArr, showNum);
+			drawComment(commentArrPicked);
+		}
+	}
+}
 }
