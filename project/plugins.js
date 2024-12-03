@@ -1,5 +1,5 @@
 /// <reference path = "../runtime.d.ts" />
- var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
     "init": function () {
 
@@ -932,10 +932,6 @@
 			}
 
 		}
-		//core.fillText('ui', '减伤', col2, position, null, f13);
-		//core.fillText('ui', core.formatBigNumber(enemy.criticalDamage||0), col2 + 30, position, null, b13);
-		//core.fillText('ui', '加防', col3, position, null, f13);
-		//core.fillText('ui', core.formatBigNumber(enemy.defDamage||0), col3 + 30, position, null, b13);
 	}
 
 	core.ui._drawBook_drawDamage = function (index, enemy, offset, position) {
@@ -2867,139 +2863,6 @@
 
 			if (!core.isReplaying()) animateHwnd.start();
 		}
-	},
-    "修复装备Bug": function () {
-		return;
-		// 修复以下两个关联Bug
-		// 修复反复切换同孔装备会进录像的Bug（放录像时多次执行穿脱事件，导致录像不同步）
-		// 修复回放时装备的穿脱事件延迟执行的Bug
-		core.actions._clickEquipboxIndex = function (index) {
-			if (index < this.LAST) {
-				if (index >= core.status.globalAttribute.equipName.length) return;
-				if (index == core.status.event.selection && core.status.hero.equipment[index]) {
-					if (core.isReplaying()) return;
-					core.unloadEquip(index);
-					// core.status.route.push("unEquip:" + index);
-				} else core.playSound('光标移动');
-			} else {
-				var equips = core.getToolboxItems('equips');
-				if (index == core.status.event.selection) {
-					if (core.isReplaying()) return;
-					var equipId = equips[index - this.LAST + (core.status.event.data.page - 1) * this.LAST];
-					core.loadEquip(equipId);
-					// core.status.route.push("equip:" + equipId);
-				} else core.playSound('光标移动');
-			}
-			core.ui._drawEquipbox(index);
-		}
-		this._afterLoadResources = function () {
-			// 本函数将在所有资源加载完毕后，游戏开启前被执行
-			// 可以在这个函数里面对资源进行一些操作，比如切分图片等。
-
-			// 这是一个将assets.png拆分成若干个32x32像素的小图片并保存的样例。
-			// var arr = core.splitImage("assets.png", 32, 32);
-			// for (var i = 0; i < arr.length; i++) {
-			//     core.material.images.images["asset"+i+".png"] = arr[i];
-			// }
-
-			// 道具的穿上/脱下，视为自动事件
-			for (var i = 0; i < core.initStatus.autoEvents.length; i++) {
-				if (core.initStatus.autoEvents[i].symbol.indexOf('equipEvent_') >= 0) {
-					core.initStatus.autoEvents.splice(i, 1);
-					i--;
-				}
-			}
-			for (var equipId in core.material.items) {
-				var equip = core.material.items[equipId];
-				if (equip.cls != 'equips' || !equip.equip) continue;
-				if (!equip.equip.equipEvent && !equip.equip.unequipEvent) continue;
-				var equipFlag = '_equipEvent_' + equipId;
-				var autoEvent1 = {
-					symbol: "_equipEvent_" + equipId,
-					currentFloor: false,
-					multiExecute: true,
-					condition: "core.hasEquip('" + equipId + "') && !core.hasFlag('" + equipFlag + "')",
-					// ******************************************************************************************************************************************************** //
-					data: core.precompile([{ "type": "setValue", "name": "flag:" + equipFlag, "value": "true" }, { "type": "function", "function": "function(){core.status.route.push('equip:" + equipId + "');}" }].concat(equip.equip.equipEvent || [])),
-					// ******************************************************************************************************************************************************** //
-				};
-				var autoEvent2 = {
-					symbol: "_unequipEvent_" + equipId,
-					currentFloor: false,
-					multiExecute: true,
-					condition: "!core.hasEquip('" + equipId + "') && core.hasFlag('" + equipFlag + "')",
-					// ******************************************************************************************************************************************************** //
-					data: core.precompile([{ "type": "setValue", "name": "flag:" + equipFlag, "value": "null" }, { "type": "function", "function": "function(){if (!core.getEquip(" + (equip.equip.type || 0) + ")) core.status.route.push('unEquip:" + (equip.equip.type || 0) + "');}" }].concat(equip.equip.unequipEvent || [])),
-					// ******************************************************************************************************************************************************** //
-				};
-				core.initStatus.autoEvents.push(autoEvent1);
-				core.initStatus.autoEvents.push(autoEvent2);
-			}
-		}
-		core.control._replayAction_equip = function (action) {
-			if (action.indexOf("equip:") != 0) return false;
-			var equipId = action.substring(6);
-			var ownEquipment = core.getToolboxItems('equips');
-			var index = ownEquipment.indexOf(equipId),
-				per = core.__SIZE__ - 1;
-			if (index < 0) return false;
-			// core.status.route.push(action);
-			if (core.material.items[equipId].hideInReplay || core.status.replay.speed == 24) {
-				core.loadEquip(equipId, core.replay);
-				return true;
-			}
-			core.status.event.data = { "page": Math.floor(index / per) + 1, "selectId": null };
-			index = index % per + per;
-			core.ui._drawEquipbox(index);
-			setTimeout(function () {
-				core.ui.closePanel();
-				core.loadEquip(equipId, core.replay);
-			}, core.control.__replay_getTimeout());
-			return true;
-		}
-		core.control._replayAction_unEquip = function (action) {
-			if (action.indexOf("unEquip:") != 0) return false;
-			var equipType = parseInt(action.substring(8));
-			if (!core.isset(equipType)) return false;
-			core.ui._drawEquipbox(equipType);
-			// core.status.route.push(action);
-			if (core.status.replay.speed == 24) {
-				core.unloadEquip(equipType, core.replay);
-				return true;
-			}
-			setTimeout(function () {
-				core.ui.closePanel();
-				core.unloadEquip(equipType, core.replay);
-			}, core.control.__replay_getTimeout());
-			return true;
-		}
-
-		core.items._realLoadEquip = function (type, loadId, unloadId, callback) {
-			var loadEquip = core.material.items[loadId] || {},
-				unloadEquip = core.material.items[unloadId] || {};
-
-			// --- 音效
-			this._realLoadEquip_playSound();
-
-			// --- 实际换装
-			this._loadEquipEffect(loadId, unloadId);
-
-			// --- 加减
-			if (loadId) core.removeItem(loadId);
-			if (unloadId) core.addItem(unloadId);
-			core.status.hero.equipment[type] = loadId || null;
-
-			// --- 提示
-			if (loadId) core.drawTip("已装备上" + loadEquip.name, loadId);
-			else if (unloadId) core.drawTip("已卸下" + unloadEquip.name, unloadId);
-
-			if (core.isReplaying()) core.updateStatusBar();
-
-			if (callback) callback();
-		}
-
-		core.control.registerReplayAction("equip", core.control._replayAction_equip);
-		core.control.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
     "新版道具栏": function () {
 		// 在此增加新插件
@@ -7090,5 +6953,61 @@
 			drawComment(commentArrPicked);
 		}
 	}
-}
+},
+	"预设套装": function () {
+		// 在此增加新插件
+
+		const abbreviateList = {
+			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
+			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
+			'n': '',
+		};
+		// n is for null;
+		const equipList = {
+			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
+			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
+		};
+
+		const ctx = 'equipSetting';
+
+		this.test = function () {
+			drawSetting(ctx);
+		}
+
+		let equipRecipeList = Array(10).fill('');
+
+		class Recipe{
+			constructor(){
+				this.content = '';
+				this.aim = [];
+			}
+		}
+
+		core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+
+		function drawSetting(ctx) {
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.clearMap(ctx);
+			core.setAlpha(ctx, 0.85);
+			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.setAlpha(ctx, 1);
+			core.strokeRoundRect(ctx, 35, 55, core.__PIXELS__ - 70, 55, 3, "white");
+			core.fillRoundRect(ctx, 35.5, 56, core.__PIXELS__ - 71, 53, 3, "#555555");
+			core.ui.fillText(ctx, "设置", 180, 50, 'white', '20px hkbdt');
+			// core.ui.drawTextContent(ctx, settings[settingIndex].text, {
+			// 	left: 40,
+			// 	top: 60,
+			// 	bold: false,
+			// 	color: "white",
+			// 	align: "left",
+			// 	fontSize: 12,
+			// 	maxWidth: 340
+			// });
+			// for (let i = 0, l = settings.length; i < l; i++) { drawSetting_drawOne(i, ctx); }
+			core.ui.fillText(ctx, "--常用设置--", 40, 130, '#FFE4B5', '16px Verdana');
+			core.ui.fillText(ctx, '[退出]', 340, 375, '#FFE4B5', '14px Verdana');
+			drawSettingSelector();
+		}
+	}
 }
