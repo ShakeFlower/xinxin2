@@ -4887,7 +4887,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 */
 		function battleByTurn_replaying(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
-			let actionList = getActionList();
+			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
+			let actionList = getActionList(nextReplay);
 			while (battle.status === 'pending') {
 				const currTurn = battle.turn;
 				if (actionList.hasOwnProperty(currTurn)) {
@@ -5720,6 +5721,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.actIndex = 0;
 				/** 当前的行动者 */
 				this.actor = this.order[this.actIndex];
+
+				/** 加载预设技能列表 */
+				this.actionList = getActionList(getRecipe(enemyId, this.enemy.combo));
 			}
 
 			/** 本回合的行动者行动*/
@@ -6643,21 +6647,41 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * 读取录像的下一项，解析为actionList
+		 * @param {string} next
 		 */
-		function getActionList() {
+		function getActionList(next) {
 			let actionList = {};
-			if (core.status.replay.toReplay.length > 0) {
-				const next = core.status.replay.toReplay[0];
-				if (next.startsWith('bs:')) {
-					const nextList = next.split(':');
-					for (let i = 1, l = nextList.length; i < l; i++) {
-						const currTurn = parseInt(nextList[i]);
-						if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
-						actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
-					}
+
+			if (next.startsWith('bs:')) {
+				const nextList = next.split(':');
+				for (let i = 1, l = nextList.length; i < l; i++) {
+					const currTurn = parseInt(nextList[i]);
+					if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
+					actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
 				}
 			}
+			
 			return actionList;
+		}
+
+		// 对于预设技能的构想：预设技能有两种释放方式，1是遇到对应怪物自动发动，2是切换到对应预设发动
+		// 用一个flag currActionNum 来表示当前有无预设
+		// 存储结构 每个enemyActionData包括:hotkey：1-9 action:行动字符串(bs:开头) 
+		// 总的变量名enemysActionData 敌人名字是键
+		/**
+		 * 
+		 * @param {*} id 
+		 * @param {*} combo 
+		 */
+		function getEnemyAction(id,combo){
+			let currActionList = {};
+			const enemysActionData = core.getFlag('enemysActionData', {});
+			const currActionNum = core.getFlag('actionNum', 0);
+			if (currActionNum > 0) {
+				
+			}
+			else if (enemysActionData.hasOwnProperty(id)) currActionList = enemysActionData[id];
+			
 		}
 
 		/** 查找技能的对应数据
