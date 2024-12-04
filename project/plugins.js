@@ -4855,6 +4855,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.recordDelayedAction();
 				battle.nextTurn();
 				battle.checkEnd();
+				battle.formatActionList();
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
@@ -5864,15 +5865,28 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return { success: false, reason: '未定义的行为' };
 			}
 
+			/**
+			 * 读取actionList，检查本回合是否有值（即需要发动技能）
+			 */
 			formatActionList() {
 				const combo = this.enemy.combo;
+				const currTurn = this.turn;
 				if (combo > 1) {
-					const currTurn = this.turn;
-					let roundCount = (currTurn)%(combo+1);
-
+					let formattedTurn = -1;
+					switch ((currTurn) % (combo + 1)) {
+						case 0:
+							formattedTurn = 2 * currTurn / (combo + 1);
+							break;
+						case 1:
+							formattedTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
+							break;
+						default:
+							break;
+					}
+					if (this.actionList.hasOwnProperty(formattedTurn)) execUserAction(this.actionList[formattedTurn]);
 				}
 				else {
-					if (this.actionList.hasOwnProperty(this.turn)) execUserAction(this.actionList[this.turn]);
+					if (this.actionList.hasOwnProperty(currTurn)) execUserAction(this.actionList[currTurn]);
 				}
 				
 			}
@@ -6680,9 +6694,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
+		 * todo:改进加载字体 改为不等待
+		 * 改进弹幕系统 改成core.http
+		 * 实现界面统一
+		 * 实现多重楼传，杀掉已有的回城楼传
+		 * 实现tips界面
+		 */
+		/**
 		 * combo = 1 '0'(h),'1'(e),'2'(h),'3'(e),'4'(h),'5'(e),'6'(h),'7'(e), h为2k,e回合为1+2k
 		 * combo = 2 '0'(h),'1'(e),'2'(e),'3'(h),'4'(e),'5'(e),'6'(h),'7'(e), h为3k,e回合为1+3k,2+3k
 		 * combo = 3 '0'(h),'1'(e),'2'(e),'3'(e),'4'(h),'5'(e),'6'(e),'7'(e), h为4k,e回合为1+4k,2+4k,3+4k
+		 * comno = 4 h:0,5,10 e:1,6,11 zh:0,2,4 ze:1,3,5 combo + 1=5 (t-1)/10+1 2t/5
 		 * 变换方法:
 		 * 先对(combo+1)取余 为0是h的回合 为1，2，...,combo是e的回合
 		 * 获取e的回合中的剑技盾技
