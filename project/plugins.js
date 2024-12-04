@@ -5723,7 +5723,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.actor = this.order[this.actIndex];
 
 				/** 加载预设技能列表 */
-				this.actionList = getActionList(getRecipe(enemyId, this.enemy.combo));
+				this.actionList = getEnemyAction(enemyId);
 			}
 
 			/** 本回合的行动者行动*/
@@ -5862,6 +5862,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					return { success: true, reason: '' };
 				}
 				return { success: false, reason: '未定义的行为' };
+			}
+
+			formatActionList() {
+				const combo = this.enemy.combo;
+				if (combo > 1) {
+					const currTurn = this.turn;
+					let roundCount = (currTurn)%(combo+1);
+
+				}
+				else {
+					if (this.actionList.hasOwnProperty(this.turn)) execUserAction(this.actionList[this.turn]);
+				}
+				
 			}
 		}
 
@@ -6673,8 +6686,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 变换方法:
 		 * 先对(combo+1)取余 为0是h的回合 为1，2，...,combo是e的回合
 		 * 获取e的回合中的剑技盾技
-		 * 对h 0 获取0 2获取3 i*(combo+1)/2
+		 * 对h 0 (除2获取k)获取0 2获取3 i*(combo+1)/2
 		 * 对e 1 (减1除2获取k) 获取(combo+1)*k + 1,2,3,...,combo 直到超出总回合数
+		 * 由123映射到1 对combo+1取余 余0余1才要操作 余0 h /(combo+1)*2 e -1 再/(combo+1)*2 再+1
 		 */
 		// 对于预设技能的构想：预设技能有两种释放方式，1是遇到对应怪物自动发动，2是切换到对应预设发动
 		// 用一个flag currActionNum 来表示当前有无预设 预设2-6 1是空过
@@ -6686,7 +6700,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		// }
 		/**
 		 * 返回一个actionList，格式如下 {'1':['c','B'],'3':['c','n']}
-		 * @param {*} id 
+		 * @param {string} id 敌人id
+		 * @return {object}
 		 */
 		function getEnemyAction(id){
 			let currActionList = {};
@@ -6726,7 +6741,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				let currTurn = 0;
 				for (let i = 0; ; i++) {
 					if (i % 2 === 0) { // 勇士出手回合的操作
-						currTurn = i * (combo + 1) / 2;
+						currTurn = (combo + 1) * (i / 2);
 						if (currTurn > maxTurn) break;
 						let action = enemyActionObj[currTurn.toString()];
 						action = action.filter(ele => ['b', 's', 'd', 'h', 'k', 'c'].includes(ele));
