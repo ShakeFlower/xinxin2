@@ -5784,6 +5784,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					return;
 				}
+				if (action === 'n') return; //n代表什么都不做
 				if (action === 'q') {
 					if (!core.isReplaying()) this.route += ':' + this.turn.toString() + 'q';
 					this.status = 'quit';}
@@ -5840,7 +5841,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (!core.hasEquip(aimShield) && (!core.hasItem('I327') || !core.hasItem(aimShield)))
 						return { success: false, reason: '当前未持有该盾技' };
 				}
-				if (action === 'q')
+				if (action === 'q' || action === 'n')
 					return { success: true, reason: '' };
 				else if (action === 'v') {
 					if (this.hero.mana <= this.hero.permana) return { success: false, reason: '气息不足' };
@@ -6648,6 +6649,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * 读取录像的下一项，解析为actionList
 		 * @param {string} next
+		 * @returns {object}
 		 */
 		function getActionList(next) {
 			let actionList = {};
@@ -6664,24 +6666,93 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return actionList;
 		}
 
+		/**
+		 * combo = 1 '0'(h),'1'(e),'2'(h),'3'(e),'4'(h),'5'(e),'6'(h),'7'(e), h为2k,e回合为1+2k
+		 * combo = 2 '0'(h),'1'(e),'2'(e),'3'(h),'4'(e),'5'(e),'6'(h),'7'(e), h为3k,e回合为1+3k,2+3k
+		 * combo = 3 '0'(h),'1'(e),'2'(e),'3'(e),'4'(h),'5'(e),'6'(e),'7'(e), h为4k,e回合为1+4k,2+4k,3+4k
+		 * 变换方法:
+		 * 先对(combo+1)取余 为0是h的回合 为1，2，...,combo是e的回合
+		 * 获取e的回合中的剑技盾技
+		 * 对h 0 获取0 2获取3 i*(combo+1)/2
+		 * 对e 1 (减1除2获取k) 获取(combo+1)*k + 1,2,3,...,combo 直到超出总回合数
+		 */
 		// 对于预设技能的构想：预设技能有两种释放方式，1是遇到对应怪物自动发动，2是切换到对应预设发动
-		// 用一个flag currActionNum 来表示当前有无预设
+		// 用一个flag currActionNum 来表示当前有无预设 预设2-6 1是空过
 		// 存储结构 每个enemyActionData包括:hotkey：1-9 action:行动字符串(bs:开头) 
 		// 总的变量名enemysActionData 敌人名字是键
+		// 当前预设覆盖
+		// enemysActionData的结构{'greenSmile':{'hotkey':1,'action':'bs:1c'},
+		// 'redSmile':{'hotkey':2,'action':'bs:1c'},
+		// }
 		/**
-		 * 
+		 * 返回一个actionList，格式如下 {'1':['c','B'],'3':['c','n']}
 		 * @param {*} id 
-		 * @param {*} combo 
 		 */
-		function getEnemyAction(id,combo){
+		function getEnemyAction(id){
 			let currActionList = {};
 			const enemysActionData = core.getFlag('enemysActionData', {});
 			const currActionNum = core.getFlag('actionNum', 0);
-			if (currActionNum > 0) {
-				
+			if ([2, 3, 4, 5, 6, 7].includes(currActionNum)) {
+				const dataList = Object.values(enemysActionData);
+				for (let i = 0, l = dataList.length; i < l; i++) {
+					const actionData = dataList[i];
+					if (actionData['hotkey'] === currActionNum) {
+						currActionList = getActionList(actionData['action']);
+					}
+				}
 			}
-			else if (enemysActionData.hasOwnProperty(id)) currActionList = enemysActionData[id];
-			
+			else if (enemysActionData.hasOwnProperty(id)) {
+				const actionData = enemysActionData[id];
+				currActionList = getActionList(actionData['action']);
+			}
+			return currActionList;
+		}
+
+		/**
+		 * 将当前route信息写入enemysActionData，连击怪信息需做一定处理
+		 * @param {Battle} battle
+		 */
+		function setEnemyActionData(battle){
+			let enemysActionData = core.getFlag('enemysActionData', {});
+			const enemy = battle.enemy;
+			const [id,combo,maxTurn] =  [enemy.id,enemy.combo,battle.turn];
+			if (!enemysActionData.hasOwnProperty(id)){
+				enemysActionData[id] = {};
+			}
+
+			let currActionStr = '';
+			if (combo > 1) {
+				let enemyActionObj = getEnemyAction(battle.route);
+				let currTurn = 0;
+				for (let i = 0; ; i++) {
+					if (i % 2 === 0) { // 勇士出手回合的操作
+						currTurn = i * (combo + 1) / 2;
+						if (currTurn > maxTurn) break;
+						let action = enemyActionObj[currTurn.toString()];
+						action = action.filter(ele => ['b', 's', 'd', 'h', 'k', 'c'].includes(ele));
+						if (action.length > 0) {
+							currActionStr += i.toString() + ':' + action[0];
+						}
+					}
+					else {
+						for (j = 1; j <= combo; j++) {
+							currTurn = (combo + 1) * (i - 1) / 2 + j; // 连击怪的当前回合
+							if (currTurn > maxTurn) break;
+							let action = enemyActionObj[currTurn.toString()];
+							action = action.filter(ele => ['M', 'C', 'R', 'F', 'E'].includes(ele));
+							if (action.length > 0) {
+								currActionStr += i.toString() + ':' + action[0];
+								break;
+							}
+						}
+						if (currTurn > maxTurn) break;
+					}
+				}
+			}
+			else {
+				currActionStr = battle.route;
+			}
+			enemysActionData[id]['action'] = currActionStr;
 		}
 
 		/** 查找技能的对应数据
