@@ -4820,6 +4820,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		async function battleByTurn(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 
+			console.log(battle.actionList);
 			core.lockControl();
 
 			beginListen(battle);
@@ -4833,6 +4834,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			while (true) {
 				if (battle.status !== 'pending') break;
+				battle.formatActionList(); // 应在updateActor改变turn值之后触发
 				await Promise.race([
 					new Promise((res) => { setTimeout(res, battle.waitTime); }),
 					new Promise((res) => {
@@ -4855,7 +4857,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.recordDelayedAction();
 				battle.nextTurn();
 				battle.checkEnd();
-				battle.formatActionList();
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
@@ -5869,26 +5870,27 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * 读取actionList，检查本回合是否有值（即需要发动技能）
 			 */
 			formatActionList() {
+				console.log(this.actionList);
 				const combo = this.enemy.combo;
-				const currTurn = this.turn;
+				let currTurn = this.turn;
 				if (combo > 1) {
-					let formattedTurn = -1;
 					switch ((currTurn) % (combo + 1)) {
 						case 0:
-							formattedTurn = 2 * currTurn / (combo + 1);
+							currTurn = 2 * currTurn / (combo + 1);
 							break;
 						case 1:
-							formattedTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
+							currTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
 							break;
 						default:
 							break;
 					}
-					if (this.actionList.hasOwnProperty(formattedTurn)) execUserAction(this.actionList[formattedTurn]);
 				}
-				else {
-					if (this.actionList.hasOwnProperty(currTurn)) execUserAction(this.actionList[currTurn]);
+				if (this.actionList.hasOwnProperty(currTurn)) {
+					this.actionList[currTurn].forEach((ele) => {
+						console.log(currTurn);
+						console.log(ele);
+					})
 				}
-				
 			}
 		}
 
@@ -6728,6 +6730,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function getEnemyAction(id){
 			let currActionList = {};
 			const enemysActionData = core.getFlag('enemysActionData', {});
+			console.log(enemysActionData);
+			console.log(id);
 			const currActionNum = core.getFlag('actionNum', 0);
 			if ([2, 3, 4, 5, 6, 7].includes(currActionNum)) {
 				const dataList = Object.values(enemysActionData);
@@ -6740,6 +6744,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			else if (enemysActionData.hasOwnProperty(id)) {
 				const actionData = enemysActionData[id];
+				console.log(actionData);
 				currActionList = getActionList(actionData['action']);
 			}
 			return currActionList;
