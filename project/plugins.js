@@ -4810,6 +4810,213 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 },
     "回合制战斗": function () {
 
+		// #region 回合制战斗的执行 **************************************************
+
+		const equipList = {
+			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
+			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
+		};
+
+		async function battleByTurn(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
+
+			core.lockControl();
+
+			beginListen(battle);
+			drawBattleUI(battle);
+			drawSkillButton(battle);
+			drawSpeedButton(battle);
+			let count = 0;
+			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
+				drawBattleIcon(battle, count++);
+			});
+
+			while (true) {
+				if (battle.status !== 'pending') break;
+				await Promise.race([
+					new Promise((res) => { setTimeout(res, battle.waitTime); }),
+					new Promise((res) => {
+						core.unregisterAction('keyDown', 'quit');
+						core.unregisterAction('ondown', 'quit');
+						core.registerAction('keyDown', 'quit', (keyCode) => {
+							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
+								battle.execUserAction('q');
+								res();
+							}
+						}, 100);
+						core.registerAction('ondown', 'quit', (x, y, px, py) => {
+							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
+								battle.execUserAction('q');
+								res();
+							} //撤退键的坐标
+						}, 100);
+					})
+				]);
+				battle.recordDelayedAction();
+				battle.nextTurn();
+				battle.checkEnd();
+				battle.formatActionList();
+				// 此处更新动画
+				drawBattleUI(battle);
+				if (battle.speed !== 'quick') drawBattleAnimate(battle);
+				drawSkillButton(battle); // 每回合过后技能已释放，需要更新按钮的状态
+				battle.updateActor();
+				if (battle.status === 'quit') break;
+			}
+			if (battle.speed !== 'quick') {
+				// 获胜时，绘制底边栏
+				let h = 0;
+				if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
+					if (h < 40) h += 4;
+					drawBattleBottomBar(battle, h);
+				});
+				//等待500ms后擦除画布
+				await new Promise((res) => { setTimeout(res, 500) });
+			}
+
+			clearCanvasAndEvent();
+			updateHeroStatus(battle);
+			afterBattleEvent(battle, x, y);
+			core.unlockControl();
+		}
+
+		/**
+		 * 录像模式下执行回合制战斗
+		 * @param {string} enemyId 
+		 * @param {number} x 
+		 * @param {number} y 
+		 */
+		function battleByTurn_replaying(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
+			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
+			let actionList = getActionList(nextReplay);
+			while (battle.status === 'pending') {
+				const currTurn = battle.turn;
+				if (actionList.hasOwnProperty(currTurn)) {
+					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
+						battle.execUserAction(actionList[currTurn][i]);
+					}
+				}
+				if (battle.status === 'quit') break;
+				battle.nextTurn();
+				battle.checkEnd();
+				battle.updateActor();
+			}
+			updateHeroStatus(battle);
+			afterBattleEvent(battle, x, y);
+		}
+
+		/**
+		 * 同步勇士的生命值，毒衰等状态
+		 * @param {Battle} battle 
+		 */
+		function updateHeroStatus(battle) {
+			const hero = battle.hero;
+			if (!core.isReplaying()) {
+				const route = battle.route;
+				if (route.length > 3) core.status.route.push(route);
+			}
+			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
+			switch (hero.status) {
+				case 'poisoned':
+					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
+					break;
+				case 'weak':
+					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
+					core.setFlag('weakV', hero.weakPoint);
+					break;
+			}
+			core.setFlag('battleSpeed', (() => {
+				if (battle.speed === 'quick') return 0;
+				else if (battle.speed === 'normal') return 1;
+				else return 2;
+			})());
+			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
+			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
+			switch (battle.status) {
+				case 'win':
+					const info = battle.enemy.info,
+						money = info.money,
+						exp = info.exp;
+
+					core.status.hero.hp = hero.hp;
+					core.status.hero.mana = hero.mana;
+					core.status.hero.hpmax = hero.hpmax;
+					core.status.hero.money += money;
+					core.status.hero.statistics.money += money;
+					core.status.hero.exp += exp;
+					core.status.hero.statistics.exp += exp;
+					core.status.hero.statistics.battle++;
+
+					break;
+				case 'lose':
+					core.lose();
+					break;
+				case 'quit':
+					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
+					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
+					break;
+			}
+			core.updateStatusBar();
+		}
+
+		/**
+		 * 获得成就，执行战后事件
+		 * @param {Battle} battle
+		 * @param {number} x
+		 * @param {number} y 
+		 */
+		function afterBattleEvent(battle, x, y) {
+			if (battle.status !== 'win') return;
+			const hero = battle.hero,
+				enemy = battle.enemy,
+				id = enemy.id;
+
+			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
+			if (hero.smartCast) core.plugin.getAchievement(38);
+			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
+
+			const blockList = {
+				swordEmperor: 398,
+				goldHornSlime: 400,
+				whiteHornSlime: 403,
+				silverSlime: 407, //白银怪，掉落钱币
+				E384: 385,
+				darkKnight: 225,
+				soldier: 212, // 重生怪
+				redWizard: 11, //炎之身体，变熔岩
+				E382: 374, //寒冰身体，变冰块
+			};
+
+			if (blockList.hasOwnProperty(id)) core.setBlock(blockList[id], x, y);
+			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
+			else core.removeBlock(x, y, core.status.floorId);
+
+			if (id === 'E335' || id === 'E413') { //烈焰身体，极寒身体
+				for (let x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
+					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
+						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
+							if (id === 'E335') core.setBlock(11, x0, y0);
+							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
+								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
+									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
+						}
+					}
+				}
+			}
+			let todo = [];
+			// 战后事件
+			if (core.status.floorId != null) {
+				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
+			}
+			core.push(todo, enemy.data.afterBattle);
+
+			// 如果事件不为空，将其插入
+			if (todo.length > 0) core.insertAction(todo, x, y);
+		}
+
+		// #endregion
+
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
@@ -5662,26 +5869,27 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * 读取actionList，检查本回合是否有值（即需要发动技能）
 			 */
 			formatActionList() {
+				console.log(this.actionList);
 				const combo = this.enemy.combo;
-				const currTurn = this.turn;
+				let currTurn = this.turn;
 				if (combo > 1) {
-					let formattedTurn = -1;
 					switch ((currTurn) % (combo + 1)) {
 						case 0:
-							formattedTurn = 2 * currTurn / (combo + 1);
+							currTurn = 2 * currTurn / (combo + 1);
 							break;
 						case 1:
-							formattedTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
+							currTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
 							break;
 						default:
 							break;
 					}
-					if (this.actionList.hasOwnProperty(formattedTurn)) execUserAction(this.actionList[formattedTurn]);
 				}
-				else {
-					if (this.actionList.hasOwnProperty(currTurn)) execUserAction(this.actionList[currTurn]);
+				if (this.actionList.hasOwnProperty(currTurn)) {
+					this.actionList[currTurn].forEach((ele) => {
+						console.log(currTurn);
+						console.log(ele);
+					})
 				}
-				
 			}
 		}
 
@@ -6733,6 +6941,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function getEnemyAction(id){
 			let currActionList = {};
 			const enemysActionData = core.getFlag('enemysActionData', {});
+			console.log(enemysActionData);
+			console.log(id);
 			const currActionNum = core.getFlag('actionNum', 0);
 			if ([2, 3, 4, 5, 6, 7].includes(currActionNum)) {
 				const dataList = Object.values(enemysActionData);
@@ -6745,7 +6955,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			else if (enemysActionData.hasOwnProperty(id)) {
 				const actionData = enemysActionData[id];
-				currActionList = core.plugin.getActionObj(actionData['action']);
+				currActionList = getActionList(actionData['action']);
 			}
 			return currActionList;
 		}
