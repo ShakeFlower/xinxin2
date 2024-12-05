@@ -4810,213 +4810,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 },
     "回合制战斗": function () {
 
-		// #region 回合制战斗的执行 **************************************************
-
-		const equipList = {
-			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
-			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
-		};
-
-		async function battleByTurn(enemyId, x, y) {
-			let battle = new Battle(enemyId, x, y);
-
-			core.lockControl();
-
-			beginListen(battle);
-			drawBattleUI(battle);
-			drawSkillButton(battle);
-			drawSpeedButton(battle);
-			let count = 0;
-			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
-				drawBattleIcon(battle, count++);
-			});
-
-			while (true) {
-				if (battle.status !== 'pending') break;
-				await Promise.race([
-					new Promise((res) => { setTimeout(res, battle.waitTime); }),
-					new Promise((res) => {
-						core.unregisterAction('keyDown', 'quit');
-						core.unregisterAction('ondown', 'quit');
-						core.registerAction('keyDown', 'quit', (keyCode) => {
-							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
-								battle.execUserAction('q');
-								res();
-							}
-						}, 100);
-						core.registerAction('ondown', 'quit', (x, y, px, py) => {
-							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
-								battle.execUserAction('q');
-								res();
-							} //撤退键的坐标
-						}, 100);
-					})
-				]);
-				battle.recordDelayedAction();
-				battle.nextTurn();
-				battle.checkEnd();
-				battle.formatActionList();
-				// 此处更新动画
-				drawBattleUI(battle);
-				if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				drawSkillButton(battle); // 每回合过后技能已释放，需要更新按钮的状态
-				battle.updateActor();
-				if (battle.status === 'quit') break;
-			}
-			if (battle.speed !== 'quick') {
-				// 获胜时，绘制底边栏
-				let h = 0;
-				if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
-					if (h < 40) h += 4;
-					drawBattleBottomBar(battle, h);
-				});
-				//等待500ms后擦除画布
-				await new Promise((res) => { setTimeout(res, 500) });
-			}
-
-			clearCanvasAndEvent();
-			updateHeroStatus(battle);
-			afterBattleEvent(battle, x, y);
-			core.unlockControl();
-		}
-
-		/**
-		 * 录像模式下执行回合制战斗
-		 * @param {string} enemyId 
-		 * @param {number} x 
-		 * @param {number} y 
-		 */
-		function battleByTurn_replaying(enemyId, x, y) {
-			let battle = new Battle(enemyId, x, y);
-			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
-			let actionList = getActionList(nextReplay);
-			while (battle.status === 'pending') {
-				const currTurn = battle.turn;
-				if (actionList.hasOwnProperty(currTurn)) {
-					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
-						battle.execUserAction(actionList[currTurn][i]);
-					}
-				}
-				if (battle.status === 'quit') break;
-				battle.nextTurn();
-				battle.checkEnd();
-				battle.updateActor();
-			}
-			updateHeroStatus(battle);
-			afterBattleEvent(battle, x, y);
-		}
-
-		/**
-		 * 同步勇士的生命值，毒衰等状态
-		 * @param {Battle} battle 
-		 */
-		function updateHeroStatus(battle) {
-			const hero = battle.hero;
-			if (!core.isReplaying()) {
-				const route = battle.route;
-				if (route.length > 3) core.status.route.push(route);
-			}
-			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
-			switch (hero.status) {
-				case 'poisoned':
-					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
-					break;
-				case 'weak':
-					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
-					core.setFlag('weakV', hero.weakPoint);
-					break;
-			}
-			core.setFlag('battleSpeed', (() => {
-				if (battle.speed === 'quick') return 0;
-				else if (battle.speed === 'normal') return 1;
-				else return 2;
-			})());
-			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
-			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
-			switch (battle.status) {
-				case 'win':
-					const info = battle.enemy.info,
-						money = info.money,
-						exp = info.exp;
-
-					core.status.hero.hp = hero.hp;
-					core.status.hero.mana = hero.mana;
-					core.status.hero.hpmax = hero.hpmax;
-					core.status.hero.money += money;
-					core.status.hero.statistics.money += money;
-					core.status.hero.exp += exp;
-					core.status.hero.statistics.exp += exp;
-					core.status.hero.statistics.battle++;
-
-					break;
-				case 'lose':
-					core.lose();
-					break;
-				case 'quit':
-					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
-					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
-					break;
-			}
-			core.updateStatusBar();
-		}
-
-		/**
-		 * 获得成就，执行战后事件
-		 * @param {Battle} battle
-		 * @param {number} x
-		 * @param {number} y 
-		 */
-		function afterBattleEvent(battle, x, y) {
-			if (battle.status !== 'win') return;
-			const hero = battle.hero,
-				enemy = battle.enemy,
-				id = enemy.id;
-
-			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
-			if (hero.smartCast) core.plugin.getAchievement(38);
-			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
-
-			const blockList = {
-				swordEmperor: 398,
-				goldHornSlime: 400,
-				whiteHornSlime: 403,
-				silverSlime: 407, //白银怪，掉落钱币
-				E384: 385,
-				darkKnight: 225,
-				soldier: 212, // 重生怪
-				redWizard: 11, //炎之身体，变熔岩
-				E382: 374, //寒冰身体，变冰块
-			};
-
-			if (blockList.hasOwnProperty(id)) core.setBlock(blockList[id], x, y);
-			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
-			else core.removeBlock(x, y, core.status.floorId);
-
-			if (id === 'E335' || id === 'E413') { //烈焰身体，极寒身体
-				for (let x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
-					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
-						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
-							if (id === 'E335') core.setBlock(11, x0, y0);
-							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
-								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
-									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
-						}
-					}
-				}
-			}
-			let todo = [];
-			// 战后事件
-			if (core.status.floorId != null) {
-				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
-			}
-			core.push(todo, enemy.data.afterBattle);
-
-			// 如果事件不为空，将其插入
-			if (todo.length > 0) core.insertAction(todo, x, y);
-		}
-
-		// #endregion
-
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
@@ -5894,6 +5687,216 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		// #endregion
 
+		// #region 回合制战斗的执行 **************************************************
+
+		const equipList = {
+			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
+			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
+		};
+
+		async function battleByTurn(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
+
+			core.lockControl();
+
+			beginListen(battle);
+			drawBattleUI(battle);
+			drawSkillButton(battle);
+			drawSpeedButton(battle);
+			let count = 0;
+			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
+				drawBattleIcon(battle, count++);
+			});
+
+			while (true) {
+				if (battle.status !== 'pending') break;
+				await Promise.race([
+					new Promise((res) => { setTimeout(res, battle.waitTime); }),
+					new Promise((res) => {
+						core.unregisterAction('keyDown', 'quit');
+						core.unregisterAction('ondown', 'quit');
+						core.registerAction('keyDown', 'quit', (keyCode) => {
+							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
+								battle.execUserAction('q');
+								res();
+							}
+						}, 100);
+						core.registerAction('ondown', 'quit', (x, y, px, py) => {
+							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
+								battle.execUserAction('q');
+								res();
+							} //撤退键的坐标
+						}, 100);
+					})
+				]);
+				battle.recordDelayedAction();
+				battle.nextTurn();
+				battle.checkEnd();
+				battle.formatActionList();
+				// 此处更新动画
+				drawBattleUI(battle);
+				if (battle.speed !== 'quick') drawBattleAnimate(battle);
+				drawSkillButton(battle); // 每回合过后技能已释放，需要更新按钮的状态
+				battle.updateActor();
+				if (battle.status === 'quit') break;
+			}
+			if (battle.speed !== 'quick') {
+				// 获胜时，绘制底边栏
+				let h = 0;
+				if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
+					if (h < 40) h += 4;
+					drawBattleBottomBar(battle, h);
+				});
+				//等待500ms后擦除画布
+				await new Promise((res) => { setTimeout(res, 500) });
+			}
+
+			clearCanvasAndEvent();
+			updateHeroStatus(battle);
+			afterBattleEvent(battle, x, y);
+			core.unlockControl();
+		}
+
+		/**
+		 * 录像模式下执行回合制战斗
+		 * @param {string} enemyId 
+		 * @param {number} x 
+		 * @param {number} y 
+		 */
+		function battleByTurn_replaying(enemyId, x, y) {
+			let battle = new Battle(enemyId, x, y);
+			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
+			let actionList = core.plugin.getActionObj(nextReplay);
+			while (battle.status === 'pending') {
+				const currTurn = battle.turn;
+				if (actionList.hasOwnProperty(currTurn)) {
+					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
+						battle.execUserAction(actionList[currTurn][i]);
+					}
+				}
+				if (battle.status === 'quit') break;
+				battle.nextTurn();
+				battle.checkEnd();
+				battle.updateActor();
+			}
+			updateHeroStatus(battle);
+			afterBattleEvent(battle, x, y);
+		}
+
+		/**
+		 * 同步勇士的生命值，毒衰等状态
+		 * @param {Battle} battle 
+		 */
+		function updateHeroStatus(battle) {
+			const hero = battle.hero;
+			if (!core.isReplaying()) {
+				const route = battle.route;
+				if (route.length > 3) core.status.route.push(route);
+			}
+			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
+			switch (hero.status) {
+				case 'poisoned':
+					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
+					break;
+				case 'weak':
+					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
+					core.setFlag('weakV', hero.weakPoint);
+					break;
+			}
+			core.setFlag('battleSpeed', (() => {
+				if (battle.speed === 'quick') return 0;
+				else if (battle.speed === 'normal') return 1;
+				else return 2;
+			})());
+			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
+			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
+			switch (battle.status) {
+				case 'win':
+					const info = battle.enemy.info,
+						money = info.money,
+						exp = info.exp;
+
+					core.status.hero.hp = hero.hp;
+					core.status.hero.mana = hero.mana;
+					core.status.hero.hpmax = hero.hpmax;
+					core.status.hero.money += money;
+					core.status.hero.statistics.money += money;
+					core.status.hero.exp += exp;
+					core.status.hero.statistics.exp += exp;
+					core.status.hero.statistics.battle++;
+					if (!core.isReplaying() && core.getFlag('recordAction', false)) {
+						setEnemyActionData(battle);
+						core.setFlag('recordAction', false);
+					}
+					break;
+				case 'lose':
+					core.lose();
+					break;
+				case 'quit':
+					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
+					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
+					break;
+			}
+			core.updateStatusBar();
+		}
+
+		/**
+		 * 获得成就，执行战后事件
+		 * @param {Battle} battle
+		 * @param {number} x
+		 * @param {number} y 
+		 */
+		function afterBattleEvent(battle, x, y) {
+			if (battle.status !== 'win') return;
+			const hero = battle.hero,
+				enemy = battle.enemy,
+				id = enemy.id;
+
+			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
+			if (hero.smartCast) core.plugin.getAchievement(38);
+			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
+
+			const blockList = {
+				swordEmperor: 398,
+				goldHornSlime: 400,
+				whiteHornSlime: 403,
+				silverSlime: 407, //白银怪，掉落钱币
+				E384: 385,
+				darkKnight: 225,
+				soldier: 212, // 重生怪
+				redWizard: 11, //炎之身体，变熔岩
+				E382: 374, //寒冰身体，变冰块
+			};
+
+			if (blockList.hasOwnProperty(id)) core.setBlock(blockList[id], x, y);
+			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
+			else core.removeBlock(x, y, core.status.floorId);
+
+			if (id === 'E335' || id === 'E413') { //烈焰身体，极寒身体
+				for (let x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
+					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
+						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
+							if (id === 'E335') core.setBlock(11, x0, y0);
+							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
+								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
+									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
+						}
+					}
+				}
+			}
+			let todo = [];
+			// 战后事件
+			if (core.status.floorId != null) {
+				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
+			}
+			core.push(todo, enemy.data.afterBattle);
+
+			// 如果事件不为空，将其插入
+			if (todo.length > 0) core.insertAction(todo, x, y);
+		}
+
+		// #endregion
+
 		// #region **************************************************
 		/** 复写events.prototype.battle */
 		events.prototype.battle = function (id, x, y, force, callback) {
@@ -6678,7 +6681,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {string} next
 		 * @returns {object}
 		 */
-		function getActionList(next) {
+		this.getActionObj = function(next) {
 			let actionList = {};
 
 			if (next.startsWith('bs:')) {
@@ -6711,9 +6714,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 对h 0 (除2获取k)获取0 2获取3 i*(combo+1)/2
 		 * 对e 1 (减1除2获取k) 获取(combo+1)*k + 1,2,3,...,combo 直到超出总回合数
 		 * 由123映射到1 对combo+1取余 余0余1才要操作 余0 h /(combo+1)*2 e -1 再/(combo+1)*2 再+1
+		 * e->e0 (h-1)*(combo+1)/2+1 
 		 */
 		// 对于预设技能的构想：预设技能有两种释放方式，1是遇到对应怪物自动发动，2是切换到对应预设发动
 		// 用一个flag currActionNum 来表示当前有无预设 预设2-6 1是空过
+		// recordAction 是否录制下场战斗
 		// 存储结构 每个enemyActionData包括:hotkey：1-9 action:行动字符串(bs:开头) 
 		// 总的变量名enemysActionData 敌人名字是键
 		// 当前预设覆盖
@@ -6734,13 +6739,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				for (let i = 0, l = dataList.length; i < l; i++) {
 					const actionData = dataList[i];
 					if (actionData['hotkey'] === currActionNum) {
-						currActionList = getActionList(actionData['action']);
+						currActionList = core.plugin.getActionObj(actionData['action']);
 					}
 				}
 			}
 			else if (enemysActionData.hasOwnProperty(id)) {
 				const actionData = enemysActionData[id];
-				currActionList = getActionList(actionData['action']);
+				currActionList = core.plugin.getActionObj(actionData['action']);
 			}
 			return currActionList;
 		}
@@ -7088,6 +7093,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 },
 	"预设套装": function () {
 		// 在此增加新插件
+		/** 变量enemysActionData格式如下：
+		 * {'greenSmile':{'hotkey':1,'action':'bs:1c'},
+		 * 'redSmile':{'hotkey':2,'action':'bs:1c'},
+		 * }
+		 */
+
+		/**
+		 * 一个页面一个Canvas，退出/进入其它页面时，中止绘制，中止当前监听
+		 * 属性btnList KeyboardEvent drawBackGround drawContent
+		 * 方法 init redraw quit jumpOff beginListen endListen
+		 * 进入一个页面时，绘制drawBackGround，drawContent(可变内容) 开启对BtnList监听
+		 * 进行需要重绘的操作时，重绘(Canvas)
+		 * 例如，从任何地方调用enemyAction的initPage 则：初始化btnList(构造函数中定义)
+		 * 开启对应的监听
+		 * 方向键的操作由页面控制
+		 * jumpOff跳转: 擦除此页面 取消监听 跳转到新页面(init)
+		 * 退出quit：擦除画布 取消监听 res unlockControl
+		 */
 
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
@@ -7106,16 +7129,138 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawSetting(ctx);
 		}
 
-		let equipRecipeList = Array(10).fill('');
+        // 按键 上下 2-6 可翻页
 
-		class Recipe{
-			constructor(){
-				this.content = '';
-				this.aim = [];
+		// 按钮：选择一个快捷键2-6
+		function startRecord(){
+
+		}
+
+		class Button {
+			/**
+			 * 按钮对象
+			 * @param {string} name 按钮名字，用于注册事件
+			 * @param {number} x 按钮左上角的x坐标
+			 * @param {number} y 按钮左上角的y坐标
+			 * @param {number} w 按钮的宽度
+			 * @param {number} h 按钮的高度
+			 * @param {Function} draw 绘制按钮
+			 * @param {Function} event 点击按钮时触发的事件
+			 */
+			constructor(name, x, y, w, h, draw, event) {
+				this.name = name;
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.disable = false;
+
+				this.draw = () => { if (!this.disable) draw(); };
+				this.event = () => { if (!this.disable) event(); };
+			}
+
+			/**
+			 * 注册按钮的点击事件
+			 */
+			register() {
+				core.registerAction('onclick', this.name, (x, y, px, py) => {
+					if (px >= x && px <= x + w && py > y && py <= y + h)
+						this.event();
+				}, 100);
+			}
+
+			/**
+			 * 取消注册按钮的点击事件
+			 */
+			unregister() {
+				core.unregisterAction('onclick', this.name);
 			}
 		}
 
-		core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+		class Page {
+			constructor(name) {
+				/** 页面名称 */
+				this.name = name;
+				/** 本页面的按钮列表
+				 * @type {Array<Button>}
+				 */
+				this.btnList;
+				this.keyEvent;
+				this.drawBackGround;
+				this.drawContent;
+				this.clear;
+			}
+
+			beginListen() {
+				core.registerAction('keyDown', this.name, keyEvent);
+				this.btnList.forEach((button)=>{button.register();})
+			}
+
+			endListen(){
+				core.unregisterAction('keyDown', this.name);
+				this.btnList.forEach((button)=>{button.unregister();})
+			}
+
+			init(){
+				this.drawBackGround();
+				this.drawContent();
+				this.beginListen();
+				this.btnList.forEach((button)=>{button.draw();})
+			}
+
+			redraw(){
+				this.drawContent();
+				this.btnList.forEach((button)=>{button.draw();})
+			}
+
+			jumpOff(){
+				endListen();
+				this.clear();
+			}
+		}
+
+		let actionSet = new Page('actionSet')
+
+		let recordBtn = new Button('record', 0, 0, 32, 32, function () {
+			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
+		}, function () { core.setFlag('', true); }
+		);
+
+		let quitBtn = new Button('quit', 100, 100, 32, 32, function () {
+			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
+		}, function () {
+			actionSet.jumpOff();
+			// 退出
+		}
+		)
+
+		actionSet.btnList = [recordBtn, quitBtn];
+
+		actionSet.keyEvent = function(keyCode){
+			switch(keyCode){
+
+			}
+		}
+
+		actionSet.drawContent = function(){
+			
+		}
+
+		function drawOneData(ctx,name,data,x,y){
+			core.drawIcon(ctx, name, x, y);
+			const actionObj = core.plugin.getActionObj(data.action);
+			// actionArr:[['1',['b','c']],['3'],['c','B']]
+			const actionArr = Object.entries(actionObj);
+			const [turnArr, skillArr] = [Object.keys(actionObj),Object.values(actionObj)];
+			for (let i = 0, l = actionArr.length; i < l; i++) {
+				const xi = x+50*i;
+				if (xi>core.__PIXELS__) break;
+				core.fillText(ctx,turnArr[i],xi,y);
+				core.drawIcon(ctx,skillArr[i][0],xi,y);
+			}
+		}
+
+		//core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
 
 		function drawSetting(ctx) {
 			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
