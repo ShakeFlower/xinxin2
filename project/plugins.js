@@ -4810,13 +4810,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 },
     "回合制战斗": function () {
 
-		// #region 回合制战斗的执行 **************************************************
-
-		const equipList = {
-			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
-			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
-		};
-
 		async function battleByTurn(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 
@@ -5869,7 +5862,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * 读取actionList，检查本回合是否有值（即需要发动技能）
 			 */
 			formatActionList() {
-				console.log(this.actionList);
 				const combo = this.enemy.combo;
 				let currTurn = this.turn;
 				if (combo > 1) {
@@ -7387,7 +7379,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
-		class Page {
+		class Menu {
 			constructor(name) {
 				/** 页面名称 */
 				this.name = name;
@@ -7395,22 +7387,47 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				 * @type {Array<Button>}
 				 */
 				this.btnList;
+				/**	按键时触发的事件 
+				 * @type {Function}
+				 */
 				this.keyEvent;
+				/**	仅在打开窗口时触发一次的绘制，需要使用不同的画布 
+				 * @type {Function}
+				 */
 				this.drawBackGround;
+				/**	每次刷新时重新触发的绘制事件
+				 * @type {Function}
+				 */
 				this.drawContent;
+				/**	清空画布的事件
+				 * @type {Function}
+				 */
 				this.clear;
+				/**	关闭窗口时触发的事件（unlockControl等）
+				 * @type {Function}
+				 */
+				this.end;
 			}
 
+			/**
+			 * 开始监听页面的按键事件和按钮列表中按钮的点击事件
+			 */
 			beginListen() {
-				core.registerAction('keyDown', this.name, keyEvent);
-				this.btnList.forEach((button)=>{button.register();})
+				core.registerAction('keyDown', this.name, keyEvent, 100);
+				this.btnList.forEach((button) => { button.register(); })
 			}
 
-			endListen(){
+			/**
+			 * 结束按键事件和点击事件的监听
+			 */
+			endListen() {
 				core.unregisterAction('keyDown', this.name);
-				this.btnList.forEach((button)=>{button.unregister();})
+				this.btnList.forEach((button) => { button.unregister(); })
 			}
 
+			/**
+			 * 初始化绘制页面
+			 */
 			init(){
 				this.drawBackGround();
 				this.drawContent();
@@ -7418,42 +7435,123 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.btnList.forEach((button)=>{button.draw();})
 			}
 
+			/**
+			 * 重绘页面和按钮
+			 */
 			redraw(){
 				this.drawContent();
 				this.btnList.forEach((button)=>{button.draw();})
 			}
 
+			/**
+			 * 跳转至其它页面，清空画布和监听事件
+			 */
 			jumpOff(){
-				endListen();
+				this.endListen();
 				this.clear();
+			}
+
+			/**
+			 * 退出窗口，清空画布和监听事件，执行退出事件(unlockControl等)
+			 */ 
+			closeMenu(){
+				this.jumpOff();
+				this.end();
+			}
+
+		}
+
+		const menuName = 'actionSet';
+		class ActionSet extends Menu{
+			constructor(){
+				super(menuName);
+				/** 当前在绘制第几页*/
+				this.page = 0;
+				/** 敌人对应的预设操作数据
+				 * @type {object}
+				 */
+				this.enemysActionData = core.getFlag('enemysActionData', {});
+				/** 敌人名字数组*/
+				this.enemysNameList = Object.keys(this.enemysActionData);
+				/** 敌人预设操作数组*/
+				this.enemysActionList = Object.values(this.enemysActionData);	
+				/** 敌人数据数量 */	
+				this.l = this.enemysNameList.length;
+			}
+
+			//0页 0存在
+			//1页 5存在
+			//2野 10存在
+			pageUp(){
+				if (5*this.page < this.l) {
+					this.page++;
+					this.drawContent();
+				}
+			}
+
+			pageDown(){
+				if (this.page>0){
+					this.page--;
+					this.drawContent();
+				}
+			}
+
+			deleteData(name){
+				if (this.enemysActionData.hasOwnProperty(name)){
+					delete this.enemysActionData.name;
+					this.enemysNameList = Object.keys(this.enemysActionData);
+					/** 敌人预设操作数组*/
+					this.enemysActionList = Object.values(this.enemysActionData);	
+					/** 敌人数据数量 */	
+					this.l = this.enemysNameList.length;
+					core.setFlag('enemysActionData', this.enemysActionData);
+				}
 			}
 		}
 
-		let actionSet = new Page('actionSet')
+		let actionSet = new ActionSet();
 
 		let recordBtn = new Button('record', 0, 0, 32, 32, function () {
 			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
+			core.fillText('actionSet','开始录制', this.x, this.y,'white','16px Verdana');
 		}, function () { core.setFlag('', true); }
 		);
 
 		let quitBtn = new Button('quit', 100, 100, 32, 32, function () {
 			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
+			core.fillText('actionSet','退出', this.x, this.y,'white','16px Verdana')
 		}, function () {
 			actionSet.jumpOff();
 			// 退出
 		}
 		)
 
+		let pageDownBtn = new Button('pageChange',20,20,20,20,function(){},
+	    function(){
+			actionSet.pageDown();
+		});
+
+		let pageUpBtn = new Button('pageUp',20,20,20,20,function(){},
+	    function(){
+			actionSet.pageUp();
+		});
+
+		let deleteBtn0 = new Button('deleteBtn0',1,1,3,3,function(){
+
+		},
+	function(){
+
+	})
+
 		actionSet.btnList = [recordBtn, quitBtn];
 
-		actionSet.keyEvent = function(keyCode){
-			switch(keyCode){
+		actionSet.keyEvent = function (keyCode) {
+			switch (keyCode) {
+				case 27://Esc
+					actionSet.closeMenu();
+				break;
 
 			}
-		}
-
-		actionSet.drawContent = function(){
-			
 		}
 
 		function drawOneData(ctx,name,data,x,y){
@@ -7469,6 +7567,35 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.drawIcon(ctx,skillArr[i][0],xi,y);
 			}
 		}
+
+		/** 变量enemysActionData格式如下：
+		 * {'greenSmile':{'hotkey':1,'action':'bs:1c'},
+		 * 'redSmile':{'hotkey':2,'action':'bs:1c'},
+		 * enemysNameList ['greenSmile','redSmile']
+		 * enemysActionList [{'hotkey':1,'action':'bs:1c'},{'hotkey':2,'action':'bs:1c'}]
+		 * }
+		 */
+
+		/**
+		 * 
+		 * @param {*} page 
+		 * @param {ActionSet} menu 
+		 */
+		function drawDataPage(page,menu){
+			const min = 5*page,
+			max = 5*page+4;
+			let j=0;
+			for (let i= min;i<=max;i++){
+				drawOneData(menuName,menu.enemysNameList[i],menu.enemysActionList[i],20,30+j);
+				j++;
+			}
+		}
+
+		actionSet.drawContent = function(){
+			// 画背景，然后
+			drawDataPage(this.page,this);
+		}
+
 
 		//core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
 
