@@ -4882,7 +4882,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function battleByTurn_replaying(enemyId, x, y) {
 			let battle = new Battle(enemyId, x, y);
 			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
-			let actionList = getActionList(nextReplay);
+			let actionList = core.plugin.getActionObj(nextReplay);
 			while (battle.status === 'pending') {
 				const currTurn = battle.turn;
 				if (actionList.hasOwnProperty(currTurn)) {
@@ -5455,7 +5455,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			setDamage(hero) {
 				const atkStatus = this.atkStatus;
-				if (hasSpecial(this.special, [2, 61, 62, 63, 64, 65, 66])) atkStatus.damage = this.atk; // 魔攻
+				if (hasSpecial(this.special, [2, 60, 61, 62, 63, 64, 65, 66])) atkStatus.damage = this.atk; // 魔攻
 				else {
 					if (hero.def - this.atk >= hero.defm) atkStatus.damage = 0; // 防临界
 					else atkStatus.damage = Math.max(this.atk - hero.def, 1);
@@ -6882,18 +6882,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @returns {object}
 		 */
 		this.getActionObj = function(next) {
-			let actionList = {};
+			let actionObj = {};
 
 			if (next.startsWith('bs:')) {
 				const nextList = next.split(':');
 				for (let i = 1, l = nextList.length; i < l; i++) {
 					const currTurn = parseInt(nextList[i]);
-					if (!actionList.hasOwnProperty(currTurn)) actionList[currTurn] = [];
-					actionList[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
+					if (!actionObj.hasOwnProperty(currTurn)) actionObj[currTurn] = [];
+					actionObj[currTurn].push(nextList[i].replace(currTurn.toString(), ''));
 				}
 			}
 			
-			return actionList;
+			return actionObj;
 		}
 
 		/**
@@ -6947,7 +6947,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			else if (enemysActionData.hasOwnProperty(id)) {
 				const actionData = enemysActionData[id];
-				currActionList = getActionList(actionData['action']);
+				currActionList = core.plugin.getActionObj(actionData['action']);
 			}
 			return currActionList;
 		}
