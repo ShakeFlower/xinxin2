@@ -7296,8 +7296,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	"预设套装": function () {
 		// 在此增加新插件
 		/** 变量enemysActionData格式如下：
-		 * {'greenSmile':{'hotkey':1,'action':'bs:1c'},
-		 * 'redSmile':{'hotkey':2,'action':'bs:1c'},
+		 * {'greenSlime':{'hotkey':1,'action':'bs:1c'},
+		 * 'redSlime':{'hotkey':2,'action':'bs:1c'},
 		 * }
 		 */
 
@@ -7314,10 +7314,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 退出quit：擦除画布 取消监听 res unlockControl
 		 */
 
+		//todo
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
-			'n': '',
+			'n': '','c':''
 		};
 		// n is for null;
 		const equipList = {
@@ -7554,17 +7555,29 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		// {'greenSlime':{'hotkey':1,'action':'bs:1c'},
+		// 'redSlime':{'hotkey':2,'action':'bs:1c'},
+		// }
+		// const ctx = 'menu';
+		// const name = 'greenSlime';
+		// let data = {'hotkey':1,'action':'bs:1c'}
+		// let x=20,y=20;
+
 		function drawOneData(ctx,name,data,x,y){
 			core.drawIcon(ctx, name, x, y);
 			const actionObj = core.plugin.getActionObj(data.action);
-			// actionArr:[['1',['b','c']],['3'],['c','B']]
-			const actionArr = Object.entries(actionObj);
+			// actionArr:[['1',['b','c']],['3',['c','B']]...]
 			const [turnArr, skillArr] = [Object.keys(actionObj),Object.values(actionObj)];
-			for (let i = 0, l = actionArr.length; i < l; i++) {
-				const xi = x+50*i;
-				if (xi>core.__PIXELS__) break;
-				core.fillText(ctx,turnArr[i],xi,y);
-				core.drawIcon(ctx,skillArr[i][0],xi,y);
+			for (let i = 0; i < 8; i++) {
+				const xi = x + 32 * (i + 1);
+				if (xi > core.__PIXELS__) break;
+				if (turnArr.includes(i)) {
+					core.drawIcon(ctx, abbreviateList[skillArr[i][0]], xi, y);
+				}
+				if (Math.max(...turnArr)>9) {
+					// 绘制一个省略号
+					
+				}
 			}
 		}
 
@@ -7599,16 +7612,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		//core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
 
+		
 		function drawSetting(ctx) {
+			// let ctx = core.createCanvas('menu',0,0, core.__PIXELS__, core.__PIXELS__, 180);
 			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
 			core.clearMap(ctx);
 			core.setAlpha(ctx, 0.85);
 			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
 			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
 			core.setAlpha(ctx, 1);
-			core.strokeRoundRect(ctx, 35, 55, core.__PIXELS__ - 70, 55, 3, "white");
-			core.fillRoundRect(ctx, 35.5, 56, core.__PIXELS__ - 71, 53, 3, "#555555");
-			core.ui.fillText(ctx, "设置", 180, 50, 'white', '20px hkbdt');
+
+			// core.strokeRoundRect(ctx, 35, 55, core.__PIXELS__ - 70, 55, 3, "white");
+			// core.fillRoundRect(ctx, 35.5, 56, core.__PIXELS__ - 71, 53, 3, "#555555");
+			// core.ui.fillText(ctx, "设置", 180, 50, 'white', '20px hkbdt');
 			// core.ui.drawTextContent(ctx, settings[settingIndex].text, {
 			// 	left: 40,
 			// 	top: 60,
@@ -7619,9 +7635,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			// 	maxWidth: 340
 			// });
 			// for (let i = 0, l = settings.length; i < l; i++) { drawSetting_drawOne(i, ctx); }
-			core.ui.fillText(ctx, "--常用设置--", 40, 130, '#FFE4B5', '16px Verdana');
-			core.ui.fillText(ctx, '[退出]', 340, 375, '#FFE4B5', '14px Verdana');
-			drawSettingSelector();
+			// core.ui.fillText(ctx, "--常用设置--", 40, 130, '#FFE4B5', '16px Verdana');
+			// core.ui.fillText(ctx, '[退出]', 340, 375, '#FFE4B5', '14px Verdana');
+			//drawSettingSelector();
 		}
 	}
 }
