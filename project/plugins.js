@@ -7376,7 +7376,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.unregisterAction('onclick', this.name);
 			}
 		}
-
+		if (false) {
+			let myData = {
+				'greenSlime': { 'hotkey': 1, 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'redSlime': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'bat': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'vampire': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'redBat': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'zombieKnight': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+				'zombie': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
+			}
+			core.setFlag('enemysActionData', myData);
+			let as = core.plugin.drawActionset()
+			as.drawContent();
+			as.beginListen();
+		}
 		class Menu {
 			constructor(name) {
 				/** 页面名称,将用作画布名称*/
@@ -7459,7 +7473,46 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setAlpha(ctx, 0.85);
 			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
 			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
+			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
 			core.setAlpha(ctx, 1);
+			core.fillText(ctx,'预设技能',170,60,'#FFE4B5','20px hkbdt');
+			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '4', 204, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '5', 236, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '6', 268, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '快捷键', 320, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '分配快捷键', 70, 365, 'white', '18px Verdana');
+		}
+
+		/**
+		 * 绘制单个敌人的预设技能信息
+		 * @param {string} ctx 画布名称
+		 * @param {string} name 敌人名称
+		 * @param {object} data 对该敌人的预存技能信息，形如{'hotkey':2,'action':'bs:1c'}
+		 * @param {number} x 绘制的x坐标
+		 * @param {number} y 绘制的y坐标
+		 */
+		function drawOneData(ctx, name, data, x, y) {
+			core.drawIcon(ctx, name, x - 10, y);
+			const actionObj = core.plugin.getActionObj(data.action);
+			const hotkey = data.hotkey;
+			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
+
+			for (let i = 0; i <= 5; i++) {
+				const xi = x + 32 * (i + 1);
+				if (xi > core.__PIXELS__) break;
+				const index = turnArr.indexOf(i.toString());
+				if (index !== -1) {
+					core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
+				}
+				if (Math.max(...turnArr) > 5) {
+					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
+				}
+			}
+			if (hotkey) core.drawIcon(ctx, 'btn' + hotkey.toString(), x + 268, y);
 		}
 
 		class ActionSet extends Menu{
@@ -7487,11 +7540,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawContent() {
 				drawSetting(ctx);
 				const [x, y] = [64, 128];
-				const maxIndex = Math.min((this.page + 1) * this.rowCount - 1, this.enemysActionList.length - 1);
+				const maxIndex = Math.min((this.page + 1) * this.rowCount, this.enemysActionList.length - 1);		
 				let j = 0;
-				for (i = this.page * this.rowCount; i < maxIndex; i++) {
+				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
 					drawOneData(ctx, this.enemysNameList[i], this.enemysActionList[i], x, y + 32 * (j++));
 				}
+				core.fillText(ctx, this.page, 320, 327, 'white', '18px Verdana');
 				this.btnList.forEach((button) => { button.draw(); })
 			}
 
@@ -7504,8 +7558,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			pageUp() {
-				if (this.rowCount * this.page < this.l) {
+				const l = this.enemysActionList.length;
+				if (this.rowCount * (this.page + 1) < l) {
 					this.page++;
+					this.btnList.get('pageDown').disable = false;
+					if (this.rowCount * (this.page + 1) >= l) {
+						this.btnList.get('pageUp').disable = true;
+					}
 					this.drawContent();
 				}
 			}
@@ -7513,6 +7572,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			pageDown() {
 				if (this.page > 0) {
 					this.page--;
+					this.btnList.get('pageUp').disable = false;
+					if (this.page === 0) {
+						this.btnList.get('pageDown').disable = true;
+					}
 					this.drawContent();
 				}
 			}
@@ -7546,247 +7609,118 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			setHotKey(hotkey){
 				const currDataIndex = this.rowCount * this.page + this.row;
 				if (currDataIndex < this.enemysNameList.length) {
+					for (let i = 0, l = this.enemysActionData.length; i < l; i++) {
+						if (enemysActionData[i].hotkey === hotkey) {
+							delete enemysActionData[i].hotkey;
+						}
+					}
 					this.enemysActionData[this.enemysNameList[currDataIndex]].hotkey = hotkey;
+					core.setFlag('enemysActionData', enemysActionData);
 					this.drawContent();
 				}
 			}
 		}
 
 		class IconButton extends Button{
-			constructor(name, x, y, w, h){
-				super(name, x, y, w, h);
-				this.draw = function(){
+			constructor(name, x, y){
+				super(name, x, y, 32, 32);
+				super._draw = function(){
 					const [x, y] = [this.x, this.y];
 					core.drawIcon(ctx, this.name, x, y);
 				}
 			}
 		}
 
-		let actionSet = new ActionSet();
+		this.drawActionset = function(){
 
-		let recordBtn = new Button('record', 64, 308, 145, 24),
-			deleteBtn = new Button('delete', 240, 308, 46, 24),
-			pageDownBtn = new Button('pageDown', 300, 327, 10, 10), // to be tested
-			pageUpBtn = new Button('pageUp', 340, 327, 10, 10),
-			hotkey2Btn = new IconButton('hotkey2', 170, 345, 32, 32),
-			hotkey3Btn = new IconButton('hotkey3', 200, 345, 32, 32),
-			hotkey4Btn = new IconButton('hotkey4', 230, 345, 32, 32),
-			hotkey5Btn = new IconButton('hotkey5', 260, 345, 32, 32),
-			hotkey6Btn = new IconButton('hotkey6', 290, 345, 32, 32);
+			let actionSet = new ActionSet();
 
-		recordBtn._draw = function () {
-			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
-			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
-			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
-		};
-		deleteBtn._draw = function () {
-			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
-			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
-			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
-		};
-		pageDownBtn._draw = function () {
-			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
-		};
-		pageUpBtn._draw = function () {
-			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
-		};
+			let recordBtn = new Button('record', 64, 308, 145, 24),
+				deleteBtn = new Button('delete', 240, 308, 46, 24),
+				pageDownBtn = new Button('pageDown', 300, 327, 10, 10), // to be tested
+				pageUpBtn = new Button('pageUp', 340, 327, 10, 10),
+				hotkey2Btn = new IconButton('btn2', 170, 345, 32, 32),
+				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
+				hotkey4Btn = new IconButton('btn4', 230, 345, 32, 32),
+				hotkey5Btn = new IconButton('btn5', 260, 345, 32, 32),
+				hotkey6Btn = new IconButton('btn6', 290, 345, 32, 32);
 
-		recordBtn.event = actionSet.beginRecord;
-		deleteBtn.event = actionSet.deleteData;
-		pageDownBtn.event = actionSet.pageDown;
-		pageUpBtn.event = actionSet.pageUp;
-		hotkey2Btn.event = ()=>{actionSet.setHotKey(2);}
-		hotkey3Btn.event = ()=>{actionSet.setHotKey(3);}
-		hotkey4Btn.event = ()=>{actionSet.setHotKey(4);}
-		hotkey5Btn.event = ()=>{actionSet.setHotKey(5);}
-		hotkey6Btn.event = ()=>{actionSet.setHotKey(6);}
-
-		actionSet.btnList = new Map([['record', recordBtn], ['quit', quitBtn], ['pageDown', pageDownBtn],
-		['pageUp', pageUpBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],
-		['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
-
-
-		if (false)
-		{
-			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
-			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
-			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
-
-			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
-			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
-			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
-
-			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
-			core.fillText(ctx, '1', 320, 327, 'white', '18px Verdana');
-			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
-
-			core.fillText(ctx, '分配快捷键', 70, 365, '#555555', '18px Verdana');
-			core.drawIcon(ctx, 'btn2', 170, 345);
-			core.drawIcon(ctx, 'btn3', 200, 345);
-			core.drawIcon(ctx, 'btn4', 230, 345);
-			core.drawIcon(ctx, 'btn5', 260, 345);
-			core.drawIcon(ctx, 'btn6', 290, 345);
-		}
-
-		actionSet.keyEvent = function (keyCode) {
-			switch (keyCode) {
-				case 27://Esc
-					actionSet.end();
-					break;
-				case 37://Left
-					actionSet.pageDown();
-					break;
-				case 39://Right
-					actionSet.pageUp();
-					break;
-				case 38://Up
-					if (actionSet.row > 0) {
-						actionSet.row--;
-					}
-					break;
-				case 40://Down
-					if (actionSet.row < actionSet.rowCount - 1) {
-						actionSet.row++;
-					}
-					break;
-				case 13://Enter
-				case 32://SpaceBar
-				case 67://C
-					actionSet.beginRecord();
-					break;
-				case 46://Delete
-					actionSet.deleteData();
-					break;
-				case 98:
-				case 99:
-				case 100:
-				case 101:
-				case 102: // num 2~6
-					actionSet.setHotKey(keyCode - 96);
-					break;
-			}
-		}
-
-		/**
-		 * 绘制单个敌人的预存技能数据
-		 * @param {string} ctx 画布名称
-		 * @param {string} name 敌人名称
-		 * @param {object} data 对该敌人的预存技能信息，形如{'hotkey':2,'action':'bs:1c'}
-		 * @param {number} x 绘制的x坐标
-		 * @param {number} y 绘制的y坐标
-		 */
-		function drawOneData(ctx, name, data, x, y) {
-			core.drawIcon(ctx, name, x - 10, y);
-			const actionObj = core.plugin.getActionObj(data.action);
-			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
-
-			for (let i = 0; i <= 5; i++) {
-				const xi = x + 32 * (i + 1);
-				if (xi > core.__PIXELS__) break;
-				const index = turnArr.indexOf(i.toString());
-				if (index !== -1) {
-					core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
-				}
-				if (Math.max(...turnArr) > 5) {
-					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
-				}
-			}
-		}
-
-		/** 变量enemysActionData格式如下：
-		 * {'greenSmile':{'hotkey':1,'action':'bs:1c'},
-		 * 'redSmile':{'hotkey':2,'action':'bs:1c'},
-		 * enemysNameList ['greenSmile','redSmile']
-		 * enemysActionList [{'hotkey':1,'action':'bs:1c'},{'hotkey':2,'action':'bs:1c'}]
-		 * }
-		 */
-
-
-		if (false){
-			// function drawSetting(ctx) {
-			// 	core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
-			// 	core.clearMap(ctx);
-			// 	core.setAlpha(ctx, 0.85);
-			// 	core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
-			// 	core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
-			// 	core.setAlpha(ctx, 1);
-			// }
-			const ctx = 'menu';
-			drawSetting(ctx);
-			const name = 'greenSlime';
-			let currData = { 'hotkey': 1, 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' }
-			let x = 64, y = 128;
-
-			const abbreviateList = {
-				'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
-				'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
+			recordBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
+				core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
+				core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
+			};
+			deleteBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
+				core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
+				core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
+			};
+			pageDownBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
+			};
+			pageUpBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
 			};
 
-			function drawOneData(ctx, name, data, x, y) {
-				core.drawIcon(ctx, name, x - 10, y);
-				const actionObj = core.plugin.getActionObj(data.action);
-				const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
+			recordBtn.event = actionSet.beginRecord;
+			deleteBtn.event = actionSet.deleteData;
+			pageDownBtn.event = actionSet.pageDown;
+			pageUpBtn.event = actionSet.pageUp;
+			hotkey2Btn.event = () => { actionSet.setHotKey(2); }
+			hotkey3Btn.event = () => { actionSet.setHotKey(3); }
+			hotkey4Btn.event = () => { actionSet.setHotKey(4); }
+			hotkey5Btn.event = () => { actionSet.setHotKey(5); }
+			hotkey6Btn.event = () => { actionSet.setHotKey(6); }
 
-				for (let i = 0; i <= 5; i++) {
-					const xi = x + 32 * (i + 1);
-					if (xi > core.__PIXELS__) break;
-					const index = turnArr.indexOf(i.toString());
-					if (index !== -1) {
-						core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
-					}
-					if (Math.max(...turnArr) > 5) {
-						core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
-					}
+			pageDownBtn.disable = true;
+
+			actionSet.btnList = new Map([['record', recordBtn], ['delete', deleteBtn], ['pageDown', pageDownBtn],
+			['pageUp', pageUpBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],
+			['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
+
+			actionSet.keyEvent = function (keyCode) {
+				switch (keyCode) {
+					case 27://Esc
+						actionSet.end();
+						break;
+					case 37://Left
+						actionSet.pageDown();
+						break;
+					case 39://Right
+						actionSet.pageUp();
+						break;
+					case 38://Up
+						if (actionSet.row > 0) {
+							actionSet.row--;
+						}
+						break;
+					case 40://Down
+						if (actionSet.row < actionSet.rowCount - 1) {
+							actionSet.row++;
+						}
+						break;
+					case 13://Enter
+					case 32://SpaceBar
+					case 67://C
+						actionSet.beginRecord();
+						break;
+					case 46://Delete
+						actionSet.deleteData();
+						break;
+					case 98:
+					case 99:
+					case 100:
+					case 101:
+					case 102: // num 2~6
+						actionSet.setHotKey(keyCode - 96);
+						break;
 				}
 			}
-			core.fillText(ctx, '回合数', 45, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '4', 204, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '5', 236, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '6', 268, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '快捷键', 320, 110, 'white', '18px Verdana');
-			drawOneData(ctx, name, currData, x, y);
-			drawOneData(ctx, name, currData, x, y + 32);
-			drawOneData(ctx, name, currData, x, y + 64);
-			drawOneData(ctx, name, currData, x, y + 96);
-			drawOneData(ctx, name, currData, x, y + 128);
-
-			core.drawIcon(ctx, 'btn1', 330, y);
-
-			// 下方内容：
-			//  记录下场战斗操作
-			//  删除       (考虑数据为0的情况)
-			//  上一页/下一页
-			//  退出
-
-			// 设置快捷键
-
-			// Button y=128
-			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
-			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
-			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
-
-			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
-			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
-			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
-
-			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
-			core.fillText(ctx, '1', 320, 327, 'white', '18px Verdana');
-			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
-
-			core.fillText(ctx, '分配快捷键', 70, 365, '#555555', '18px Verdana');
-			core.drawIcon(ctx, 'btn2', 170, 345);
-			core.drawIcon(ctx, 'btn3', 200, 345);
-			core.drawIcon(ctx, 'btn4', 230, 345);
-			core.drawIcon(ctx, 'btn5', 260, 345);
-			core.drawIcon(ctx, 'btn6', 290, 345);
-		}
-		 
+			return actionSet;
+		}	 
 	}
 }
