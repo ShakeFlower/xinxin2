@@ -7636,8 +7636,38 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			switch (keyCode) {
 				case 27://Esc
 					actionSet.end();
-				break;
-
+					break;
+				case 37://Left
+					actionSet.pageDown();
+					break;
+				case 39://Right
+					actionSet.pageUp();
+					break;
+				case 38://Up
+					if (actionSet.row > 0) {
+						actionSet.row--;
+					}
+					break;
+				case 40://Down
+					if (actionSet.row < actionSet.rowCount - 1) {
+						actionSet.row++;
+					}
+					break;
+				case 13://Enter
+				case 32://SpaceBar
+				case 67://C
+					actionSet.beginRecord();
+					break;
+				case 46://Delete
+					actionSet.deleteData();
+					break;
+				case 98:
+				case 99:
+				case 100:
+				case 101:
+				case 102: // num 2~6
+					actionSet.setHotKey(keyCode - 96);
+					break;
 			}
 		}
 
