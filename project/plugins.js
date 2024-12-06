@@ -7314,7 +7314,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 退出quit：擦除画布 取消监听 res unlockControl
 		 */
 
-		//todo
+		//todo c的图标待补充
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
@@ -7325,20 +7325,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
 			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
 		};
-
-		const ctx = 'equipSetting';
-
-		this.test = function () {
-			drawSetting(ctx);
-		}
-
-        // 按键 上下 2-6 可翻页
-
-		// 按钮：选择一个快捷键2-6
-		function startRecord(){
-
-		}
-
 		class Button {
 			/**
 			 * 按钮对象
@@ -7350,16 +7336,26 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 * @param {Function} draw 绘制按钮
 			 * @param {Function} event 点击按钮时触发的事件
 			 */
-			constructor(name, x, y, w, h, draw, event) {
+			constructor(name, x, y, w, h) {
+				/** 按钮名称 */
 				this.name = name;
 				this.x = x;
 				this.y = y;
 				this.w = w;
 				this.h = h;
+				/** 按钮是否处于未激活状态（不绘制，不监听）*/
 				this.disable = false;
 
-				this.draw = () => { if (!this.disable) draw(); };
-				this.event = () => { if (!this.disable) event(); };
+				/** 绘制按钮 */
+				this._draw = () => {};
+				/** 点击按钮时触发的事件 */
+				this.event = () => {};
+			}
+
+			/** 绘制按钮 */
+			draw(){
+				if (this.disable) return;
+				this._draw();
 			}
 
 			/**
@@ -7367,6 +7363,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			register() {
 				core.registerAction('onclick', this.name, (x, y, px, py) => {
+					if (this.disable) return;
 					if (px >= x && px <= x + w && py > y && py <= y + h)
 						this.event();
 				}, 100);
@@ -7382,39 +7379,47 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		class Menu {
 			constructor(name) {
-				/** 页面名称 */
+				/** 页面名称,将用作画布名称*/
 				this.name = name;
 				/** 本页面的按钮列表
-				 * @type {Array<Button>}
+				 * @type {Map<string,Button>}
 				 */
-				this.btnList;
-				/**	按键时触发的事件 
-				 * @type {Function}
-				 */
-				this.keyEvent;
-				/**	仅在打开窗口时触发一次的绘制，需要使用不同的画布 
-				 * @type {Function}
-				 */
-				this.drawBackGround;
-				/**	每次刷新时重新触发的绘制事件
-				 * @type {Function}
-				 */
-				this.drawContent;
-				/**	清空画布的事件
-				 * @type {Function}
-				 */
-				this.clear;
+				this.btnList = new Map();
 				/**	关闭窗口时触发的事件（unlockControl等）
 				 * @type {Function}
 				 */
-				this.end;
+
+				/**	按键时触发的事件 
+				 * @type {Function}
+				 */
+				this.keyEvent = () => { };
+				/**	关闭窗口时触发的事件 
+				 * @type {Function}
+				 */
+				this.end = () => {
+					core.clearMap(this.name);
+				};
+			}
+
+			/**
+			 * 重绘页面和按钮
+			 */
+			drawContent(){
+				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			/**
+			 * 清空页面绘制
+			 */
+			clear(){
+				core.clearMap(this.name);
 			}
 
 			/**
 			 * 开始监听页面的按键事件和按钮列表中按钮的点击事件
 			 */
 			beginListen() {
-				core.registerAction('keyDown', this.name, keyEvent, 100);
+				core.registerAction('keyDown', this.name, this.keyEvent, 100);
 				this.btnList.forEach((button) => { button.register(); })
 			}
 
@@ -7429,43 +7434,37 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/**
 			 * 初始化绘制页面
 			 */
-			init(){
-				this.drawBackGround();
-				this.drawContent();
+			init() {
 				this.beginListen();
-				this.btnList.forEach((button)=>{button.draw();})
-			}
-
-			/**
-			 * 重绘页面和按钮
-			 */
-			redraw(){
 				this.drawContent();
-				this.btnList.forEach((button)=>{button.draw();})
 			}
 
 			/**
 			 * 跳转至其它页面，清空画布和监听事件
 			 */
-			jumpOff(){
+			jumpOff() {
 				this.endListen();
 				this.clear();
 			}
-
-			/**
-			 * 退出窗口，清空画布和监听事件，执行退出事件(unlockControl等)
-			 */ 
-			closeMenu(){
-				this.jumpOff();
-				this.end();
-			}
-
 		}
 
-		const menuName = 'actionSet';
+		const ctx = 'actionSet';
+		/**
+ 		 * 绘制选框背景
+		 * @param {string} ctx 画布名称
+ 		 */
+		function drawSetting(ctx) {
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.clearMap(ctx);
+			core.setAlpha(ctx, 0.85);
+			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.setAlpha(ctx, 1);
+		}
+
 		class ActionSet extends Menu{
 			constructor(){
-				super(menuName);
+				super(ctx);
 				/** 当前在绘制第几页*/
 				this.page = 0;
 				/** 敌人对应的预设操作数据
@@ -7476,107 +7475,194 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.enemysNameList = Object.keys(this.enemysActionData);
 				/** 敌人预设操作数组*/
 				this.enemysActionList = Object.values(this.enemysActionData);	
-				/** 敌人数据数量 */	
-				this.l = this.enemysNameList.length;
+				/** 单页面显示的怪物数据行数 */
+				this.rowCount = 5;
+				/** 当前在哪一行*/
+				this.row = 0;
+
+				// 当前绘制第 rowCount*page 到rowCount*page+rowCount-1个
+				// 选中第rowCount*page+index个
 			}
 
-			//0页 0存在
-			//1页 5存在
-			//2野 10存在
-			pageUp(){
-				if (5*this.page < this.l) {
+			drawContent() {
+				drawSetting(ctx);
+				const [x, y] = [64, 128];
+				const maxIndex = Math.min((this.page + 1) * this.rowCount - 1, this.enemysActionList.length - 1);
+				let j = 0;
+				for (i = this.page * this.rowCount; i < maxIndex; i++) {
+					drawOneData(ctx, this.enemysNameList[i], this.enemysActionList[i], x, y + 32 * (j++));
+				}
+				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			/**
+			 * 开始录制下场战斗，并退出页面
+			 */
+			beginRecord(){
+				core.setFlag('recordAction',true);
+				this.end();
+			}
+
+			pageUp() {
+				if (this.rowCount * this.page < this.l) {
 					this.page++;
 					this.drawContent();
 				}
 			}
 
-			pageDown(){
-				if (this.page>0){
+			pageDown() {
+				if (this.page > 0) {
 					this.page--;
 					this.drawContent();
 				}
 			}
 
-			deleteData(name){
-				if (this.enemysActionData.hasOwnProperty(name)){
-					delete this.enemysActionData.name;
-					this.enemysNameList = Object.keys(this.enemysActionData);
-					/** 敌人预设操作数组*/
-					this.enemysActionList = Object.values(this.enemysActionData);	
-					/** 敌人数据数量 */	
-					this.l = this.enemysNameList.length;
-					core.setFlag('enemysActionData', this.enemysActionData);
+			/**
+			 * 根据name从enemysActionData中移除一项数据
+			 */
+			deleteData(){
+				const currDataIndex = this.rowCount * this.page + this.row;
+				if (currDataIndex < this.enemysNameList.length) {
+					const name = this.enemysNameList[currDataIndex];
+					if (this.enemysActionData.hasOwnProperty(name)){
+						delete this.enemysActionData.name;
+						this.enemysNameList = Object.keys(this.enemysActionData);
+						/** 敌人预设操作数组*/
+						this.enemysActionList = Object.values(this.enemysActionData);	
+						core.setFlag('enemysActionData', this.enemysActionData);
+						this.drawContent();
+					}
+				}
+				else {
+					core.playSound('error.mp3');
+					core.drawTip('当前位置没有要删除的数据');
+				}
+			}
+
+			/**
+			 * 对当前选中的敌人数据设置其hotkey的值
+			 * @param {number} hotkey
+			 */
+			setHotKey(hotkey){
+				const currDataIndex = this.rowCount * this.page + this.row;
+				if (currDataIndex < this.enemysNameList.length) {
+					this.enemysActionData[this.enemysNameList[currDataIndex]].hotkey = hotkey;
+					this.drawContent();
+				}
+			}
+		}
+
+		class IconButton extends Button{
+			constructor(name, x, y, w, h){
+				super(name, x, y, w, h);
+				this.draw = function(){
+					const [x, y] = [this.x, this.y];
+					core.drawIcon(ctx, this.name, x, y);
 				}
 			}
 		}
 
 		let actionSet = new ActionSet();
 
-		let recordBtn = new Button('record', 0, 0, 32, 32, function () {
-			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
-			core.fillText('actionSet','开始录制', this.x, this.y,'white','16px Verdana');
-		}, function () { core.setFlag('', true); }
-		);
+		let recordBtn = new Button('record', 64, 308, 145, 24),
+			deleteBtn = new Button('delete', 240, 308, 46, 24),
+			pageDownBtn = new Button('pageDown', 300, 327, 10, 10), // to be tested
+			pageUpBtn = new Button('pageUp', 340, 327, 10, 10),
+			hotkey2Btn = new IconButton('hotkey2', 170, 345, 32, 32),
+			hotkey3Btn = new IconButton('hotkey3', 200, 345, 32, 32),
+			hotkey4Btn = new IconButton('hotkey4', 230, 345, 32, 32),
+			hotkey5Btn = new IconButton('hotkey5', 260, 345, 32, 32),
+			hotkey6Btn = new IconButton('hotkey6', 290, 345, 32, 32);
 
-		let quitBtn = new Button('quit', 100, 100, 32, 32, function () {
-			core.fillRect('actionSet', this.x, this.y, this.w, this.h, 'white');
-			core.fillText('actionSet','退出', this.x, this.y,'white','16px Verdana')
-		}, function () {
-			actionSet.jumpOff();
-			// 退出
+		recordBtn._draw = function () {
+			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
+			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
+			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
+		};
+		deleteBtn._draw = function () {
+			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
+			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
+			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
+		};
+		pageDownBtn._draw = function () {
+			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
+		};
+		pageUpBtn._draw = function () {
+			const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
+		};
+
+		recordBtn.event = actionSet.beginRecord;
+		deleteBtn.event = actionSet.deleteData;
+		pageDownBtn.event = actionSet.pageDown;
+		pageUpBtn.event = actionSet.pageUp;
+		hotkey2Btn.event = ()=>{actionSet.setHotKey(2);}
+		hotkey3Btn.event = ()=>{actionSet.setHotKey(3);}
+		hotkey4Btn.event = ()=>{actionSet.setHotKey(4);}
+		hotkey5Btn.event = ()=>{actionSet.setHotKey(5);}
+		hotkey6Btn.event = ()=>{actionSet.setHotKey(6);}
+
+		actionSet.btnList = new Map([['record', recordBtn], ['quit', quitBtn], ['pageDown', pageDownBtn],
+		['pageUp', pageUpBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],
+		['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
+
+
+		if (false)
+		{
+			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
+			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
+			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
+
+			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
+			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
+			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
+
+			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
+			core.fillText(ctx, '1', 320, 327, 'white', '18px Verdana');
+			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
+
+			core.fillText(ctx, '分配快捷键', 70, 365, '#555555', '18px Verdana');
+			core.drawIcon(ctx, 'btn2', 170, 345);
+			core.drawIcon(ctx, 'btn3', 200, 345);
+			core.drawIcon(ctx, 'btn4', 230, 345);
+			core.drawIcon(ctx, 'btn5', 260, 345);
+			core.drawIcon(ctx, 'btn6', 290, 345);
 		}
-		)
-
-		let pageDownBtn = new Button('pageChange',20,20,20,20,function(){},
-	    function(){
-			actionSet.pageDown();
-		});
-
-		let pageUpBtn = new Button('pageUp',20,20,20,20,function(){},
-	    function(){
-			actionSet.pageUp();
-		});
-
-		let deleteBtn0 = new Button('deleteBtn0',1,1,3,3,function(){
-
-		},
-	function(){
-
-	})
-
-		actionSet.btnList = [recordBtn, quitBtn];
 
 		actionSet.keyEvent = function (keyCode) {
 			switch (keyCode) {
 				case 27://Esc
-					actionSet.closeMenu();
+					actionSet.end();
 				break;
 
 			}
 		}
 
-		// {'greenSlime':{'hotkey':1,'action':'bs:1c'},
-		// 'redSlime':{'hotkey':2,'action':'bs:1c'},
-		// }
-		// const ctx = 'menu';
-		// const name = 'greenSlime';
-		// let data = {'hotkey':1,'action':'bs:1c'}
-		// let x=20,y=20;
-
-		function drawOneData(ctx,name,data,x,y){
-			core.drawIcon(ctx, name, x, y);
+		/**
+		 * 绘制单个敌人的预存技能数据
+		 * @param {string} ctx 画布名称
+		 * @param {string} name 敌人名称
+		 * @param {object} data 对该敌人的预存技能信息，形如{'hotkey':2,'action':'bs:1c'}
+		 * @param {number} x 绘制的x坐标
+		 * @param {number} y 绘制的y坐标
+		 */
+		function drawOneData(ctx, name, data, x, y) {
+			core.drawIcon(ctx, name, x - 10, y);
 			const actionObj = core.plugin.getActionObj(data.action);
-			// actionArr:[['1',['b','c']],['3',['c','B']]...]
-			const [turnArr, skillArr] = [Object.keys(actionObj),Object.values(actionObj)];
-			for (let i = 0; i < 8; i++) {
+			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
+
+			for (let i = 0; i <= 5; i++) {
 				const xi = x + 32 * (i + 1);
 				if (xi > core.__PIXELS__) break;
-				if (turnArr.includes(i)) {
-					core.drawIcon(ctx, abbreviateList[skillArr[i][0]], xi, y);
+				const index = turnArr.indexOf(i.toString());
+				if (index !== -1) {
+					core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
 				}
-				if (Math.max(...turnArr)>9) {
-					// 绘制一个省略号
-					
+				if (Math.max(...turnArr) > 5) {
+					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
 				}
 			}
 		}
@@ -7589,55 +7675,88 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * }
 		 */
 
-		/**
-		 * 
-		 * @param {*} page 
-		 * @param {ActionSet} menu 
-		 */
-		function drawDataPage(page,menu){
-			const min = 5*page,
-			max = 5*page+4;
-			let j=0;
-			for (let i= min;i<=max;i++){
-				drawOneData(menuName,menu.enemysNameList[i],menu.enemysActionList[i],20,30+j);
-				j++;
+
+		if (false){
+			// function drawSetting(ctx) {
+			// 	core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			// 	core.clearMap(ctx);
+			// 	core.setAlpha(ctx, 0.85);
+			// 	core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			// 	core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			// 	core.setAlpha(ctx, 1);
+			// }
+			const ctx = 'menu';
+			drawSetting(ctx);
+			const name = 'greenSlime';
+			let currData = { 'hotkey': 1, 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' }
+			let x = 64, y = 128;
+
+			const abbreviateList = {
+				'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
+				'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
+			};
+
+			function drawOneData(ctx, name, data, x, y) {
+				core.drawIcon(ctx, name, x - 10, y);
+				const actionObj = core.plugin.getActionObj(data.action);
+				const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
+
+				for (let i = 0; i <= 5; i++) {
+					const xi = x + 32 * (i + 1);
+					if (xi > core.__PIXELS__) break;
+					const index = turnArr.indexOf(i.toString());
+					if (index !== -1) {
+						core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
+					}
+					if (Math.max(...turnArr) > 5) {
+						core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
+					}
+				}
 			}
+			core.fillText(ctx, '回合数', 45, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '4', 204, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '5', 236, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '6', 268, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '快捷键', 320, 110, 'white', '18px Verdana');
+			drawOneData(ctx, name, currData, x, y);
+			drawOneData(ctx, name, currData, x, y + 32);
+			drawOneData(ctx, name, currData, x, y + 64);
+			drawOneData(ctx, name, currData, x, y + 96);
+			drawOneData(ctx, name, currData, x, y + 128);
+
+			core.drawIcon(ctx, 'btn1', 330, y);
+
+			// 下方内容：
+			//  记录下场战斗操作
+			//  删除       (考虑数据为0的情况)
+			//  上一页/下一页
+			//  退出
+
+			// 设置快捷键
+
+			// Button y=128
+			core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
+			core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
+			core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
+
+			core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
+			core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
+			core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
+
+			core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
+			core.fillText(ctx, '1', 320, 327, 'white', '18px Verdana');
+			core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
+
+			core.fillText(ctx, '分配快捷键', 70, 365, '#555555', '18px Verdana');
+			core.drawIcon(ctx, 'btn2', 170, 345);
+			core.drawIcon(ctx, 'btn3', 200, 345);
+			core.drawIcon(ctx, 'btn4', 230, 345);
+			core.drawIcon(ctx, 'btn5', 260, 345);
+			core.drawIcon(ctx, 'btn6', 290, 345);
 		}
-
-		actionSet.drawContent = function(){
-			// 画背景，然后
-			drawDataPage(this.page,this);
-		}
-
-
-		//core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
-
-		
-		function drawSetting(ctx) {
-			// let ctx = core.createCanvas('menu',0,0, core.__PIXELS__, core.__PIXELS__, 180);
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
-			core.clearMap(ctx);
-			core.setAlpha(ctx, 0.85);
-			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
-			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
-			core.setAlpha(ctx, 1);
-
-			// core.strokeRoundRect(ctx, 35, 55, core.__PIXELS__ - 70, 55, 3, "white");
-			// core.fillRoundRect(ctx, 35.5, 56, core.__PIXELS__ - 71, 53, 3, "#555555");
-			// core.ui.fillText(ctx, "设置", 180, 50, 'white', '20px hkbdt');
-			// core.ui.drawTextContent(ctx, settings[settingIndex].text, {
-			// 	left: 40,
-			// 	top: 60,
-			// 	bold: false,
-			// 	color: "white",
-			// 	align: "left",
-			// 	fontSize: 12,
-			// 	maxWidth: 340
-			// });
-			// for (let i = 0, l = settings.length; i < l; i++) { drawSetting_drawOne(i, ctx); }
-			// core.ui.fillText(ctx, "--常用设置--", 40, 130, '#FFE4B5', '16px Verdana');
-			// core.ui.fillText(ctx, '[退出]', 340, 375, '#FFE4B5', '14px Verdana');
-			//drawSettingSelector();
-		}
+		 
 	}
 }
