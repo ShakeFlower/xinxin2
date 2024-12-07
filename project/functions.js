@@ -397,7 +397,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	}
 	// 衰弱
 	if ((core.enemys.hasSpecial(special, 13) || core.enemys.hasSpecial(special, 87)) && turn >= 5) {
-		core.setFlag('weakV', (enemy.damage || 1));
+		core.setFlag('weakValue', (enemy.damage || 1));
 		core.triggerDebuff('get', 'weak');
 	}
 	// 诅咒
@@ -1628,9 +1628,39 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 毒衰咒效果的获得与解除
 	// action：获得还是解除；'get'表示获得，'remove'表示解除
 	// type：一个数组表示获得了哪些毒衰咒效果；poison, weak，curse
+
+	// type改为字符串 不允许是数组
+
+	// 疑似老版本就没处理这个问题
+	if (action === 'get') {
+		if (type === 'poison') {
+			core.setFlag('poison', true);
+			core.control.triggerDebuff('remove','weak');
+		} else if (action === 'weak') {
+			core.control.triggerDebuff('remove','poison');
+			core.setFlag('weak', true);
+			// flag:weakValue的值由外部预先设置好
+			const weakValue = core.getFlag('weakValue', 0);
+			core.addStatus('atk', -weakValue);
+			core.addStatus('def', -weakValue);
+		}
+	} else if (action === 'remove') {
+		if (type === 'poison') {
+			core.setFlag('poison', false);
+		} else if (action === 'weak') {
+			core.setFlag('weak', false);
+			const weakValue = core.getFlag('weakValue', 0);
+			core.addStatus('atk', weakValue);
+			core.addStatus('def', weakValue);
+			core.setFlag('weakValue', 0);
+		}
+	}
+
+	/**
 	if (!(type instanceof Array)) type = [type];
 
 	if (action == 'get') {
+
 		if (core.inArray(type, 'poison') && !core.hasFlag("poison") && (flags.bugFix || !core.hasFlag('weak'))) {
 			// 获得毒效果
 			core.setFlag('poison', true);
@@ -1677,6 +1707,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.setFlag("curse", false);
 		}
 	}
+	*/
 },
         "updateStatusBar": function () {
 	// 更新状态栏

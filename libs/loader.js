@@ -42,7 +42,9 @@ loader.prototype._load_sync = function (callback) {
             })
         })
     });
+    console.time(2);
     this._loadFonts();
+    console.timeEnd(2);
 }
 
 loader.prototype._load_async = function (callback) {
@@ -97,6 +99,7 @@ loader.prototype._load_async = function (callback) {
 // 加载字体文件
 loader.prototype._loadFonts = async function () {
     try {
+        console.time(1);
         const fontFileList = [new FontFace(
             "hkbdt",
             "url(project/fonts/hkbdt.ttf)",
@@ -112,6 +115,7 @@ loader.prototype._loadFonts = async function () {
             await fontFile.load();
             document.fonts.add(fontFile);
         }
+        console.timeEnd(1);
     }
     catch (error) {
         console.log(error + ",load fonts failed!")

@@ -5080,9 +5080,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 本场战斗是否达成智能施法成就的完成条件 */
 			smartCast = false;
 
+			//todolist:weakV疑似weakValue 待确认
 			constructor() {
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
-					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakV', 0));
+					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakValue', 0));
 				/** 一管气息的容量 */
 				this.permana = this.manamax / 6;
 				/** 本次攻击的状态 
@@ -5925,8 +5926,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
 					break;
 				case 'weak':
+					core.setFlag('weakValue', hero.weakPoint); // 先获得衰弱点数再执行衰弱效果
 					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
-					core.setFlag('weakV', hero.weakPoint);
 					break;
 			}
 			core.setFlag('battleSpeed', (() => {
@@ -7305,11 +7306,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawContent() {
 				drawSetting(ctx);
 				const [x, y] = [64, 128];
-				const maxIndex = Math.min((this.page + 1) * this.rowCount, this.actionList.length - 1);		
+				const l = this.actionList.length;
+				const maxIndex = Math.min((this.page + 1) * this.rowCount, l - 1);		
 				let j = 0;
 				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
 					drawOneData(ctx, this.targetList[i], this.actionList[i], x, y + 32 * (j++));
 				}
+				if (l === 0) core.fillText(ctx, `还没有设置预设技能数据\n点击“设置”后和敌人战斗来添加数据！`,
+					200, 200, 'white', '18px Verdana');
 				core.fillText(ctx, this.page, 320, 327, 'white', '18px Verdana');
 				this.btnList.forEach((button) => { button.draw(); })
 			}
