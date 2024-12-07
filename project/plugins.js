@@ -1300,67 +1300,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	}
 },
-    "drawLight": function () {
-
-		// 绘制灯光/漆黑层效果。调用方式 core.plugin.drawLight(...)
-		// 【参数说明】
-		// name：必填，要绘制到的画布名；可以是一个系统画布，或者是个自定义画布；如果不存在则创建
-		// color：可选，只能是一个0~1之间的数，为不透明度的值。不填则默认为0.9。
-		// lights：可选，一个数组，定义了每个独立的灯光。
-		//        其中每一项是三元组 [x,y,r] x和y分别为该灯光的横纵坐标，r为该灯光的半径。
-		// lightDec：可选，0到1之间，光从多少百分比才开始衰减（在此范围内保持全亮），不设置默认为0。
-		//        比如lightDec为0.5代表，每个灯光部分内圈50%的范围全亮，50%以后才开始快速衰减。
-		// 【调用样例】
-		// core.plugin.drawLight('curtain'); // 在curtain层绘制全图不透明度0.9，等价于更改画面色调为[0,0,0,0.9]。
-		// core.plugin.drawLight('ui', 0.95, [[25,11,46]]); // 在ui层绘制全图不透明度0.95，其中在(25,11)点存在一个半径为46的灯光效果。
-		// core.plugin.drawLight('test', 0.2, [[25,11,46,0.1]]); // 创建一个test图层，不透明度0.2，其中在(25,11)点存在一个半径为46的灯光效果，灯光中心不透明度0.1。
-		// core.plugin.drawLight('test2', 0.9, [[25,11,46],[105,121,88],[301,221,106]]); // 创建test2图层，且存在三个灯光效果，分别是中心(25,11)半径46，中心(105,121)半径88，中心(301,221)半径106。
-		// core.plugin.drawLight('xxx', 0.3, [[25,11,46],[105,121,88,0.2]], 0.4); // 存在两个灯光效果，它们在内圈40%范围内保持全亮，40%后才开始衰减。
-		this.drawLight = function (name, color, lights, lightDec) {
-
-			// 清空色调层；也可以修改成其它层比如animate/weather层，或者用自己创建的canvas
-			var ctx = core.getContextByName(name);
-			if (ctx == null) {
-				if (typeof name == 'string')
-					ctx = core.createCanvas(name, 0, 0, core.__PIXELS__, core.__PIXELS__, 98);
-				else return;
-			}
-
-			ctx.mozImageSmoothingEnabled = false;
-			ctx.webkitImageSmoothingEnabled = false;
-			ctx.msImageSmoothingEnabled = false;
-			ctx.imageSmoothingEnabled = false;
-
-			core.clearMap(name);
-			// 绘制色调层，默认不透明度
-			if (color == null) color = 0.9;
-			ctx.fillStyle = "rgba(0,0,0," + color + ")";
-			ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-			lightDec = core.clamp(lightDec, 0, 1);
-
-			// 绘制每个灯光效果
-			ctx.globalCompositeOperation = 'destination-out';
-			lights.forEach(function (light) {
-				// 坐标，半径，中心不透明度
-				var x = light[0],
-					y = light[1],
-					r = light[2];
-				// 计算衰减距离
-				var decDistance = parseInt(r * lightDec);
-				// 正方形区域的直径和左上角坐标
-				var grd = ctx.createRadialGradient(x, y, decDistance, x, y, r);
-				grd.addColorStop(0, "rgba(0,0,0,1)");
-				grd.addColorStop(1, "rgba(0,0,0,0)");
-				ctx.beginPath();
-				ctx.fillStyle = grd;
-				ctx.arc(x, y, r, 0, 2 * Math.PI);
-				ctx.fill();
-			});
-			ctx.globalCompositeOperation = 'source-over';
-			// 可以在任何地方（如afterXXX或自定义脚本事件）调用函数，方法为  core.plugin.xxx();
-		}
-	},
     "shop": function () {
 		// 【全局商店】相关的功能
 		// 
@@ -2094,409 +2033,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "enemyLevel": function () {
-		// 此插件将提供怪物手册中的怪物境界显示
-		// 使用此插件需要先给每个怪物定义境界，方法如下：
-		// 点击怪物的【配置表格】，找到“【怪物】相关的表格配置”，然后在【名称】仿照增加境界定义：
-		/*
-		 "level": {
-			  "_leaf": true,
-			  "_type": "textarea",
-			  "_string": true,
-			  "_data": "境界"
-		 },
-		 */
-		// 然后保存刷新，可以看到怪物的属性定义中出现了【境界】。再开启本插件即可。
-
-		// 是否开启本插件，默认禁用；将此改成 true 将启用本插件。
-		var __enable = false;
-		if (!__enable) return;
-
-		// 这里定义每个境界的显示颜色；可以写'red', '#RRGGBB' 或者[r,g,b,a]四元数组
-		var levelToColors = {
-			"萌新一阶": "red",
-			"萌新二阶": "#FF0000",
-			"萌新三阶": [255, 0, 0, 1],
-		};
-
-		// 复写 _drawBook_drawName
-		var originDrawBook = core.ui._drawBook_drawName;
-		core.ui._drawBook_drawName = function (index, enemy, top, left, width) {
-			// 如果没有境界，则直接调用原始代码绘制
-			if (!enemy.level) return originDrawBook.call(core.ui, index, enemy, top, left, width);
-			// 存在境界，则额外进行绘制
-			core.setTextAlign('ui', 'center');
-			if (enemy.specialText.length == 0) {
-				core.fillText('ui', enemy.name, left + width / 2,
-					top + 27, '#DDDDDD', this._buildFont(17, true));
-				core.fillText('ui', enemy.level, left + width / 2,
-					top + 51, core.arrayToRGBA(levelToColors[enemy.level] || '#DDDDDD'), this._buildFont(14, true));
-			} else {
-				core.fillText('ui', enemy.name, left + width / 2,
-					top + 20, '#DDDDDD', this._buildFont(17, true), width);
-				switch (enemy.specialText.length) {
-					case 1:
-						core.fillText('ui', enemy.specialText[0], left + width / 2,
-							top + 38, core.arrayToRGBA((enemy.specialColor || [])[0] || '#FF6A6A'),
-							this._buildFont(14, true), width);
-						break;
-					case 2:
-						// Step 1: 计算字体
-						var text = enemy.specialText[0] + "  " + enemy.specialText[1];
-						core.setFontForMaxWidth('ui', text, width, this._buildFont(14, true));
-						// Step 2: 计算总宽度
-						var totalWidth = core.calWidth('ui', text);
-						var leftWidth = core.calWidth('ui', enemy.specialText[0]);
-						var rightWidth = core.calWidth('ui', enemy.specialText[1]);
-						// Step 3: 绘制
-						core.fillText('ui', enemy.specialText[0], left + (width + leftWidth - totalWidth) / 2,
-							top + 38, core.arrayToRGBA((enemy.specialColor || [])[0] || '#FF6A6A'));
-						core.fillText('ui', enemy.specialText[1], left + (width + totalWidth - rightWidth) / 2,
-							top + 38, core.arrayToRGBA((enemy.specialColor || [])[1] || '#FF6A6A'));
-						break;
-					default:
-						core.fillText('ui', '多属性...', left + width / 2,
-							top + 38, '#FF6A6A', this._buildFont(14, true), width);
-				}
-				core.fillText('ui', enemy.level, left + width / 2,
-					top + 56, core.arrayToRGBA(levelToColors[enemy.level] || '#DDDDDD'), this._buildFont(14, true));
-			}
-		}
-
-		// 也可以复写其他的属性颜色如怪物攻防等，具体参见下面的例子的注释部分
-		core.ui._drawBook_drawRow1 = function (index, enemy, top, left, width, position) {
-			// 绘制第一行
-			core.setTextAlign('ui', 'left');
-			var b13 = this._buildFont(13, true),
-				f13 = this._buildFont(13, false);
-			var col1 = left,
-				col2 = left + width * 9 / 25,
-				col3 = left + width * 17 / 25;
-			core.fillText('ui', '生命', col1, position, '#DDDDDD', f13);
-			core.fillText('ui', core.formatBigNumber(enemy.hp || 0), col1 + 30, position, /*'red' */ null, b13);
-			core.fillText('ui', '攻击', col2, position, null, f13);
-			core.fillText('ui', core.formatBigNumber(enemy.atk || 0), col2 + 30, position, /* '#FF0000' */ null, b13);
-			core.fillText('ui', '防御', col3, position, null, f13);
-			core.fillText('ui', core.formatBigNumber(enemy.def || 0), col3 + 30, position, /* [255, 0, 0, 1] */ null, b13);
-		}
-
-
-	},
-    "dynamicHp": function () {
-		// 此插件允许人物血量动态进行变化
-		// 原作：Fux2（老黄鸡）
-
-		// 是否开启本插件，默认禁用；将此改成 true 将启用本插件。
-		var __enable = false;
-		if (!__enable) return;
-
-		var speed = 0.05; // 动态血量变化速度，越大越快。
-
-		var _currentHp = null;
-		var _lastStatus = null;
-		var _check = function () {
-			if (_lastStatus != core.status.hero) {
-				_lastStatus = core.status.hero;
-				_currentHp = core.status.hero.hp;
-			}
-		}
-
-		core.registerAnimationFrame('dynamicHp', true, function () {
-			_check();
-			if (core.status.hero.hp != _currentHp) {
-				var dis = (_currentHp - core.status.hero.hp) * speed;
-				if (Math.abs(dis) < 2) {
-					_currentHp = core.status.hero.hp;
-				} else {
-					_currentHp -= dis;
-				}
-				core.setStatusBarInnerHTML('hp', _currentHp);
-			}
-		});
-	},
-    "multiHeros": function () {
-		// 多角色插件
-		// Step 1: 启用本插件
-		// Step 2: 定义每个新的角色各项初始数据（参见下方注释）
-		// Step 3: 在游戏中的任何地方都可以调用 `core.changeHero()` 进行切换；也可以 `core.changeHero(1)` 来切换到某个具体的角色上
-
-		// 是否开启本插件，默认禁用；将此改成 true 将启用本插件。
-		var __enable = false;
-		if (!__enable) return;
-
-		// 在这里定义全部的新角色属性
-		// 请注意，在这里定义的内容不会多角色共用，在切换时会进行恢复。
-		// 你也可以自行新增或删除，比如不共用金币则可以加上"money"的初始化，不共用道具则可以加上"items"的初始化，
-		// 多角色共用hp的话则删除hp，等等。总之，不共用的属性都在这里进行定义就好。
-		var hero1 = {
-			"floorId": "MT0", // 该角色初始楼层ID；如果共用楼层可以注释此项
-			"image": "brave.png", // 角色的行走图名称；此项必填不然会报错
-			"name": "1号角色",
-			"lv": 1,
-			"hp": 10000, // 如果HP共用可注释此项
-			"atk": 1000,
-			"def": 1000,
-			"mdef": 0,
-			// "money": 0, // 如果要不共用金币则取消此项注释
-			// "exp": 0, // 如果要不共用经验则取消此项注释
-			"loc": { "x": 0, "y": 0, "direction": "up" }, // 该角色初始位置；如果共用位置可注释此项
-			"items": {
-				"tools": {}, // 如果共用消耗道具（含钥匙）则可注释此项
-				// "constants": {}, // 如果不共用永久道具（如手册）可取消注释此项
-				"equips": {}, // 如果共用在背包的装备可注释此项
-			},
-			"equipment": [], // 如果共用装备可注释此项；此项和上面的「共用在背包的装备」需要拥有相同状态，不然可能出现问题
-		};
-		// 也可以类似新增其他角色
-		// 新增的角色，各项属性共用与不共用的选择必须和上面完全相同，否则可能出现问题。
-		// var hero2 = { ...
-
-		var heroCount = 2; // 包含默认角色在内总共多少个角色，该值需手动修改。
-
-		this.initHeros = function () {
-			core.setFlag("hero1", core.clone(hero1)); // 将属性值存到变量中
-			// core.setFlag("hero2", core.clone(hero2)); // 更多的角色也存入变量中；每个定义的角色都需要新增一行
-
-			// 检测是否存在装备
-			if (hero1.equipment) {
-				if (!hero1.items || !hero1.items.equips) {
-					alert('多角色插件的equipment和道具中的equips必须拥有相同状态！');
-				}
-				// 存99号套装为全空
-				var saveEquips = core.getFlag("saveEquips", []);
-				saveEquips[99] = [];
-				core.setFlag("saveEquips", saveEquips);
-			} else {
-				if (hero1.items && hero1.items.equips) {
-					alert('多角色插件的equipment和道具中的equips必须拥有相同状态！');
-				}
-			}
-		}
-
-		// 在游戏开始注入initHeros
-		var _startGame_setHard = core.events._startGame_setHard;
-		core.events._startGame_setHard = function () {
-			_startGame_setHard.call(core.events);
-			core.initHeros();
-		}
-
-		// 切换角色
-		// 可以使用 core.changeHero() 来切换到下一个角色
-		// 也可以 core.changeHero(1) 来切换到某个角色（默认角色为0）
-		this.changeHero = function (toHeroId) {
-			var currHeroId = core.getFlag("heroId", 0); // 获得当前角色ID
-			if (toHeroId == null) {
-				toHeroId = (currHeroId + 1) % heroCount;
-			}
-			if (currHeroId == toHeroId) return;
-
-			var saveList = Object.keys(hero1);
-
-			// 保存当前内容
-			var toSave = {};
-			// 暂时干掉 drawTip 和 音效，避免切装时的提示
-			var _drawTip = core.ui.drawTip;
-			core.ui.drawTip = function () { };
-			var _playSound = core.control.playSound;
-			core.control.playSound = function () { }
-			// 记录当前录像，因为可能存在换装问题
-			core.clearRouteFolding();
-			var routeLength = core.status.route.length;
-			// 优先判定装备
-			if (hero1.equipment) {
-				core.items.quickSaveEquip(100 + currHeroId);
-				core.items.quickLoadEquip(99);
-			}
-
-			saveList.forEach(function (name) {
-				if (name == 'floorId') toSave[name] = core.status.floorId; // 楼层单独设置
-				else if (name == 'items') {
-					toSave.items = core.clone(core.status.hero.items);
-					Object.keys(toSave.items).forEach(function (one) {
-						if (!hero1.items[one]) delete toSave.items[one];
-					});
-				} else toSave[name] = core.clone(core.status.hero[name]); // 使用core.clone()来创建新对象
-			});
-
-			core.setFlag("hero" + currHeroId, toSave); // 将当前角色信息进行保存
-			var data = core.getFlag("hero" + toHeroId); // 获得要切换的角色保存内容
-
-			// 设置角色的属性值
-			saveList.forEach(function (name) {
-				if (name == "floorId");
-				else if (name == "items") {
-					Object.keys(core.status.hero.items).forEach(function (one) {
-						if (data.items[one]) core.status.hero.items[one] = core.clone(data.items[one]);
-					});
-				} else {
-					core.status.hero[name] = core.clone(data[name]);
-				}
-			});
-			// 最后装上装备
-			if (hero1.equipment) {
-				core.items.quickLoadEquip(100 + toHeroId);
-			}
-
-			core.ui.drawTip = _drawTip;
-			core.control.playSound = _playSound;
-			core.status.route = core.status.route.slice(0, routeLength);
-
-			// 插入事件：改变角色行走图并进行楼层切换
-			var toFloorId = data.floorId || core.status.floorId;
-			var toLoc = data.loc || core.status.hero.loc;
-			core.insertAction([
-				{ "type": "setHeroIcon", "name": data.image || "hero.png" }, // 改变行走图
-				// 同层则用changePos，不同层则用changeFloor；这是为了避免共用楼层造成触发eachArrive
-				toFloorId != core.status.floorId ? {
-					"type": "changeFloor",
-					"floorId": toFloorId,
-					"loc": [toLoc.x, toLoc.y],
-					"direction": toLoc.direction,
-					"time": 0 // 可以在这里设置切换时间
-				} : { "type": "changePos", "loc": [toLoc.x, toLoc.y], "direction": toLoc.direction }
-				// 你还可以在这里执行其他事件，比如增加或取消跟随效果
-			]);
-			core.setFlag("heroId", toHeroId); // 保存切换到的角色ID
-		}
-	},
-    "itemCategory": function () {
-		// 物品分类插件。此插件允许你对消耗道具和永久道具进行分类，比如标记「宝物类」「剧情道具」「药品」等等。
-		// 使用方法：
-		// 1. 启用本插件
-		// 2. 在下方数组中定义全部的物品分类类型
-		// 3. 点击道具的【配置表格】，找到“【道具】相关的表格配置”，然后在【道具描述】之后仿照增加道具的分类：
-		/*
-		 "category": {
-			  "_leaf": true,
-			  "_type": "textarea",
-			  "_string": true,
-			  "_data": "道具分类"
-		 },
-		 */
-		// （你也可以选择使用下拉框的方式定义每个道具的分类，写法参见上面的cls）
-		// 然后刷新编辑器，就可以对每个物品进行分类了
-
-		// 是否开启本插件，默认禁用；将此改成 true 将启用本插件。
-		var __enable = false;
-		if (!__enable) return;
-
-		// 在这里定义所有的道具分类类型，一行一个
-		var categories = [
-			"宝物类",
-			"辅助类",
-			"技能类",
-			"剧情道具",
-			"增益道具",
-		];
-		// 当前选中的道具类别
-		var currentCategory = null;
-
-		// 重写 core.ui._drawToolbox 以绘制分类类别
-		var _drawToolbox = core.ui._drawToolbox;
-		core.ui._drawToolbox = function (index) {
-			_drawToolbox.call(this, index);
-			core.setTextAlign('ui', 'left');
-			core.fillText('ui', '类别[E]：' + (currentCategory || "全部"), 15, this.PIXEL - 13);
-		}
-
-		// 获得所有应该在道具栏显示的某个类型道具
-		core.ui.getToolboxItems = function (cls) {
-			// 检查类别
-			return Object.keys(core.status.hero.items[cls])
-				.filter(function (id) {
-					return !core.material.items[id].hideInToolbox &&
-						(currentCategory == null || core.material.items[id].category == currentCategory);
-				}).sort();
-		}
-
-		// 注入道具栏的点击事件（点击类别）
-		var _clickToolbox = core.actions._clickToolbox;
-		core.actions._clickToolbox = function (x, y) {
-			if (x >= 0 && x <= this.HSIZE - 4 && y == this.LAST) {
-				drawToolboxCategory();
-				return;
-			}
-			return _clickToolbox.call(core.actions, x, y);
-		}
-
-		// 注入道具栏的按键事件（E键）
-		var _keyUpToolbox = core.actions._keyUpToolbox;
-		core.actions._keyUpToolbox = function (keyCode) {
-			if (keyCode == 69) {
-				// 按E键则打开分类类别选择
-				drawToolboxCategory();
-				return;
-			}
-			return _keyUpToolbox.call(core.actions, keyCode);
-		}
-
-		// ------ 以下为选择道具分类的相关代码 ------ //
-
-		// 关闭窗口时清除分类选择项
-		var _closePanel = core.ui.closePanel;
-		core.ui.closePanel = function () {
-			currentCategory = null;
-			_closePanel.call(core.ui);
-		}
-
-		// 弹出菜单以选择具体哪个分类
-		// 直接使用 core.drawChoices 进行绘制
-		var drawToolboxCategory = function () {
-			if (core.status.event.id != 'toolbox') return;
-			var selection = categories.indexOf(currentCategory) + 1;
-			core.ui.closePanel();
-			core.status.event.id = 'toolbox-category';
-			core.status.event.selection = selection;
-			core.lockControl();
-			// 给第一项插入「全部」
-			core.drawChoices('请选择道具类别', ["全部"].concat(categories));
-		}
-
-		// 选择某一项
-		var _selectCategory = function (index) {
-			core.ui.closePanel();
-			if (index <= 0 || index > categories.length) currentCategory = null;
-			else currentCategory = categories[index - 1];
-			core.openToolbox();
-		}
-
-		var _clickToolBoxCategory = function (x, y) {
-			if (!core.status.lockControl || core.status.event.id != 'toolbox-category') return false;
-
-			if (x < core.actions.CHOICES_LEFT || x > core.actions.CHOICES_RIGHT) return false;
-			var choices = core.status.event.ui.choices;
-			var topIndex = core.actions._getChoicesTopIndex(choices.length);
-			if (y >= topIndex && y < topIndex + choices.length) {
-				_selectCategory(y - topIndex);
-			}
-			return true;
-		}
-
-		// 注入点击事件
-		core.registerAction('onclick', 'toolbox-category', _clickToolBoxCategory, 100);
-
-		// 注入光标跟随事件
-		core.registerAction('onmove', 'toolbox-category', function (x, y) {
-			if (!core.status.lockControl || core.status.event.id != 'toolbox-category') return false;
-			core.actions._onMoveChoices(x, y);
-			return true;
-		}, 100);
-
-		// 注入键盘光标事件
-		core.registerAction('keyDown', 'toolbox-category', function (keyCode) {
-			if (!core.status.lockControl || core.status.event.id != 'toolbox-category') return false;
-			core.actions._keyDownChoices(keyCode);
-			return true;
-		}, 100);
-
-		// 注入键盘按键事件
-		core.registerAction('keyUp', 'toolbox-category', function (keyCode) {
-			if (!core.status.lockControl || core.status.event.id != 'toolbox-category') return false;
-			core.actions._selectChoices(core.status.event.ui.choices.length, keyCode, _clickToolBoxCategory);
-			return true;
-		}, 100);
-
-	},
     "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
@@ -2687,10 +2223,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.btnList.forEach((button) => { button.draw(); })
 			}
 
-			clear(){
-				core.clearMap(this.name);
-			}
-
 			beginListen() {
 				core.registerAction('keyDown', this.name, this.keyEvent, 100);
 				this.btnList.forEach((button) => { button.register(); })
@@ -2699,6 +2231,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			endListen() {
 				core.unregisterAction('keyDown', this.name);
 				this.btnList.forEach((button) => { button.unregister(); })
+			}
+
+			clear(){
+				this.endListen();
+				core.deleteCanvas(this.name);
 			}
 
 			init() {
@@ -4128,6 +3665,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			//this._realLoadEquip(equipType, null, unloadEquipId, callback);
 		}
 
+		items.prototype.quickLoadEquip = function (index) {
+			if (index === 1) {
+				return;
+			}
+			core.setFlag('preSetIndex',index);
+			core.drawTip("已切换" + index + "号预设技能方案");
+		}
 	},
     "自定义设置": function () {
 		// 在此增加新插件
@@ -5080,7 +4624,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/** 本场战斗是否达成智能施法成就的完成条件 */
 			smartCast = false;
 
-			//todolist:weakV疑似weakValue 待确认
 			constructor() {
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
 					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakValue', 0));
@@ -5125,7 +4668,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								this.freeze++;
 								break;
 							case 2:
-								hero.hp -= Math.round(atkStatus.damage / 4);
+								this.hp -= Math.round(atkStatus.damage / 4);
 								break;
 						}
 						if (enemy.phase++ > 2) enemy.phase = 0;
@@ -5805,8 +5348,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 				if (this.preSetSkillObj.hasOwnProperty(currTurn)) {
 					this.preSetSkillObj[currTurn].forEach((ele) => {
-						console.log(currTurn);
-						console.log(ele);
+						this.execUserAction(ele);
 					})
 				}
 			}
@@ -6580,6 +6122,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const atkStatusH = battle.hero.atkStatus,
 				atkStatusE = battle.enemy.atkStatus;
 			const [hx, hy, ex, ey, px, py] = [355, 152, 60, 166, 245, 225];
+			let currOffset = 0;
 			switch (battle.actor) {
 				case 'hero':
 					if (atkStatusH.frozen) break;
@@ -6587,7 +6130,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
 						break;
 					}
-					let [oex, oey] = [0, 0];
+					let [oex, oey] = [0, 0, 0];
 					const hAnimate = atkStatusH.animate;
 					if (enemyOffsetList.hasOwnProperty(hAnimate)) {
 						currOffset = enemyOffsetList[hAnimate];
@@ -6610,7 +6153,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'enemy':
 					if (atkStatusE.frozen) break;
 					const eid = battle.enemy.id;
-					let [currOffset, ohx, ohy, opx, opy] = [0, 0, 0, 0, 0];
+					let [ohx, ohy, opx, opy] = [0, 0, 0, 0];
 					if (heroOffsetList.hasOwnProperty(eid)) {
 						currOffset = heroOffsetList[eid];
 						[ohx, ohy] = [currOffset.x || 0, currOffset.y || 0];
@@ -6840,13 +6383,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function getPresetSkill(id){
 			let currPreset = {};
 			if (core.isReplaying()) return currPreset;
-			const presetSkill = core.getFlag('presetSkill', {});
-			const hotkeyData = core.getFlag('hotkeyData', 0);
-			if ([2, 3, 4, 5, 6, 7].includes(preSetIndex)) {
-				const ekey = hotkeyData[preSetIndex];
-				if (currPreset.hasOwnProperty(presetSkill)) {
-					currPreset = core.plugin.getActionObj(presetSkill[ekey])
-				}
+			const presetSkill = core.getFlag('presetSkill', {}); // {'redSlime':'xxx','bat':'xxx'}
+			const hotkeyData = core.getFlag('hotkeyData', 0); //{'2':'redSlime'}
+			const preSetIndex = core.getFlag('preSetIndex', 0);
+			if ([2, 3, 4, 5, 6, 7].includes(preSetIndex) && hotkeyData.hasOwnProperty(preSetIndex)) {
+				currPreset = core.plugin.getActionObj(presetSkill[hotkeyData[preSetIndex]])
 			}
 			else if (presetSkill.hasOwnProperty(id)) {
 				currPreset = core.plugin.getActionObj(presetSkill[id]);
@@ -6859,6 +6400,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battle
 		 */
 		function setPresetSkill(battle){
+			console.log(111);
 			let presetSkill = core.getFlag('presetSkill', {});
 			const enemy = battle.enemy;
 			const [id, combo, maxTurn] = [enemy.id, enemy.combo, battle.turn];
@@ -6895,7 +6437,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			else {
 				currPreset = battle.route;
 			}
-			presetSkill[id] = currPreset;
+			console.log(currPreset)
+			if (currPreset.length > 2) {
+				presetSkill[id] = currPreset;
+				core.setFlag('presetSkill', presetSkill);
+				core.playSound('achievement.mp3');
+				core.drawTip('已成功记录技能释放信息！');
+			}
+			else{
+				core.playSound('error.mp3');
+				core.drawTip('当前未录制到技能释放信息！');
+			}
 		}
 
 		/** 查找技能的对应数据
@@ -7185,13 +6737,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	}
 },
     "预设技能": function () {
-		// 在此增加新插件
 
-		//todolist c的图标待补充
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
-			'n': '','c':''
+			'c':'critical'
 		};
 
 		if (false) {
@@ -7203,21 +6753,35 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				'redBat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
 				'zombie':'bs:0s:1h:2M:3b:4F:5k:6R:10F', 
 			};
+			
 			let hotkeyData = {'2':'greenSlime','4':'bat'}
 			core.setFlag('presetSkill', myData);
 			core.setFlag('hotkeyData', hotkeyData);
-			let as = core.plugin.drawActionset();
+			core.lockControl();
+			let as = core.plugin.initPreSetPage();
+			as.end = ()=>{
+				as.clear();
+				core.unlockControl();
+			}
 			as.drawContent();
 			as.beginListen();
-			core.registerAction('ondown','test1',(x,y,px,py)=>{
-				console.log(px);
-				console.log(py);
-			},200);
+		}
+
+		this.test = function () {
+			core.lockControl();
+			let as = core.plugin.initPreSetPage();
+			as.end = () => {
+				as.clear();
+				core.unlockControl();
+			}
+			as.drawContent();
+			as.beginListen();
 		}
 
 		// 变量解释： recordAction 下场战斗是否录制信息
+		// presetSkill 当前保存的预设方案信息
 		// preSetIndex 当前切换到了哪个预设方案
-		// hotkeyData:{'2':'敌人名字' '3':'敌人名字'}
+		// hotkeyData {'2':'敌人名字' '3':'敌人名字'}
 
 		const ctx = 'actionSet';
 		/**
@@ -7233,7 +6797,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
 			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
 			core.setAlpha(ctx, 1);
-			core.fillText(ctx,'预设技能',170,60,'#FFE4B5','20px hkbdt');
+			core.fillText(ctx, '设定快捷键后，按下Alt2~6切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '手机段点击底部工具栏即可。', 40, 80, '#00DDFF', '14px Verdana');
 			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
@@ -7283,7 +6848,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * @extends {MenuBase}
 		 */
-		class ActionSet extends Menu{
+		class PresetMenu extends Menu{
 			constructor(){
 				super(ctx);
 				/** 当前在绘制第几页*/
@@ -7307,15 +6872,30 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				drawSetting(ctx);
 				const [x, y] = [64, 128];
 				const l = this.actionList.length;
-				const maxIndex = Math.min((this.page + 1) * this.rowCount, l - 1);		
+				const maxIndex = Math.min((this.page + 1) * this.rowCount, l);
 				let j = 0;
 				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
 					drawOneData(ctx, this.targetList[i], this.actionList[i], x, y + 32 * (j++));
 				}
-				if (l === 0) core.fillText(ctx, `还没有设置预设技能数据\n点击“设置”后和敌人战斗来添加数据！`,
-					200, 200, 'white', '18px Verdana');
-				core.fillText(ctx, this.page, 320, 327, 'white', '18px Verdana');
+				if (l === 0) {
+					core.fillText(ctx, `还没有设置预设技能数据`,
+						60, 150, 'white', '14px Verdana');
+					core.fillText(ctx, `点击"记录"后和敌人战斗来添加数据！`,
+						60, 180, 'white', '14px Verdana');
+				}
+				if (l > this.rowCount) {
+					core.fillText(ctx, this.page + 1, 320, 328, 'white', '18px Verdana');
+				}
+				this.btnList.get('pageUp').disable = this.rowCount * (this.page + 1) >= l;
+				this.btnList.get('pageDown').disable = this.page === 0;
 				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			// 清空画布
+			clear(){
+				core.deleteCanvas(this.name);
+				core.clearUIEventSelector(0);
+				this.endListen();
 			}
 
 			/**
@@ -7330,10 +6910,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const l = this.actionList.length;
 				if (this.rowCount * (this.page + 1) < l) {
 					this.page++;
-					this.btnList.get('pageDown').disable = false;
-					if (this.rowCount * (this.page + 1) >= l) {
-						this.btnList.get('pageUp').disable = true;
-					}
 					this.drawContent();
 				}
 			}
@@ -7341,10 +6917,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			pageDown() {
 				if (this.page > 0) {
 					this.page--;
-					this.btnList.get('pageUp').disable = false;
-					if (this.page === 0) {
-						this.btnList.get('pageDown').disable = true;
-					}
 					this.drawContent();
 				}
 			}
@@ -7385,6 +6957,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					else hotkeyData[hotkey] = enemyId;
 				}
+				core.setFlag('hotkeyData', hotkeyData);
+				this.drawContent();
 			}
 		}
 
@@ -7398,9 +6972,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
-		this.drawActionset = function(){
+		this.initPreSetPage = function(){
 
-			let actionSet = new ActionSet();
+			let actionSet = new PresetMenu();
 
 			let recordBtn = new Button('record', 64, 308, 145, 24),
 				deleteBtn = new Button('delete', 240, 308, 46, 24),
@@ -7438,7 +7012,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.drawUIEventSelector(0, "winskin.png", x, y + 32 * actionSet.row, w, 32, 181);
 			}
 
-			recordBtn.event = actionSet.beginRecord;
+			recordBtn.event = actionSet.beginRecord.bind(actionSet);;
 			deleteBtn.event = actionSet.deleteData.bind(actionSet);
 			pageDownBtn.event = actionSet.pageDown.bind(actionSet);
 			pageUpBtn.event = actionSet.pageUp.bind(actionSet);
@@ -7455,8 +7029,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 					}
 			}
-
-			pageDownBtn.disable = true;
 
 			actionSet.btnList = new Map([['record', recordBtn], ['delete', deleteBtn], ['pageDown', pageDownBtn],
 			['pageUp', pageUpBtn], ['select', selectBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], 
@@ -7476,11 +7048,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					case 38://Up
 						if (actionSet.row > 0) {
 							actionSet.row--;
+							actionSet.drawContent();
 						}
 						break;
 					case 40://Down
 						if (actionSet.row < actionSet.rowCount - 1) {
 							actionSet.row++;
+							actionSet.drawContent();
 						}
 						break;
 					case 13://Enter
@@ -7491,20 +7065,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					case 46://Delete
 						actionSet.deleteData();
 						break;
-					case 98:
-					case 99:
-					case 100:
-					case 101:
-					case 102: // num 2~6
-						actionSet.setHotKey(keyCode - 96);
+					case 50:
+					case 51:
+					case 52:
+					case 53:
+					case 54: // num 2~6
+						actionSet.setHotKey(keyCode - 48);
 						break;
 				}
 			}
 			return actionSet;
 		}	 
 	},
-    "楼传转移": function () {
-		
-
-}
+    "楼传转移": undefined
 }

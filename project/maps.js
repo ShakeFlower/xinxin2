@@ -388,6 +388,7 @@ var maps_90f36752_8815_4be8_b32b_d7fad1d0542e =
 	"488": {"cls":"npcs","id":"N488"},
 	"489": {"cls":"npcs","id":"N489"},
 	"490": {"cls":"items","id":"I490"},
+	"491": {"cls":"items","id":"critical"},
 	"991": {"cls":"terrains","id":"T991"},
 	"992": {"cls":"terrains","id":"T992"},
 	"993": {"cls":"terrains","id":"T993"},

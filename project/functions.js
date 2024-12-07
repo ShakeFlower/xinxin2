@@ -1251,7 +1251,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		return;
 
 	// Alt+0~9，快捷换上套装
-	if (0 && altKey && keyCode >= 48 && keyCode <= 57) {
+	if (altKey && keyCode >= 48 && keyCode <= 57) {
 		core.items.quickLoadEquip(keyCode - 48);
 		return;
 	}

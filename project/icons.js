@@ -442,7 +442,8 @@ var icons_4665ee12_3a1f_44a4_bea3_0fccba634dc1 =
 		"I451": 93,
 		"iceCube": 4,
 		"I453": 94,
-		"I490": 95
+		"I490": 95,
+		"critical": 96
 	},
 	"autotile": {
 		"autotile": 0,

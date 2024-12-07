@@ -2636,5 +2636,10 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"canUseItemEffect": "true",
 		"text": "调节游戏设置",
 		"useItemEffect": "core.plugin.changeSetting();"
+	},
+	"critical": {
+		"cls": "items",
+		"name": "新物品",
+		"canUseItemEffect": "true"
 	}
 }
