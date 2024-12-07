@@ -223,6 +223,16 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	}
 
 
+	// 所有激活过的楼层传送点 allflyPoints
+	const flyPoints = corfe.getFlag('allflyPoints',null);
+	// 首先思考一下怎么实现
+	// 首先，allflyPoints应当记录非地上层的所有传送点{'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
+	// {'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
+	// 每手动走一次传送点，对应的hasGet设为True
+	// 每传过来一次 显然currFrom 要变化 不论是楼传进来还是走进来
+	// 同层传送 取currFrom的下一项
+	// 走楼梯传不存在loc 直存在stair 需要研究它怎么获取楼梯的
+
 	// 平面塔模式
 	var stair = null,
 		loc = null;
@@ -249,6 +259,11 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		if (core.status.maps[fromId].title == core.status.maps[toId].title || toId.indexOf('b') >= 0 || (0 && flags.bugFix && core.floorIds.indexOf(toId + "b") >= 0)) {
 			if (core.status.maps[toId].underGround) stair = "upFloor";
 			else stair = "downFloor";
+		}
+
+		// 同层传送
+		if (fromIndex === toIndex){
+
 		}
 	}
 

@@ -4073,7 +4073,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 	},
     "切装事件": function () {
-		// 在此增加新插件
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
 			if (!this.canEquip(equipId, true)) {
@@ -4775,7 +4774,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 	},
     "动态火焰": function () {
-	// 在此增加新插件
 
 	////// canvas创建 //////
 	this.createCanvasWithWidth = function (name, x, y, width, height, z) {
@@ -7185,7 +7183,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	}
 },
-	"预设技能": function () {
+    "预设技能": function () {
 		// 在此增加新插件
 
 		//todolist c的图标待补充
@@ -7302,8 +7300,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				/** 当前在哪一行*/
 				this.row = 0;
 
-				// 当前绘制第 rowCount*page 到rowCount*page+rowCount-1个
-				// 选中第rowCount*page+index个
 			}
 
 			drawContent() {
@@ -7377,9 +7373,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			setHotKey(hotkey){
 				const currDataIndex = this.rowCount * this.page + this.row;
-				/**
- 				 * @type {Object<string,string>}
- 				 */
 				const hotkeyData = core.getFlag('hotkeyData', {});
 				if (currDataIndex >= 0 && currDataIndex < this.targetList.length) {
 					const enemyId = this.targetList[currDataIndex];
@@ -7505,5 +7498,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			return actionSet;
 		}	 
-	}
+	},
+    "楼传转移": function () {
+		
+
+}
 }
