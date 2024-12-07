@@ -2693,6 +2693,79 @@ declare class icons {
     getTilesetOffset(id?: string): void
 }
 
+/** 按钮基类 */
+declare class ButtonBase {
+    /**
+     * 构造函数
+     * @param name 按钮名字，用于注册事件
+     * @param x 按钮左上角的x坐标
+     * @param y 按钮左上角的y坐标
+     * @param w 按钮的宽度
+     * @param h 按钮的高度
+     */
+    constructor(name: string, x: number, y: number, w: number, h: number): ButtonBase
+    /** 按钮名称 */
+    name: string;
+    /** 按钮左上角的x坐标 */
+    x: number;
+    /** 按钮左上角的y坐标 */
+    y: number;
+    /** 按钮的宽度 */
+    w: number;
+    /** 按钮的高度 */
+    h: number;
+    /** 按钮是否未激活（不绘制，不监听） */
+    disable: boolean;
+    /** 绘制按钮 */
+    _draw: Function
+    /** 点击按钮时触发的事件 */
+    event: Function
+
+    /** 绘制按钮 */
+    draw(): void
+
+    /** 注册按钮的点击事件 */
+    register(): void
+
+    /** 取消注册按钮的点击事件 */
+    unregister(): void
+}
+
+/** 自绘窗口基类 */
+declare class MenuBase {
+    /**
+     * 构造函数
+     */
+    constructor(name: string): MenuBase
+
+    /** 页面名称,将用作画布名称 */
+    name: string
+    /** 本页面的按钮列表 */
+    btnList: Map<string, Button>
+    /** 本页面注册的按键事件 */
+    keyEvent: Function
+    /** 本页面关闭时触发的事件 */
+    end: Function
+
+    /** 重绘页面和按钮 */
+    drawContent(): void
+
+    /** 清空页面绘制 */
+    clear(): void
+
+    /** 开始监听页面按键事件和按钮列表中的点击事件 */
+    beginListen(): void
+
+    /** 结束所有按键事件和点击事件的监听 */
+    endListen(): void
+
+    /** 初始化绘制页面 */
+    init(): void
+
+    /** 跳转至其它页面，清空画布和监听事件 */
+    jumpOff(): void
+}
+
 type core = {
     /** 地图可视部分大小 */
     __SIZE__: number;

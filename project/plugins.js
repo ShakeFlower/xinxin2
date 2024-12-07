@@ -2638,8 +2638,79 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "动画": function () {
-		// 在此增加新插件
+    "工具": function () {
+		// 工具函数和类
+
+		/**
+		 * @type {ButtonBase}
+		 */
+		this.Button = class{
+			constructor(name, x, y, w, h) {
+				this.name = name;
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.disable = false;
+
+				this._draw = () => {};
+				this.event = (x, y, px, py) => {};
+			}
+
+			draw(){
+				if (this.disable) return;
+				this._draw();
+			}
+
+			register() {
+				core.registerAction('onclick', this.name, (x, y, px, py) => {
+					if (this.disable) return;
+					if (px >= this.x && px <= this.x + this.w && py > this.y && py <= this.y + this.h)
+						this.event(x, y, px, py);
+				}, 100);
+			}
+
+			unregister() {
+				core.unregisterAction('onclick', this.name);
+			}
+		}
+
+		this.Menu = class{
+			constructor(name) {
+				this.name = name;
+				this.btnList = new Map();
+				this.keyEvent = () => { };
+				this.end = () => { core.clearMap(this.name); };
+			}
+
+			drawContent(){
+				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			clear(){
+				core.clearMap(this.name);
+			}
+
+			beginListen() {
+				core.registerAction('keyDown', this.name, this.keyEvent, 100);
+				this.btnList.forEach((button) => { button.register(); })
+			}
+
+			endListen() {
+				core.unregisterAction('keyDown', this.name);
+				this.btnList.forEach((button) => { button.unregister(); })
+			}
+
+			init() {
+				this.beginListen();
+				this.drawContent();
+			}
+
+			jumpOff() {
+				this.endListen();
+				this.clear();
+			}
+		}
 
 		this.dice = function (x) {
 			if (!Number.isInteger(x) || x < 0) return 0;
@@ -2704,6 +2775,63 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				"callback": callback
 			});
 			return id;
+		}
+
+		////// 深拷贝一个对象，含Set和Map //////
+		utils.prototype.clone = function (data, filter, recursion) {
+			if (!core.isset(data)) return null;
+			// date
+			if (data instanceof Date) {
+				var copy = new Date();
+				copy.setTime(data.getTime());
+				return copy;
+			}
+			// array
+			if (data instanceof Array) {
+				var copy = [];
+				for (var i in data) {
+					if (!filter || filter(i, data[i]))
+						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
+				}
+				return copy;
+			}
+			// 函数
+			if (data instanceof Function) {
+				return data;
+			}
+
+			// Set
+			// 对Set而言，过滤器填入value即可
+			if (data instanceof Set) {
+				var copy = new Set();
+				data.forEach(value => {
+					if (!filter || filter(value))
+						copy.add(core.clone(value, recursion ? filter : null, recursion));
+				});
+				return copy;
+			}
+
+			// Map
+			if (data instanceof Map) {
+				var copy = new Map();
+				data.forEach((value, key) => {
+					if (!filter || filter(key, value))
+						copy.set(core.clone(key, recursion ? filter : null, recursion),
+					core.clone(value, recursion ? filter : null, recursion));
+				});
+				return copy;
+			}
+
+			// object
+			if (data instanceof Object) {
+				var copy = {};
+				for (var i in data) {
+					if (data.hasOwnProperty(i) && (!filter || filter(i, data[i])))
+						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
+				}
+				return copy;
+			}
+			return data;
 		}
 
 		////// 检查并执行领域、夹击、阻击事件 //////
@@ -4810,206 +4938,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 },
     "回合制战斗": function () {
 
-		async function battleByTurn(enemyId, x, y) {
-			let battle = new Battle(enemyId, x, y);
-
-			core.lockControl();
-
-			beginListen(battle);
-			drawBattleUI(battle);
-			drawSkillButton(battle);
-			drawSpeedButton(battle);
-			let count = 0;
-			core.plugin.registerAnimationInterval('battleIcon', 200, () => {
-				drawBattleIcon(battle, count++);
-			});
-
-			while (true) {
-				if (battle.status !== 'pending') break;
-				await Promise.race([
-					new Promise((res) => { setTimeout(res, battle.waitTime); }),
-					new Promise((res) => {
-						core.unregisterAction('keyDown', 'quit');
-						core.unregisterAction('ondown', 'quit');
-						core.registerAction('keyDown', 'quit', (keyCode) => {
-							if (keyCode === 8 || keyCode === 81) {	//backSpace & Q
-								battle.execUserAction('q');
-								res();
-							}
-						}, 100);
-						core.registerAction('ondown', 'quit', (x, y, px, py) => {
-							if (35 <= px && px <= 105 && 260 <= py && py <= 270) {
-								battle.execUserAction('q');
-								res();
-							} //撤退键的坐标
-						}, 100);
-					})
-				]);
-				battle.recordDelayedAction();
-				battle.nextTurn();
-				battle.checkEnd();
-				battle.formatActionList();
-				// 此处更新动画
-				drawBattleUI(battle);
-				if (battle.speed !== 'quick') drawBattleAnimate(battle);
-				drawSkillButton(battle); // 每回合过后技能已释放，需要更新按钮的状态
-				battle.updateActor();
-				if (battle.status === 'quit') break;
-			}
-			if (battle.speed !== 'quick') {
-				// 获胜时，绘制底边栏
-				let h = 0;
-				if (battle.status === 'win') core.plugin.registerAnimationInterval('showBottomBar', 10, () => {
-					if (h < 40) h += 4;
-					drawBattleBottomBar(battle, h);
-				});
-				//等待500ms后擦除画布
-				await new Promise((res) => { setTimeout(res, 500) });
-			}
-
-			clearCanvasAndEvent();
-			updateHeroStatus(battle);
-			afterBattleEvent(battle, x, y);
-			core.unlockControl();
-		}
-
-		/**
-		 * 录像模式下执行回合制战斗
-		 * @param {string} enemyId 
-		 * @param {number} x 
-		 * @param {number} y 
-		 */
-		function battleByTurn_replaying(enemyId, x, y) {
-			let battle = new Battle(enemyId, x, y);
-			const nextReplay = core.status.replay.toReplay.length > 0 ? core.status.replay.toReplay[0] : '';
-			let actionList = core.plugin.getActionObj(nextReplay);
-			while (battle.status === 'pending') {
-				const currTurn = battle.turn;
-				if (actionList.hasOwnProperty(currTurn)) {
-					for (let i = 0, l = actionList[currTurn].length; i < l; i++) {
-						battle.execUserAction(actionList[currTurn][i]);
-					}
-				}
-				if (battle.status === 'quit') break;
-				battle.nextTurn();
-				battle.checkEnd();
-				battle.updateActor();
-			}
-			updateHeroStatus(battle);
-			afterBattleEvent(battle, x, y);
-		}
-
-		/**
-		 * 同步勇士的生命值，毒衰等状态
-		 * @param {Battle} battle 
-		 */
-		function updateHeroStatus(battle) {
-			const hero = battle.hero;
-			if (!core.isReplaying()) {
-				const route = battle.route;
-				if (route.length > 3) core.status.route.push(route);
-			}
-			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
-			switch (hero.status) {
-				case 'poisoned':
-					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
-					break;
-				case 'weak':
-					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
-					core.setFlag('weakV', hero.weakPoint);
-					break;
-			}
-			core.setFlag('battleSpeed', (() => {
-				if (battle.speed === 'quick') return 0;
-				else if (battle.speed === 'normal') return 1;
-				else return 2;
-			})());
-			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
-			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
-			switch (battle.status) {
-				case 'win':
-					const info = battle.enemy.info,
-						money = info.money,
-						exp = info.exp;
-
-					core.status.hero.hp = hero.hp;
-					core.status.hero.mana = hero.mana;
-					core.status.hero.hpmax = hero.hpmax;
-					core.status.hero.money += money;
-					core.status.hero.statistics.money += money;
-					core.status.hero.exp += exp;
-					core.status.hero.statistics.exp += exp;
-					core.status.hero.statistics.battle++;
-
-					break;
-				case 'lose':
-					core.lose();
-					break;
-				case 'quit':
-					core.status.hero.hp = Math.min(hero.hp, core.status.hero.hp);
-					core.status.hero.hpmax = Math.min(hero.hpmax, core.status.hero.hpmax);
-					break;
-			}
-			core.updateStatusBar();
-		}
-
-		/**
-		 * 获得成就，执行战后事件
-		 * @param {Battle} battle
-		 * @param {number} x
-		 * @param {number} y 
-		 */
-		function afterBattleEvent(battle, x, y) {
-			if (battle.status !== 'win') return;
-			const hero = battle.hero,
-				enemy = battle.enemy,
-				id = enemy.id;
-
-			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
-			if (hero.smartCast) core.plugin.getAchievement(38);
-			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
-
-			const blockList = {
-				swordEmperor: 398,
-				goldHornSlime: 400,
-				whiteHornSlime: 403,
-				silverSlime: 407, //白银怪，掉落钱币
-				E384: 385,
-				darkKnight: 225,
-				soldier: 212, // 重生怪
-				redWizard: 11, //炎之身体，变熔岩
-				E382: 374, //寒冰身体，变冰块
-			};
-
-			if (blockList.hasOwnProperty(id)) core.setBlock(blockList[id], x, y);
-			else if (enemy.magicIce) core.setBlock(25, x, y); //掉落魔法冰块
-			else core.removeBlock(x, y, core.status.floorId);
-
-			if (id === 'E335' || id === 'E413') { //烈焰身体，极寒身体
-				for (let x0 = Math.max(1, x - 1); x0 <= Math.min(11, x + 1); x0++) {
-					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
-						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
-							if (id === 'E335') core.setBlock(11, x0, y0);
-							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
-								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
-									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
-						}
-					}
-				}
-			}
-			let todo = [];
-			// 战后事件
-			if (core.status.floorId != null) {
-				core.push(todo, core.floors[core.status.floorId].afterBattle[x + "," + y]);
-			}
-			core.push(todo, enemy.data.afterBattle);
-
-			// 如果事件不为空，将其插入
-			if (todo.length > 0) core.insertAction(todo, x, y);
-		}
-
-		// #endregion
-
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
@@ -5717,7 +5645,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.actor = this.order[this.actIndex];
 
 				/** 加载预设技能列表 */
-				this.actionList = getEnemyAction(enemyId);
+				this.preSetSkillObj = getPresetSkill(enemyId);
 			}
 
 			/** 本回合的行动者行动*/
@@ -5861,7 +5789,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/**
 			 * 读取actionList，检查本回合是否有值（即需要发动技能）
 			 */
-			formatActionList() {
+			execPreSetSkill() {
 				const combo = this.enemy.combo;
 				let currTurn = this.turn;
 				if (combo > 1) {
@@ -5876,8 +5804,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							break;
 					}
 				}
-				if (this.actionList.hasOwnProperty(currTurn)) {
-					this.actionList[currTurn].forEach((ele) => {
+				if (this.preSetSkillObj.hasOwnProperty(currTurn)) {
+					this.preSetSkillObj[currTurn].forEach((ele) => {
 						console.log(currTurn);
 						console.log(ele);
 					})
@@ -5910,6 +5838,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			while (true) {
 				if (battle.status !== 'pending') break;
+				battle.execPreSetSkill(); // 每回合的this.turn更新后，读取该回合的预设技能列表，执行其中的内容
 				await Promise.race([
 					new Promise((res) => { setTimeout(res, battle.waitTime); }),
 					new Promise((res) => {
@@ -5932,7 +5861,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.recordDelayedAction();
 				battle.nextTurn();
 				battle.checkEnd();
-				battle.formatActionList();
 				// 此处更新动画
 				drawBattleUI(battle);
 				if (battle.speed !== 'quick') drawBattleAnimate(battle);
@@ -6025,7 +5953,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.status.hero.statistics.exp += exp;
 					core.status.hero.statistics.battle++;
 					if (!core.isReplaying() && core.getFlag('recordAction', false)) {
-						setEnemyActionData(battle);
+						setPresetSkill(battle);
 						core.setFlag('recordAction', false);
 					}
 					break;
@@ -6877,7 +6805,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * 读取录像的下一项，解析为actionList
+		 * 读取string格式的技能序列，解析为actionObj
 		 * @param {string} next
 		 * @returns {object}
 		 */
@@ -6897,76 +6825,48 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * todo:改进加载字体 改为不等待
+		 * todolist:改进加载字体 改为不等待
 		 * 改进弹幕系统 改成core.http
 		 * 实现界面统一
 		 * 实现多重楼传，杀掉已有的回城楼传
 		 * 实现tips界面
+		 * 实现新的伤害跳出
 		 */
+
 		/**
-		 * combo = 1 '0'(h),'1'(e),'2'(h),'3'(e),'4'(h),'5'(e),'6'(h),'7'(e), h为2k,e回合为1+2k
-		 * combo = 2 '0'(h),'1'(e),'2'(e),'3'(h),'4'(e),'5'(e),'6'(h),'7'(e), h为3k,e回合为1+3k,2+3k
-		 * combo = 3 '0'(h),'1'(e),'2'(e),'3'(e),'4'(h),'5'(e),'6'(e),'7'(e), h为4k,e回合为1+4k,2+4k,3+4k
-		 * comno = 4 h:0,5,10 e:1,6,11 zh:0,2,4 ze:1,3,5 combo + 1=5 (t-1)/10+1 2t/5
-		 * 变换方法:
-		 * 先对(combo+1)取余 为0是h的回合 为1，2，...,combo是e的回合
-		 * 获取e的回合中的剑技盾技
-		 * 对h 0 (除2获取k)获取0 2获取3 i*(combo+1)/2
-		 * 对e 1 (减1除2获取k) 获取(combo+1)*k + 1,2,3,...,combo 直到超出总回合数
-		 * 由123映射到1 对combo+1取余 余0余1才要操作 余0 h /(combo+1)*2 e -1 再/(combo+1)*2 再+1
-		 * e->e0 (h-1)*(combo+1)/2+1 
-		 */
-		// 对于预设技能的构想：预设技能有两种释放方式，1是遇到对应怪物自动发动，2是切换到对应预设发动
-		// 用一个flag currActionNum 来表示当前有无预设 预设2-6 1是空过
-		// recordAction 是否录制下场战斗
-		// 存储结构 每个enemyActionData包括:hotkey：1-9 action:行动字符串(bs:开头) 
-		// 总的变量名enemysActionData 敌人名字是键
-		// 当前预设覆盖
-		// enemysActionData的结构{'greenSmile':{'hotkey':1,'action':'bs:1c'},
-		// 'redSmile':{'hotkey':2,'action':'bs:1c'},
-		// }
-		/**
-		 * 返回一个actionList，格式如下 {'1':['c','B'],'3':['c','n']}
+		 * 返回一个Obj，格式如下 {'1':['c','B'],'3':['c','n']}
 		 * @param {string} id 敌人id
 		 * @return {object}
 		 */
-		function getEnemyAction(id){
-			let currActionList = {};
-			const enemysActionData = core.getFlag('enemysActionData', {});
-			console.log(enemysActionData);
-			console.log(id);
-			const currActionNum = core.getFlag('actionNum', 0);
-			if ([2, 3, 4, 5, 6, 7].includes(currActionNum)) {
-				const dataList = Object.values(enemysActionData);
-				for (let i = 0, l = dataList.length; i < l; i++) {
-					const actionData = dataList[i];
-					if (actionData['hotkey'] === currActionNum) {
-						currActionList = core.plugin.getActionObj(actionData['action']);
-					}
+		function getPresetSkill(id){
+			let currPreset = {};
+			if (core.isReplaying()) return currPreset;
+			const presetSkill = core.getFlag('presetSkill', {});
+			const hotkeyData = core.getFlag('hotkeyData', 0);
+			if ([2, 3, 4, 5, 6, 7].includes(preSetIndex)) {
+				const ekey = hotkeyData[preSetIndex];
+				if (currPreset.hasOwnProperty(presetSkill)) {
+					currPreset = core.plugin.getActionObj(presetSkill[ekey])
 				}
 			}
-			else if (enemysActionData.hasOwnProperty(id)) {
-				const actionData = enemysActionData[id];
-				currActionList = core.plugin.getActionObj(actionData['action']);
+			else if (presetSkill.hasOwnProperty(id)) {
+				currPreset = core.plugin.getActionObj(presetSkill[id]);
 			}
-			return currActionList;
+			return currPreset;
 		}
 
 		/**
-		 * 将当前route信息写入enemysActionData，连击怪信息需做一定处理
+		 * 将当前route信息写入presetSkill，连击怪信息需做一定处理
 		 * @param {Battle} battle
 		 */
-		function setEnemyActionData(battle){
-			let enemysActionData = core.getFlag('enemysActionData', {});
+		function setPresetSkill(battle){
+			let presetSkill = core.getFlag('presetSkill', {});
 			const enemy = battle.enemy;
-			const [id,combo,maxTurn] =  [enemy.id,enemy.combo,battle.turn];
-			if (!enemysActionData.hasOwnProperty(id)){
-				enemysActionData[id] = {};
-			}
+			const [id, combo, maxTurn] = [enemy.id, enemy.combo, battle.turn];
 
-			let currActionStr = '';
+			let currPreset = '';
 			if (combo > 1) {
-				let enemyActionObj = getEnemyAction(battle.route);
+				let enemyActionObj = core.plugin.getActionObj(battle.route);
 				let currTurn = 0;
 				for (let i = 0; ; i++) {
 					if (i % 2 === 0) { // 勇士出手回合的操作
@@ -6975,7 +6875,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						let action = enemyActionObj[currTurn.toString()];
 						action = action.filter(ele => ['b', 's', 'd', 'h', 'k', 'c'].includes(ele));
 						if (action.length > 0) {
-							currActionStr += i.toString() + ':' + action[0];
+							currPreset += i.toString() + ':' + action[0];
 						}
 					}
 					else {
@@ -6985,7 +6885,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							let action = enemyActionObj[currTurn.toString()];
 							action = action.filter(ele => ['M', 'C', 'R', 'F', 'E'].includes(ele));
 							if (action.length > 0) {
-								currActionStr += i.toString() + ':' + action[0];
+								currPreset += i.toString() + ':' + action[0];
 								break;
 							}
 						}
@@ -6994,9 +6894,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 			}
 			else {
-				currActionStr = battle.route;
+				currPreset = battle.route;
 			}
-			enemysActionData[id]['action'] = currActionStr;
+			presetSkill[id] = currPreset;
 		}
 
 		/** 查找技能的对应数据
@@ -7129,14 +7029,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					return critical ? 'g2-cri' : 'g2';
 			}
 		}
-
-		/**
-		 * 获取播放动画时像素坐标的偏移量
-		 */
-		function getAniOffset() {
-
-		}
-
 		// #endregion
 	},
     "弹幕插件": function () {
@@ -7293,174 +7185,40 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	}
 },
-	"预设套装": function () {
+	"预设技能": function () {
 		// 在此增加新插件
-		/** 变量enemysActionData格式如下：
-		 * {'greenSlime':{'hotkey':1,'action':'bs:1c'},
-		 * 'redSlime':{'hotkey':2,'action':'bs:1c'},
-		 * }
-		 */
 
-		/**
-		 * 一个页面一个Canvas，退出/进入其它页面时，中止绘制，中止当前监听
-		 * 属性btnList KeyboardEvent drawBackGround drawContent
-		 * 方法 init redraw quit jumpOff beginListen endListen
-		 * 进入一个页面时，绘制drawBackGround，drawContent(可变内容) 开启对BtnList监听
-		 * 进行需要重绘的操作时，重绘(Canvas)
-		 * 例如，从任何地方调用enemyAction的initPage 则：初始化btnList(构造函数中定义)
-		 * 开启对应的监听
-		 * 方向键的操作由页面控制
-		 * jumpOff跳转: 擦除此页面 取消监听 跳转到新页面(init)
-		 * 退出quit：擦除画布 取消监听 res unlockControl
-		 */
-
-		//todo c的图标待补充
+		//todolist c的图标待补充
 		const abbreviateList = {
 			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
 			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
 			'n': '','c':''
 		};
-		// n is for null;
-		const equipList = {
-			'I315': 'b', 'I319': 's', 'I318': 'd', 'I317': 'h', 'I316': 'k',
-			'I339': 'M', 'I321': 'C', 'I375': 'R', 'I322': 'F', 'I320': 'E',
-		};
-		class Button {
-			/**
-			 * 按钮对象
-			 * @param {string} name 按钮名字，用于注册事件
-			 * @param {number} x 按钮左上角的x坐标
-			 * @param {number} y 按钮左上角的y坐标
-			 * @param {number} w 按钮的宽度
-			 * @param {number} h 按钮的高度
-			 * @param {Function} draw 绘制按钮
-			 * @param {Function} event 点击按钮时触发的事件
-			 */
-			constructor(name, x, y, w, h) {
-				/** 按钮名称 */
-				this.name = name;
-				this.x = x;
-				this.y = y;
-				this.w = w;
-				this.h = h;
-				/** 按钮是否处于未激活状态（不绘制，不监听）*/
-				this.disable = false;
 
-				/** 绘制按钮 */
-				this._draw = () => {};
-				/** 点击按钮时触发的事件 */
-				this.event = () => {};
-			}
-
-			/** 绘制按钮 */
-			draw(){
-				if (this.disable) return;
-				this._draw();
-			}
-
-			/**
-			 * 注册按钮的点击事件
-			 */
-			register() {
-				core.registerAction('onclick', this.name, (x, y, px, py) => {
-					if (this.disable) return;
-					if (px >= x && px <= x + w && py > y && py <= y + h)
-						this.event();
-				}, 100);
-			}
-
-			/**
-			 * 取消注册按钮的点击事件
-			 */
-			unregister() {
-				core.unregisterAction('onclick', this.name);
-			}
-		}
 		if (false) {
 			let myData = {
-				'greenSlime': { 'hotkey': 1, 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'redSlime': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'bat': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'vampire': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'redBat': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'zombieKnight': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-				'zombie': { 'action': 'bs:0s:1h:2M:3b:4F:5k:6R:10F' },
-			}
-			core.setFlag('enemysActionData', myData);
-			let as = core.plugin.drawActionset()
+				'greenSlime':'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'redSlime': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'bat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'vampire': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'redBat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'zombie':'bs:0s:1h:2M:3b:4F:5k:6R:10F', 
+			};
+			let hotkeyData = {'2':'greenSlime','4':'bat'}
+			core.setFlag('presetSkill', myData);
+			core.setFlag('hotkeyData', hotkeyData);
+			let as = core.plugin.drawActionset();
 			as.drawContent();
 			as.beginListen();
+			core.registerAction('ondown','test1',(x,y,px,py)=>{
+				console.log(px);
+				console.log(py);
+			},200);
 		}
-		class Menu {
-			constructor(name) {
-				/** 页面名称,将用作画布名称*/
-				this.name = name;
-				/** 本页面的按钮列表
-				 * @type {Map<string,Button>}
-				 */
-				this.btnList = new Map();
-				/**	关闭窗口时触发的事件（unlockControl等）
-				 * @type {Function}
-				 */
 
-				/**	按键时触发的事件 
-				 * @type {Function}
-				 */
-				this.keyEvent = () => { };
-				/**	关闭窗口时触发的事件 
-				 * @type {Function}
-				 */
-				this.end = () => {
-					core.clearMap(this.name);
-				};
-			}
-
-			/**
-			 * 重绘页面和按钮
-			 */
-			drawContent(){
-				this.btnList.forEach((button) => { button.draw(); })
-			}
-
-			/**
-			 * 清空页面绘制
-			 */
-			clear(){
-				core.clearMap(this.name);
-			}
-
-			/**
-			 * 开始监听页面的按键事件和按钮列表中按钮的点击事件
-			 */
-			beginListen() {
-				core.registerAction('keyDown', this.name, this.keyEvent, 100);
-				this.btnList.forEach((button) => { button.register(); })
-			}
-
-			/**
-			 * 结束按键事件和点击事件的监听
-			 */
-			endListen() {
-				core.unregisterAction('keyDown', this.name);
-				this.btnList.forEach((button) => { button.unregister(); })
-			}
-
-			/**
-			 * 初始化绘制页面
-			 */
-			init() {
-				this.beginListen();
-				this.drawContent();
-			}
-
-			/**
-			 * 跳转至其它页面，清空画布和监听事件
-			 */
-			jumpOff() {
-				this.endListen();
-				this.clear();
-			}
-		}
+		// 变量解释： recordAction 下场战斗是否录制信息
+		// preSetIndex 当前切换到了哪个预设方案
+		// hotkeyData:{'2':'敌人名字' '3':'敌人名字'}
 
 		const ctx = 'actionSet';
 		/**
@@ -7491,14 +7249,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 绘制单个敌人的预设技能信息
 		 * @param {string} ctx 画布名称
 		 * @param {string} name 敌人名称
-		 * @param {object} data 对该敌人的预存技能信息，形如{'hotkey':2,'action':'bs:1c'}
+		 * @param {string} data 对该敌人的预存技能信息，形如'bs:1c'
 		 * @param {number} x 绘制的x坐标
 		 * @param {number} y 绘制的y坐标
 		 */
 		function drawOneData(ctx, name, data, x, y) {
 			core.drawIcon(ctx, name, x - 10, y);
-			const actionObj = core.plugin.getActionObj(data.action);
-			const hotkey = data.hotkey;
+			const actionObj = core.plugin.getActionObj(data);
 			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
 
 			for (let i = 0; i <= 5; i++) {
@@ -7512,22 +7269,34 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
 				}
 			}
-			if (hotkey) core.drawIcon(ctx, 'btn' + hotkey.toString(), x + 268, y);
+			const hotkeyData = core.getFlag('hotkeyData', {});
+			const [hotkeys, hotKeyenemies] = [Object.keys(hotkeyData), Object.values(hotkeyData)];
+			const currEnemyIndex = hotKeyenemies.indexOf(name);
+			if (currEnemyIndex !== -1) core.drawIcon(ctx, 'btn' + hotkeys[currEnemyIndex], x + 268, y);
 		}
 
+		/**
+		 * @type {ButtonBase}
+		 */
+		const Button = this.Button;
+		const Menu = this.Menu;
+
+		/**
+		 * @extends {MenuBase}
+		 */
 		class ActionSet extends Menu{
 			constructor(){
 				super(ctx);
 				/** 当前在绘制第几页*/
 				this.page = 0;
 				/** 敌人对应的预设操作数据
-				 * @type {object}
+				 * @type {Object<string,string>}
 				 */
-				this.enemysActionData = core.getFlag('enemysActionData', {});
+				this.presetSkill = core.getFlag('presetSkill', {});
 				/** 敌人名字数组*/
-				this.enemysNameList = Object.keys(this.enemysActionData);
+				this.targetList = Object.keys(this.presetSkill);
 				/** 敌人预设操作数组*/
-				this.enemysActionList = Object.values(this.enemysActionData);	
+				this.actionList = Object.values(this.presetSkill);	
 				/** 单页面显示的怪物数据行数 */
 				this.rowCount = 5;
 				/** 当前在哪一行*/
@@ -7540,10 +7309,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawContent() {
 				drawSetting(ctx);
 				const [x, y] = [64, 128];
-				const maxIndex = Math.min((this.page + 1) * this.rowCount, this.enemysActionList.length - 1);		
+				const maxIndex = Math.min((this.page + 1) * this.rowCount, this.actionList.length - 1);		
 				let j = 0;
 				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
-					drawOneData(ctx, this.enemysNameList[i], this.enemysActionList[i], x, y + 32 * (j++));
+					drawOneData(ctx, this.targetList[i], this.actionList[i], x, y + 32 * (j++));
 				}
 				core.fillText(ctx, this.page, 320, 327, 'white', '18px Verdana');
 				this.btnList.forEach((button) => { button.draw(); })
@@ -7558,7 +7327,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			pageUp() {
-				const l = this.enemysActionList.length;
+				const l = this.actionList.length;
 				if (this.rowCount * (this.page + 1) < l) {
 					this.page++;
 					this.btnList.get('pageDown').disable = false;
@@ -7581,18 +7350,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			/**
-			 * 根据name从enemysActionData中移除一项数据
+			 * 根据name从presetSkill中移除一项数据
 			 */
 			deleteData(){
 				const currDataIndex = this.rowCount * this.page + this.row;
-				if (currDataIndex < this.enemysNameList.length) {
-					const name = this.enemysNameList[currDataIndex];
-					if (this.enemysActionData.hasOwnProperty(name)){
-						delete this.enemysActionData.name;
-						this.enemysNameList = Object.keys(this.enemysActionData);
+				if (currDataIndex < this.targetList.length) {
+					const name = this.targetList[currDataIndex];
+					if (this.presetSkill.hasOwnProperty(name)){
+						delete this.presetSkill[name];
+						this.targetList = Object.keys(this.presetSkill);
 						/** 敌人预设操作数组*/
-						this.enemysActionList = Object.values(this.enemysActionData);	
-						core.setFlag('enemysActionData', this.enemysActionData);
+						this.actionList = Object.values(this.presetSkill);	
+						core.setFlag('presetSkill', this.presetSkill);
 						this.drawContent();
 					}
 				}
@@ -7608,15 +7377,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			setHotKey(hotkey){
 				const currDataIndex = this.rowCount * this.page + this.row;
-				if (currDataIndex < this.enemysNameList.length) {
-					for (let i = 0, l = this.enemysActionData.length; i < l; i++) {
-						if (enemysActionData[i].hotkey === hotkey) {
-							delete enemysActionData[i].hotkey;
-						}
+				/**
+ 				 * @type {Object<string,string>}
+ 				 */
+				const hotkeyData = core.getFlag('hotkeyData', {});
+				if (currDataIndex >= 0 && currDataIndex < this.targetList.length) {
+					const enemyId = this.targetList[currDataIndex];
+					if (hotkeyData[hotkey] === enemyId) { // 重复选中即删除该快捷键
+						hotkeyData[hotkey] = '';
 					}
-					this.enemysActionData[this.enemysNameList[currDataIndex]].hotkey = hotkey;
-					core.setFlag('enemysActionData', enemysActionData);
-					this.drawContent();
+					else hotkeyData[hotkey] = enemyId;
 				}
 			}
 		}
@@ -7637,8 +7407,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			let recordBtn = new Button('record', 64, 308, 145, 24),
 				deleteBtn = new Button('delete', 240, 308, 46, 24),
-				pageDownBtn = new Button('pageDown', 300, 327, 10, 10), // to be tested
-				pageUpBtn = new Button('pageUp', 340, 327, 10, 10),
+				pageDownBtn = new Button('pageDown', 300, 310, 15, 15), // to be tested
+				pageUpBtn = new Button('pageUp', 340, 310, 15, 15),
+				selectBtn = new Button('select', 54, 128, 315, 160),
 				hotkey2Btn = new IconButton('btn2', 170, 345, 32, 32),
 				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
 				hotkey4Btn = new IconButton('btn4', 230, 345, 32, 32),
@@ -7647,40 +7418,52 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			recordBtn._draw = function () {
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillRect(ctx, 64, 308, 145, 24, '#D3D3D3');
-				core.strokeRect(ctx, 64, 308, 145, 24, '#888888');;
-				core.fillText(ctx, '记录下场战斗操作', 70, 324, 'Tomato', '16px Verdana');
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
 			};
 			deleteBtn._draw = function () {
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillRect(ctx, 240, 308, 46, 24, '#D3D3D3');
-				core.strokeRect(ctx, 240, 308, 46, 24, '#888888');;
-				core.fillText(ctx, '删除', 246, 324, '#555555', '16px Verdana');
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '删除', x + 6, y + 16, '#555555', '16px Verdana');
 			};
 			pageDownBtn._draw = function () {
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillText(ctx, '<', 300, 327, 'white', '18px Verdana');
+				core.fillText(ctx, '<', x, y + 18, 'white', '18px Verdana'); 
 			};
 			pageUpBtn._draw = function () {
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillText(ctx, '>', 340, 327, 'white', '18px Verdana');
+				core.fillText(ctx, '>', x, y + 18, 'white', '18px Verdana');
 			};
+			selectBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.drawUIEventSelector(0, "winskin.png", x, y + 32 * actionSet.row, w, 32, 181);
+			}
 
 			recordBtn.event = actionSet.beginRecord;
-			deleteBtn.event = actionSet.deleteData;
-			pageDownBtn.event = actionSet.pageDown;
-			pageUpBtn.event = actionSet.pageUp;
+			deleteBtn.event = actionSet.deleteData.bind(actionSet);
+			pageDownBtn.event = actionSet.pageDown.bind(actionSet);
+			pageUpBtn.event = actionSet.pageUp.bind(actionSet);
 			hotkey2Btn.event = () => { actionSet.setHotKey(2); }
 			hotkey3Btn.event = () => { actionSet.setHotKey(3); }
 			hotkey4Btn.event = () => { actionSet.setHotKey(4); }
 			hotkey5Btn.event = () => { actionSet.setHotKey(5); }
 			hotkey6Btn.event = () => { actionSet.setHotKey(6); }
+			selectBtn.event = function (x, y, px, py) {
+				for (let i = 0; i <= 4; i++)
+					if (py >= this.y + 32 * i && py <= this.y + 32 * (i + 1)) {
+						actionSet.row = i;
+						actionSet.drawContent();
+						break;
+					}
+			}
 
 			pageDownBtn.disable = true;
 
 			actionSet.btnList = new Map([['record', recordBtn], ['delete', deleteBtn], ['pageDown', pageDownBtn],
-			['pageUp', pageUpBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],
-			['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
+			['pageUp', pageUpBtn], ['select', selectBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], 
+			['hotkey4', hotkey4Btn],['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
 
 			actionSet.keyEvent = function (keyCode) {
 				switch (keyCode) {
