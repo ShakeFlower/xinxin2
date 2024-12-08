@@ -1638,10 +1638,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 疑似老版本就没处理这个问题
 	if (action === 'get') {
 		if (type === 'poison') {
+			if (core.hasFlag('weak')) return;
 			core.setFlag('poison', true);
-			core.control.triggerDebuff('remove', 'weak');
 		} else if (type === 'weak') {
-			core.control.triggerDebuff('remove', 'poison');
+			if (core.hasFlag('poison')) return;
 			core.setFlag('weak', true);
 			// flag:weakValue的值由外部预先设置好
 			const weakValue = core.getFlag('weakValue', 0);

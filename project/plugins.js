@@ -3763,7 +3763,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setAlpha(ctx, 1);
 			core.strokeRoundRect(ctx, 35, 70, core.__PIXELS__ - 70, 55, 3, "white");
 			core.fillRoundRect(ctx, 35.5, 71, core.__PIXELS__ - 71, 53, 3, "#555555");
-			core.ui.fillText(ctx, "设置", 185, 55, 'white', '20px hkbdt');
+			core.ui.fillText(ctx, "设置", 185, 55, 'white', '20px Verdana');
 			core.ui.fillText(ctx, "--常用设置--", 40, 145, '#FFE4B5', '16px Verdana');
 		}
 
@@ -3837,6 +3837,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			"status": function () { return core.getFlag('xinHotkey') ? '新新' : 'h5' },
 			"func": function () { core.setFlag('xinHotkey', !core.getFlag('xinHotkey')); },
 			"text": "是否使用新新2原版的快捷键（具体可按L查看）。"
+		},
+		{
+			"name": "在线留言",
+			"x": 40,
+			"y": 305,
+			"status": function () { return core.getFlag('comment') ? '开' : '关' },
+			"func": function () { core.setFlag('comment', !core.getFlag('comment'));  },
+			"text": "是否接收并显示在线留言。"
 		},
 		]
 
@@ -4412,6 +4420,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					row++;
 				}
 			}
+			core.setAlpha(ctx, 1);
 		}
 
 		const Button = this.Button;
@@ -5776,12 +5785,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
 			switch (hero.status) {
 				case 'poisoned':
-					if (!core.hasFlag('poison')) core.triggerDebuff('get', 'poison');
+					if (!core.hasFlag('poison') && !core.hasFlag('weak')) core.triggerDebuff('get', 'poison');
 					break;
 				case 'weak':
 					core.setFlag('weakValue', hero.weakPoint); // 先获得衰弱点数再执行衰弱效果
-					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
-					console.log(111);
+					if (!core.hasFlag('poison') && !core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
 					break;
 			}
 			core.setFlag('battleSpeed', (() => {
@@ -6687,7 +6695,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * todolist:
 		 * 实现界面统一
-		 * 实现弹幕功能
 		 * 实现多重楼传，杀掉已有的回城楼传 ?
 		 * 实现tips界面
 		 * 实现新的伤害跳出
@@ -6899,8 +6906,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		// #endregion
 	},
     "弹幕插件": function () {
-	// 在此增加新插件
+	
 	const towerName = "xinxin2";
+		let W, H, WIDTH, HEIGHT;
+		if (core._WIDTH_ && core._HEIGHT_) {
+			[W, H] = [core._WIDTH_, core._HEIGHT_];
+		} else if (core.__SIZE__) {
+			[W, H] = [core.__SIZE__, core.__SIZE__];
+		} else {
+			[W, H] = [13, 13];
+		}
+		if (core._PX_ && core._PY_) {
+			[WIDTH, HEIGHT] = [core._PX_, core._PY_];
+		} else if (core.__SIZE__) {
+			[WIDTH, HEIGHT] = [core.__PIXELS__, core.__PIXELS__];
+		} else {
+			[WIDTH, HEIGHT] = [416, 416];
+		}
+
 
 	utils.prototype.http = function (type, url, formData, success, error, mimeType, responseType, onprogress, timeout) {
 		let xhr = new XMLHttpRequest();
@@ -6946,21 +6969,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			function (res) {
 				res = JSON.parse(res);
 				console.log(res);
-				console.log(typeof res);
-				console.log(res["list"]);
 				core.drawTip('接收成功！')
 				core.playSound('item.mp3');
 				let commentCollection = {};
 				const commentList = res?.list;
-				console.log(commentList);
 				for (let i = 0, l = commentList.length; i <= l - 1; i++) {
 					if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
 					const commentTags = commentList[i].tags;
 					const cFloorId = commentTags.split(',')[0],
 						cX = parseInt(commentTags.split(',')[1]),
 						cY = parseInt(commentTags.split(',')[2]);
-					if (0 <= cX && cX <= core._WIDTH_ - 1 && 0 <= cY &&
-						cY <= core._HEIGHT_ - 1 && core.floorIds.includes(cFloorId)) {
+					if (0 <= cX && cX <= W - 1 && 0 <= cY &&
+						cY <= H - 1 && core.floorIds.includes(cFloorId)) {
 						if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
 						const str = cX + ',' + cY;
 						if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
@@ -6970,6 +6990,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.setFlag('commentCollection', commentCollection);
 			},
 			function (err) {
+				err = JSON.parse(err);
 				console.error(err);
 				core.drawTip('接收失败' + err?.message);
 				core.playSound('error.mp3');
@@ -6984,11 +7005,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		form.append('towername', towerName);
 		form.append('comment', comment);
 		form.append('tags', tags);
+		form.append('userid', 2324);
+		form.append('password', '77c8fd5ff49c370342e4472ebdda5903');
 		utils.prototype.http(
 			'POST',
 			'https://h5mota.com/backend/tower/barrage.php',
 			form,
 			function (res) {
+				res = JSON.parse(res);
 				console.log(res);
 				if (res?.code === 0) {
 					core.drawTip('提交成功！')
@@ -6999,6 +7023,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 			},
 			function (err) {
+				err = JSON.parse(err);
 				console.error(err);
 				core.drawTip('接收失败' + err?.message);
 				core.playSound('error.mp3');
@@ -7011,7 +7036,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		if (!core.getFlag('comment') || core.isReplaying()) return;
 		let commentCollection = core.getFlag('commentCollection', {}),
 			floorId = core.status.floorId;
-		core.createCanvas('sign', 0, 0, core._PX_, core._PY_, 120);
+		core.createCanvas('sign', 0, 0, WIDTH, HEIGHT, 120);
 		core.setOpacity('sign', 0.6);
 		if (commentCollection.hasOwnProperty(floorId)) {
 			for (let pos in commentCollection[floorId]) {
@@ -7049,10 +7074,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	function drawComment(commentArr) {
 		for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
 			core.plugin.addScrollingText(commentArr[i], {
-				'style': 'white',
-				'x': core._PX_ + 20 * Math.random(),
-				'y': core.plugin.dice(i + 1) * core._PY_ / (l + 1) + 40 * Math.random(),
+				'x': WIDTH + 20 * Math.random(),
+				'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
 				'vx': -2 + Math.random(),
+				'style': 'white',
+				'font':'18px Verdana'
 			});
 		}
 	}

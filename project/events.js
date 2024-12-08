@@ -303,6 +303,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"value": "400"
 									},
 									{
+										"type": "playSound",
+										"name": "shop.mp3"
+									},
+									{
 										"type": "if",
 										"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 										"true": [
@@ -339,6 +343,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"value": "3"
 									},
 									{
+										"type": "playSound",
+										"name": "shop.mp3"
+									},
+									{
 										"type": "if",
 										"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 										"true": [
@@ -373,6 +381,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "3"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									},
 									{
 										"type": "if",
@@ -498,6 +510,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "3"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -516,6 +532,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:atk",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -534,6 +554,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "2"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -651,6 +675,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"value": "800"
 											},
 											{
+												"type": "playSound",
+												"name": "shop.mp3"
+											},
+											{
 												"type": "if",
 												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 												"true": [
@@ -687,6 +715,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"value": "5"
 											},
 											{
+												"type": "playSound",
+												"name": "shop.mp3"
+											},
+											{
 												"type": "if",
 												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 												"true": [
@@ -721,6 +753,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:def",
 												"operator": "+=",
 												"value": "5"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											},
 											{
 												"type": "if",
@@ -774,6 +810,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:hp",
 												"operator": "+=",
 												"value": "800"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -798,6 +838,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:atk",
 												"operator": "+=",
 												"value": "6"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -822,6 +866,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:def",
 												"operator": "+=",
 												"value": "6"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -937,6 +985,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "10"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -955,6 +1007,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:atk",
 										"operator": "+=",
 										"value": "3"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -973,6 +1029,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "5"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1068,6 +1128,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "item:yellowKey",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1086,6 +1150,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "item:blueKey",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1181,6 +1249,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "item:greenKey",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1288,6 +1360,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"value": "1200"
 											},
 											{
+												"type": "playSound",
+												"name": "shop.mp3"
+											},
+											{
 												"type": "if",
 												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 												"true": [
@@ -1324,6 +1400,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"value": "6"
 											},
 											{
+												"type": "playSound",
+												"name": "shop.mp3"
+											},
+											{
 												"type": "if",
 												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
 												"true": [
@@ -1358,6 +1438,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:def",
 												"operator": "+=",
 												"value": "6"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											},
 											{
 												"type": "if",
@@ -1411,6 +1495,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:hp",
 												"operator": "+=",
 												"value": "1200"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -1435,6 +1523,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:atk",
 												"operator": "+=",
 												"value": "8"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -1459,6 +1551,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"name": "status:def",
 												"operator": "+=",
 												"value": "8"
+											},
+											{
+												"type": "playSound",
+												"name": "shop.mp3"
 											}
 										]
 									},
@@ -1574,6 +1670,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "12"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1592,6 +1692,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:atk",
 										"operator": "+=",
 										"value": "4"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1610,6 +1714,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:def",
 										"operator": "+=",
 										"value": "6"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1705,6 +1813,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "item:yellowKey",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1723,6 +1835,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "item:blueKey",
 										"operator": "+=",
 										"value": "1"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1849,6 +1965,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"type": "setValue",
 										"name": "item:I407",
 										"value": "0"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1868,6 +1988,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:hp",
 										"operator": "+=",
 										"value": "200"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1887,6 +2011,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:hp",
 										"operator": "+=",
 										"value": "400"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1906,6 +2034,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:hp",
 										"operator": "+=",
 										"value": "750"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},
@@ -1925,6 +2057,10 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"name": "status:hp",
 										"operator": "+=",
 										"value": "1000"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
 							},

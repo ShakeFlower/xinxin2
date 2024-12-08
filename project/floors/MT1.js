@@ -32,6 +32,11 @@ main.floors.MT1=
             "value": "true"
         },
         {
+            "type": "setValue",
+            "name": "flag:comment",
+            "value": "true"
+        },
+        {
             "type": "function",
             "function": "function(){\ncore.removeMaps(\"TU1\", \"TU5b\")\n}"
         },
