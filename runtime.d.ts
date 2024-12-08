@@ -2720,6 +2720,8 @@ declare class ButtonBase {
     _draw: Function
     /** 点击按钮时触发的事件 */
     event: Function
+    /** 返回按钮当前状态 */
+    status: Function
 
     /** 绘制按钮 */
     draw(): void
@@ -2741,7 +2743,7 @@ declare class MenuBase {
     /** 页面名称,将用作画布名称 */
     name: string
     /** 本页面的按钮列表 */
-    btnList: Map<string, Button>
+    btnList: Map<string, ButtonBase>
     /** 本页面注册的按键事件 */
     keyEvent: Function
     /** 本页面关闭时触发的事件 */

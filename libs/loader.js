@@ -42,9 +42,7 @@ loader.prototype._load_sync = function (callback) {
             })
         })
     });
-    console.time(2);
     this._loadFonts();
-    console.timeEnd(2);
 }
 
 loader.prototype._load_async = function (callback) {

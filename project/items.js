@@ -555,7 +555,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"useItemEffect": "core.triggerDebuff('remove', 'poison');",
 		"canUseItemEffect": "core.hasFlag('poison');",
 		"itemEffectTip": "，回复中毒状态",
-		"itemEffect": "core.triggerDebuff('remove', 'poison');\ncore.autoGetItem();"
+		"itemEffect": "core.triggerDebuff('remove', 'poison');"
 	},
 	"weakWine": {
 		"cls": "items",

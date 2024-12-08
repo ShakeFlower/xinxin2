@@ -224,7 +224,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 
 
 	// 所有激活过的楼层传送点 allflyPoints
-	const flyPoints = corfe.getFlag('allflyPoints',null);
+	const flyPoints = core.getFlag('allflyPoints', null);
 	// 首先思考一下怎么实现
 	// 首先，allflyPoints应当记录非地上层的所有传送点{'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
 	// {'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
@@ -262,7 +262,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		}
 
 		// 同层传送
-		if (fromIndex === toIndex){
+		if (fromIndex === toIndex) {
 
 		}
 	}
@@ -1635,9 +1635,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	if (action === 'get') {
 		if (type === 'poison') {
 			core.setFlag('poison', true);
-			core.control.triggerDebuff('remove','weak');
-		} else if (action === 'weak') {
-			core.control.triggerDebuff('remove','poison');
+			core.control.triggerDebuff('remove', 'weak');
+		} else if (type === 'weak') {
+			core.control.triggerDebuff('remove', 'poison');
 			core.setFlag('weak', true);
 			// flag:weakValue的值由外部预先设置好
 			const weakValue = core.getFlag('weakValue', 0);
@@ -1647,7 +1647,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	} else if (action === 'remove') {
 		if (type === 'poison') {
 			core.setFlag('poison', false);
-		} else if (action === 'weak') {
+		} else if (type === 'weak') {
 			core.setFlag('weak', false);
 			const weakValue = core.getFlag('weakValue', 0);
 			core.addStatus('atk', weakValue);

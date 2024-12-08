@@ -2174,228 +2174,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "工具": function () {
-		// 工具函数和类
-
-		/**
-		 * @type {ButtonBase}
-		 */
-		this.Button = class{
-			constructor(name, x, y, w, h) {
-				this.name = name;
-				this.x = x;
-				this.y = y;
-				this.w = w;
-				this.h = h;
-				this.disable = false;
-
-				this._draw = () => {};
-				this.event = (x, y, px, py) => {};
-			}
-
-			draw(){
-				if (this.disable) return;
-				this._draw();
-			}
-
-			register() {
-				core.registerAction('onclick', this.name, (x, y, px, py) => {
-					if (this.disable) return;
-					if (px >= this.x && px <= this.x + this.w && py > this.y && py <= this.y + this.h)
-						this.event(x, y, px, py);
-				}, 100);
-			}
-
-			unregister() {
-				core.unregisterAction('onclick', this.name);
-			}
-		}
-
-		this.Menu = class{
-			constructor(name) {
-				this.name = name;
-				this.btnList = new Map();
-				this.keyEvent = () => { };
-				this.end = () => { core.clearMap(this.name); };
-			}
-
-			drawContent(){
-				this.btnList.forEach((button) => { button.draw(); })
-			}
-
-			beginListen() {
-				core.registerAction('keyDown', this.name, this.keyEvent, 100);
-				this.btnList.forEach((button) => { button.register(); })
-			}
-
-			endListen() {
-				core.unregisterAction('keyDown', this.name);
-				this.btnList.forEach((button) => { button.unregister(); })
-			}
-
-			clear(){
-				this.endListen();
-				core.deleteCanvas(this.name);
-			}
-
-			init() {
-				this.beginListen();
-				this.drawContent();
-			}
-
-			jumpOff() {
-				this.endListen();
-				this.clear();
-			}
-		}
-
-		this.dice = function (x) {
-			if (!Number.isInteger(x) || x < 0) return 0;
-			const rNumber = Math.random();
-			for (let i = 0; i <= x; i++) {
-				if (rNumber >= i / (x + 1) && rNumber <= (i + 1) / (x + 1)) {
-					return i;
-				}
-			}
-			return 0;
-		}
-
-		/**
-		 * 注册一个每interval帧执行一次的动画
-		 * @param {string} name 
-		 * @param {number} interval 
-		 * @param {Function} event 
-		 */
-		this.registerAnimationInterval = function (name, interval, event) {
-			let currTime = 0;
-			core.registerAnimationFrame(name, true, (timestamp) => {
-				if (timestamp - currTime < interval) return;
-				currTime = timestamp;
-				event();
-			});
-		}
-
-		/**
-		 * 按照像素坐标绘制动画
-			 * @param {string} name 动画名称
-			 * @param {number} x 像素x坐标
-			 * @param {number} y 像素y坐标
-			 * @param {boolean} alignWindow 
-			 * @param {Function} callback 
-		 */
-		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
-			name = core.getMappedName(name);
-
-			// 正在播放录像：不显示动画
-			if (core.isReplaying() || !core.material.animates[name] || x == null || y == null) {
-				if (callback) callback();
-				return -1;
-			}
-
-			// 开始绘制
-			let animate = core.material.animates[name];
-			if (alignWindow) {
-				centerX += core.bigmap.offsetX;
-				centerY += core.bigmap.offsetY;
-			}
-			animate.se = animate.se || {};
-			if (typeof animate.se == 'string') animate.se = { 1: animate.se };
-
-			let id = setTimeout(null);
-			core.status.animateObjs.push({
-				"name": name,
-				"id": id,
-				"animate": animate,
-				"centerX": x,
-				"centerY": y,
-				"index": 0,
-				"callback": callback
-			});
-			return id;
-		}
-
-		////// 深拷贝一个对象，含Set和Map //////
-		utils.prototype.clone = function (data, filter, recursion) {
-			if (!core.isset(data)) return null;
-			// date
-			if (data instanceof Date) {
-				var copy = new Date();
-				copy.setTime(data.getTime());
-				return copy;
-			}
-			// array
-			if (data instanceof Array) {
-				var copy = [];
-				for (var i in data) {
-					if (!filter || filter(i, data[i]))
-						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
-				}
-				return copy;
-			}
-			// 函数
-			if (data instanceof Function) {
-				return data;
-			}
-
-			// Set
-			// 对Set而言，过滤器填入value即可
-			if (data instanceof Set) {
-				var copy = new Set();
-				data.forEach(value => {
-					if (!filter || filter(value))
-						copy.add(core.clone(value, recursion ? filter : null, recursion));
-				});
-				return copy;
-			}
-
-			// Map
-			if (data instanceof Map) {
-				var copy = new Map();
-				data.forEach((value, key) => {
-					if (!filter || filter(key, value))
-						copy.set(core.clone(key, recursion ? filter : null, recursion),
-					core.clone(value, recursion ? filter : null, recursion));
-				});
-				return copy;
-			}
-
-			// object
-			if (data instanceof Object) {
-				var copy = {};
-				for (var i in data) {
-					if (data.hasOwnProperty(i) && (!filter || filter(i, data[i])))
-						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
-				}
-				return copy;
-			}
-			return data;
-		}
-
-		////// 检查并执行领域、夹击、阻击事件 //////
-		control.prototype.checkBlock = function () {
-			let x = core.getHeroLoc('x'), y = core.getHeroLoc('y'), loc = x + "," + y;
-			let damage = core.status.checkBlock.damage[loc];
-			if (damage) {
-				core.status.hero.hp -= damage;
-				let text = (Object.keys(core.status.checkBlock.type[loc] || {}).join("，")) || "伤害";
-				core.drawTip("受到" + text + damage + "点");
-				if (core.hasItem('snow')) core.drawHeroAnimate("gice");
-				else core.drawHeroAnimate("gfire"); //岩浆动画效果
-				this._checkBlock_disableQuickShop();
-				core.status.hero.statistics.extraDamage += damage;
-				if (core.status.hero.hp <= 0) {
-					core.status.hero.hp = 0;
-					core.updateStatusBar();
-					core.events.lose();
-					return;
-				} else {
-					core.updateStatusBar();
-				}
-			}
-			this._checkBlock_ambush(core.status.checkBlock.ambush[loc]);
-			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
-		}
-	},
     "自动拾取": function () {
 		// 自動拾取
 		var enable = true;
@@ -3519,386 +3297,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "跳字插件": function () {
-		// 在此增加新插件
-
-		let sTextList = new Set([]);
-		const canvas = 'scroll';
-		const gravity = 0.2;
-
-		function drawScrollingText() {
-			core.ui.clearMap(canvas);
-			sTextList.forEach(
-				function (currText) {
-					core.setAlpha(canvas, currText.alpha);
-					core.fillText(canvas, currText.text, currText.x, currText.y,
-						currText.style, currText.font, currText.maxWidth)
-				}
-			)
-		}
-
-		class ScrollingText {
-			constructor(text, args) {
-				this.text = text;
-				this.x = args.x || 0;
-				this.y = args.y || 0;
-				this.x0 = args.x || 0;
-				this.y0 = args.y || 0;
-				this.style = args.style;
-				this.font = args.font;
-				this.maxWidth = args.maxWidth;
-				this.type = args.type || 'line';
-				this.vx = args.vx || 0;
-				this.vy = args.vy || 0;
-				this.t = 0;
-				this.tmax = args.tmax || 1000;
-				this.alpha = args.alpha || 1;
-			}
-		}
-
-		this.addScrollingText = function (text, args) {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			let sText = new ScrollingText(text, args);
-			sTextList.add(sText);
-		}
-
-		function updateScrollingText() {
-			sTextList.forEach(function (currText) {
-				switch (currText.type) {
-					case 'line':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						break;
-					case 'projectile':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						currText.vy += gravity;
-						break;
-					case 'down':
-						if (currText.t < currText.tmax / 2) {
-							currText.x += currText.vx;
-							currText.y += currText.vy;
-						} else {
-							if (currText.alpha > 0.05)
-								currText.alpha -= 0.05;
-						}
-				}
-				currText.t++;
-				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-					currText.t > currText.tmax) {
-					sTextList.delete(currText);
-				}
-			})
-		}
-
-		// 每次切换楼层后执行
-		this.clearScrollingText = function () {
-			sTextList.clear();
-		}
-
-		core.plugin.registerAnimationInterval('scrollText', 10, () => {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			if (!core.dymCanvas[canvas]) {
-				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
-			}
-			updateScrollingText();
-			drawScrollingText();
-		});
-
-	},
-    "切装事件": function () {
-		////// 换上 //////
-		items.prototype.loadEquip = function (equipId, callback) {
-			if (!this.canEquip(equipId, true)) {
-				if (callback) callback();
-				return;
-			}
-
-			var loadEquip = core.material.items[equipId] || {};
-			var type = this.getEquipTypeById(equipId);
-			if (type < 0) {
-				core.playSound('操作失败');
-				core.drawTip("当前没有" + loadEquip.equip.type + "的空位！");
-				if (callback) callback();
-				return;
-			}
-
-			if (!core.hasItem('I325') && !core.hasItem('I326')) {
-				if (['I315', 'I316', 'I317', 'I318', 'I319'].includes(equipId)) {
-					if (core.status.hero.hp <= 50) {
-						core.drawTip('血量不足，无法切换剑技！');
-						core.playSound('error.mp3');
-						return;
-					} else {
-						core.status.hero.hp -= 50;
-					}
-				}
-			}
-			if (!core.hasItem('I327') && !core.hasItem('I326')) {
-				if (['I320', 'I321', 'I322', 'I339', 'I375'].includes(equipId)) {
-					if (core.status.hero.hp <= 50) {
-						core.drawTip('血量不足，无法切换盾技！');
-						core.playSound('error.mp3');
-						return;
-					} else {
-						core.status.hero.hp -= 50;
-					}
-				}
-			}
-			this._realLoadEquip(type, equipId, core.status.hero.equipment[type], callback);
-		}
-
-		////// 卸下 //////
-		items.prototype.unloadEquip = function (equipType, callback) {
-			var unloadEquipId = core.status.hero.equipment[equipType];
-			if (!unloadEquipId) {
-				if (callback) callback();
-				return;
-			}
-			core.drawTip('无法卸下已装备的技能，请装上其他技能来替换之。');
-			core.playSound('error.mp3');
-			return;
-
-			//this._realLoadEquip(equipType, null, unloadEquipId, callback);
-		}
-
-		items.prototype.quickLoadEquip = function (index) {
-			if (index === 1) {
-				return;
-			}
-			core.setFlag('preSetIndex',index);
-			core.drawTip("已切换" + index + "号预设技能方案");
-		}
-	},
-    "自定义设置": function () {
-		// 在此增加新插件
-
-		let settingIndex = 0;
-		let settings = [{
-			"name": "血瓶宝石显示数据",
-			"x": 40,
-			"y": 155,
-			"status": function () { return core.getFlag('itemDetail') ? '开' : '关' },
-			"func": function () {
-				core.setFlag('itemDetail', !core.getFlag('itemDetail'));
-				core.control.updateStatusBar();
-			},
-			"text": "在地图上显示即捡即用道具和装备增加的属性值。"
-		},
-		{
-			"name": "自动拾取",
-			"x": 40,
-			"y": 180,
-			"status": function () { return core.getFlag('autoGet') ? '开' : '关' },
-			"func": function () { core.setFlag('autoGet', !core.getFlag('autoGet')); },
-			"text": "每步后，自动拾取当前层可获得的道具。"
-		},
-		{
-			"name": "自动拾取(血瓶)",
-			"x": 40,
-			"y": 205,
-			"status": function () { return core.getFlag('autoGetHp') ? '开' : '关' },
-			"func": function () { core.setFlag('autoGetHp', !core.getFlag('autoGetHp')); },
-			"text": "开启时，可自动拾取血瓶。（需要打开自动拾取本身）"
-		},
-		{
-			"name": "自动拾取(攻防)",
-			"x": 40,
-			"y": 230,
-			"status": function () { return core.getFlag('autoGetAd') ? '开' : '关' },
-			"func": function () { core.setFlag('autoGetAd', !core.getFlag('autoGetAd')); },
-			"text": "开启时，可自动拾取攻防。（需要打开自动拾取本身）"
-		},
-		{
-			"name": "战斗速度",
-			"x": 40,
-			"y": 255,
-			"status": function () {
-				switch (core.getFlag('battleSpeed', 0)) {
-					case 0:
-						return '快';
-					case 1:
-						return '中';
-					default:
-						return '慢';
-				}
-			},
-			"func": function () {
-				switch (core.getFlag('battleSpeed', 0)) {
-					case 0:
-						core.setFlag('battleSpeed', 1);
-						break;
-					case 1:
-						core.setFlag('battleSpeed', 2);
-						break;
-					default:
-						core.setFlag('battleSpeed', 0);
-				}
-			},
-			"text": "调节战斗过程的速度"
-		},
-		{
-			"name": "快捷键",
-			"x": 40,
-			"y": 280,
-			"status": function () { return core.getFlag('xinHotkey') ? '新新' : 'h5' },
-			"func": function () { core.setFlag('xinHotkey', !core.getFlag('xinHotkey')); },
-			"text": "是否使用新新2原版的快捷键（具体可按L查看）。"
-		},
-		]
-
-		function drawSetting_drawOne(index, ctx) {
-			core.ui.fillText(ctx, settings[index].name + '：' + settings[index].status(),
-				settings[index].x, settings[index].y, 'white', '14px Verdana');
-		}
-
-		function drawSetting(ctx) {
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
-			core.clearMap(ctx);
-			core.setAlpha(ctx, 0.85);
-			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
-			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
-			core.setAlpha(ctx, 1);
-			core.strokeRoundRect(ctx, 35, 55, core.__PIXELS__ - 70, 55, 3, "white");
-			core.fillRoundRect(ctx, 35.5, 56, core.__PIXELS__ - 71, 53, 3, "#555555");
-			core.ui.fillText(ctx, "设置", 180, 50, 'white', '20px hkbdt');
-			core.ui.drawTextContent(ctx, settings[settingIndex].text, {
-				left: 40,
-				top: 60,
-				bold: false,
-				color: "white",
-				align: "left",
-				fontSize: 12,
-				maxWidth: 340
-			});
-			for (let i = 0, l = settings.length; i < l; i++) { drawSetting_drawOne(i, ctx); }
-			core.ui.fillText(ctx, "--常用设置--", 40, 130, '#FFE4B5', '16px Verdana');
-			core.ui.fillText(ctx, '[退出]', 340, 375, '#FFE4B5', '14px Verdana');
-			drawSettingSelector();
-		}
-
-		function drawSettingSelector() {
-			core.drawUIEventSelector(0, "winskin.png", settings[settingIndex].x, settings[settingIndex].y - 14, 150, 20, 181);
-		}
-
-		function showSetting() {
-			settingIndex = 0;
-			const ctx = 'setting',
-				name = 'settingChange';
-			drawSetting(ctx);
-			return new Promise(function (res) {
-
-				function keyup(keycode) {
-					// 处理按键事件
-					switch (keycode) {
-						case 13:
-						case 32:
-						case 67: //回车，空格，C键
-							core.status.route.push('cSet:' + settingIndex);
-							settings[settingIndex].func();
-							drawSetting(ctx);
-							break;
-						case 27: //Esc
-							cancel();
-							break;
-						case 37: // 左
-							if (settingIndex >= 9) settingIndex = 0;
-							drawSetting(ctx);
-							break;
-						case 38: // 上
-							if (settingIndex >= 1) {
-								if (settingIndex <= 11) settingIndex -= 1;
-								else settingIndex = 10;
-							}
-							drawSetting(ctx);
-							break;
-						case 39: // 右
-							if (settingIndex <= 8) settingIndex = 9;
-							drawSetting(ctx);
-							break;
-						case 40: // 下
-							if (settingIndex < 10) settingIndex += 1;
-							else {
-								switch (core.getFlag('specialEnd', 0)) {
-									case 2:
-										if (settingIndex === 10) settingIndex = 11;
-										break;
-									case 3:
-										if (settingIndex === 10) settingIndex = 12;
-										break;
-									default:
-										break;
-								}
-							}
-							drawSetting(ctx);
-							break;
-					}
-				}
-
-				function click(x, y, px, py) {
-					// 处理点击事件
-					if (px >= 345 && px <= 380 && py >= 365 && py <= 375) { cancel(); }
-					for (let i = 0, l = settings.length; i < l; i++) {
-						if (px >= settings[i].x && px <= settings[i].x + 150 && py >= settings[i].y - 14 && py <= settings[i].y + 6) {
-							if (i === settingIndex) {
-								core.status.route.push('cSet:' + settingIndex);
-								settings[settingIndex].func();
-							} else {
-								settingIndex = i;
-							}
-							drawSetting(ctx);
-							break;
-						}
-					}
-
-				}
-
-				function finish(confirm) {
-					// 清除画面，销毁事件监听器
-					core.unregisterAction('onclick', name);
-					core.unregisterAction('keyUp', name);
-					// 等待本次事件处理完全结束
-					res(confirm);
-				}
-
-				function cancel() {
-					core.clearMap(ctx);
-					core.clearUIEventSelector(0);
-					finish(false);
-				}
-
-				core.registerAction('ondown', name, click, 100);
-				core.registerAction('keyUp', name, keyup, 100);
-			});
-		}
-
-		this.changeSetting = function () {
-			if (core.isReplaying()) return;
-			core.setFlag('noOpenMenu', true);
-			//禁止Esc打开菜单栏
-			core.lockControl();
-
-			showSetting().then(() => {
-				core.unlockControl();
-				core.setFlag('noOpenMenu', false);
-			});
-		}
-
-		core.registerReplayAction('cSet', function (action) {
-			if (action.indexOf('cSet:') !== 0) return false;
-			const num = action.substring(5);
-			if (!settings || num >= settings.length) return false;
-			settings[num].func();
-			core.status.route.push(action);
-			core.replay();
-			return true;
-		});
-
-	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4064,6 +3463,954 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				i++;
 			}
 		}
+	},
+    "跳字插件": function () {
+		// 在此增加新插件
+
+		let sTextList = new Set([]);
+		const canvas = 'scroll';
+		const gravity = 0.2;
+
+		function drawScrollingText() {
+			core.ui.clearMap(canvas);
+			sTextList.forEach(
+				function (currText) {
+					core.setAlpha(canvas, currText.alpha);
+					core.fillText(canvas, currText.text, currText.x, currText.y,
+						currText.style, currText.font, currText.maxWidth)
+				}
+			)
+		}
+
+		class ScrollingText {
+			constructor(text, args) {
+				this.text = text;
+				this.x = args.x || 0;
+				this.y = args.y || 0;
+				this.x0 = args.x || 0;
+				this.y0 = args.y || 0;
+				this.style = args.style;
+				this.font = args.font;
+				this.maxWidth = args.maxWidth;
+				this.type = args.type || 'line';
+				this.vx = args.vx || 0;
+				this.vy = args.vy || 0;
+				this.t = 0;
+				this.tmax = args.tmax || 1000;
+				this.alpha = args.alpha || 1;
+			}
+		}
+
+		this.addScrollingText = function (text, args) {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			let sText = new ScrollingText(text, args);
+			sTextList.add(sText);
+		}
+
+		function updateScrollingText() {
+			sTextList.forEach(function (currText) {
+				switch (currText.type) {
+					case 'line':
+						currText.x += currText.vx;
+						currText.y += currText.vy;
+						break;
+					case 'projectile':
+						currText.x += currText.vx;
+						currText.y += currText.vy;
+						currText.vy += gravity;
+						break;
+					case 'down':
+						if (currText.t < currText.tmax / 2) {
+							currText.x += currText.vx;
+							currText.y += currText.vy;
+						} else {
+							if (currText.alpha > 0.05)
+								currText.alpha -= 0.05;
+						}
+				}
+				currText.t++;
+				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
+					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
+					currText.t > currText.tmax) {
+					sTextList.delete(currText);
+				}
+			})
+		}
+
+		// 每次切换楼层后执行
+		this.clearScrollingText = function () {
+			sTextList.clear();
+		}
+
+		core.plugin.registerAnimationInterval('scrollText', 10, () => {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			if (!core.dymCanvas[canvas]) {
+				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+			}
+			updateScrollingText();
+			drawScrollingText();
+		});
+
+	},
+    "切装事件": function () {
+		////// 换上 //////
+		items.prototype.loadEquip = function (equipId, callback) {
+			if (!this.canEquip(equipId, true)) {
+				if (callback) callback();
+				return;
+			}
+
+			var loadEquip = core.material.items[equipId] || {};
+			var type = this.getEquipTypeById(equipId);
+			if (type < 0) {
+				core.playSound('操作失败');
+				core.drawTip("当前没有" + loadEquip.equip.type + "的空位！");
+				if (callback) callback();
+				return;
+			}
+
+			if (!core.hasItem('I325') && !core.hasItem('I326')) {
+				if (['I315', 'I316', 'I317', 'I318', 'I319'].includes(equipId)) {
+					if (core.status.hero.hp <= 50) {
+						core.drawTip('血量不足，无法切换剑技！');
+						core.playSound('error.mp3');
+						return;
+					} else {
+						core.status.hero.hp -= 50;
+					}
+				}
+			}
+			if (!core.hasItem('I327') && !core.hasItem('I326')) {
+				if (['I320', 'I321', 'I322', 'I339', 'I375'].includes(equipId)) {
+					if (core.status.hero.hp <= 50) {
+						core.drawTip('血量不足，无法切换盾技！');
+						core.playSound('error.mp3');
+						return;
+					} else {
+						core.status.hero.hp -= 50;
+					}
+				}
+			}
+			this._realLoadEquip(type, equipId, core.status.hero.equipment[type], callback);
+		}
+
+		////// 卸下 //////
+		items.prototype.unloadEquip = function (equipType, callback) {
+			var unloadEquipId = core.status.hero.equipment[equipType];
+			if (!unloadEquipId) {
+				if (callback) callback();
+				return;
+			}
+			core.drawTip('无法卸下已装备的技能，请装上其他技能来替换之。');
+			core.playSound('error.mp3');
+			return;
+		}
+
+		items.prototype.quickLoadEquip = function (index) {
+			if (index === 1) {
+				core.drawTip("已取消预设技能");
+			}
+			else {
+				core.drawTip("已切换" + index + "号预设技能方案");
+			}
+			core.setFlag('preSetIndex', index);
+			core.playSound('equip.mp3');
+		}
+
+		items.prototype.quickSaveEquip = items.prototype.quickLoadEquip;
+	},
+	"工具": function () {
+		// 工具函数和类
+		/**
+		 * @type {ButtonBase}
+		 */
+		this.Button = class{
+			constructor(name, x, y, w, h) {
+				this.name = name;
+				this.x = x;
+				this.y = y;
+				this.w = w;
+				this.h = h;
+				this.disable = false;
+
+				this._draw = () => {};
+				this.event = (x, y, px, py) => {};
+			}
+
+			draw(){
+				if (this.disable) return;
+				this._draw();
+			}
+
+			register() {
+				core.registerAction('onclick', this.name, (x, y, px, py) => {
+					if (this.disable) return;
+					if (px >= this.x && px <= this.x + this.w && py > this.y && py <= this.y + this.h)
+						this.event(x, y, px, py);
+				}, 100);
+			}
+
+			unregister() {
+				core.unregisterAction('onclick', this.name);
+			}
+		}
+
+		this.Menu = class{
+			constructor(name) {
+				this.name = name;
+				this.btnList = new Map();
+				this.keyEvent = () => { };
+				this.end = () => { core.clearMap(this.name); };
+			}
+
+			drawContent(){
+				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			beginListen() {
+				core.registerAction('keyDown', this.name, this.keyEvent, 100);
+				this.btnList.forEach((button) => { button.register(); })
+			}
+
+			endListen() {
+				core.unregisterAction('keyDown', this.name);
+				this.btnList.forEach((button) => { button.unregister(); })
+			}
+
+			clear(){
+				this.endListen();
+				core.deleteCanvas(this.name);
+			}
+
+			init() {
+				this.beginListen();
+				this.drawContent();
+			}
+
+			jumpOff() {
+				this.endListen();
+				this.clear();
+			}
+		}
+
+		/** 生成一个0到x的随机数 */
+		this.dice = function (x) {
+			if (!Number.isInteger(x) || x < 0) return 0;
+			return Math.floor(Math.random() * (x + 1));
+		}
+
+		/**
+		 * 注册一个每interval帧执行一次的动画
+		 * @param {string} name 
+		 * @param {number} interval 
+		 * @param {Function} event 
+		 */
+		this.registerAnimationInterval = function (name, interval, event) {
+			let currTime = 0;
+			core.registerAnimationFrame(name, true, (timestamp) => {
+				if (timestamp - currTime < interval) return;
+				currTime = timestamp;
+				event();
+			});
+		}
+
+		/**
+		 * 按照像素坐标绘制动画
+			 * @param {string} name 动画名称
+			 * @param {number} x 像素x坐标
+			 * @param {number} y 像素y坐标
+			 * @param {boolean} alignWindow 
+			 * @param {Function} callback 
+		 */
+		this.drawAnimateByPixel = function (name, x, y, alignWindow, callback) {
+			name = core.getMappedName(name);
+
+			// 正在播放录像：不显示动画
+			if (core.isReplaying() || !core.material.animates[name] || x == null || y == null) {
+				if (callback) callback();
+				return -1;
+			}
+
+			// 开始绘制
+			let animate = core.material.animates[name];
+			if (alignWindow) {
+				centerX += core.bigmap.offsetX;
+				centerY += core.bigmap.offsetY;
+			}
+			animate.se = animate.se || {};
+			if (typeof animate.se == 'string') animate.se = { 1: animate.se };
+
+			let id = setTimeout(null);
+			core.status.animateObjs.push({
+				"name": name,
+				"id": id,
+				"animate": animate,
+				"centerX": x,
+				"centerY": y,
+				"index": 0,
+				"callback": callback
+			});
+			return id;
+		}
+
+		////// 深拷贝一个对象，含Set和Map //////
+		utils.prototype.clone = function (data, filter, recursion) {
+			if (!core.isset(data)) return null;
+			// date
+			if (data instanceof Date) {
+				var copy = new Date();
+				copy.setTime(data.getTime());
+				return copy;
+			}
+			// array
+			if (data instanceof Array) {
+				var copy = [];
+				for (var i in data) {
+					if (!filter || filter(i, data[i]))
+						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
+				}
+				return copy;
+			}
+			// 函数
+			if (data instanceof Function) {
+				return data;
+			}
+
+			// Set
+			// 对Set而言，过滤器填入value即可
+			if (data instanceof Set) {
+				var copy = new Set();
+				data.forEach(value => {
+					if (!filter || filter(value))
+						copy.add(core.clone(value, recursion ? filter : null, recursion));
+				});
+				return copy;
+			}
+
+			// Map
+			if (data instanceof Map) {
+				var copy = new Map();
+				data.forEach((value, key) => {
+					if (!filter || filter(key, value))
+						copy.set(core.clone(key, recursion ? filter : null, recursion),
+					core.clone(value, recursion ? filter : null, recursion));
+				});
+				return copy;
+			}
+
+			// object
+			if (data instanceof Object) {
+				var copy = {};
+				for (var i in data) {
+					if (data.hasOwnProperty(i) && (!filter || filter(i, data[i])))
+						copy[i] = core.clone(data[i], recursion ? filter : null, recursion);
+				}
+				return copy;
+			}
+			return data;
+		}
+
+		////// 检查并执行领域、夹击、阻击事件 //////
+		control.prototype.checkBlock = function () {
+			let x = core.getHeroLoc('x'), y = core.getHeroLoc('y'), loc = x + "," + y;
+			let damage = core.status.checkBlock.damage[loc];
+			if (damage) {
+				core.status.hero.hp -= damage;
+				let text = (Object.keys(core.status.checkBlock.type[loc] || {}).join("，")) || "伤害";
+				core.drawTip("受到" + text + damage + "点");
+				if (core.hasItem('snow')) core.drawHeroAnimate("gice");
+				else core.drawHeroAnimate("gfire"); //岩浆动画效果
+				this._checkBlock_disableQuickShop();
+				core.status.hero.statistics.extraDamage += damage;
+				if (core.status.hero.hp <= 0) {
+					core.status.hero.hp = 0;
+					core.updateStatusBar();
+					core.events.lose();
+					return;
+				} else {
+					core.updateStatusBar();
+				}
+			}
+			this._checkBlock_ambush(core.status.checkBlock.ambush[loc]);
+			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
+		}
+	},
+    "自定义设置": function () {
+
+		const Button = this.Button;
+		const Menu = this.Menu;
+
+		const ctx = 'setting';
+
+		function drawSetting(ctx) {
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.clearMap(ctx);
+			core.setAlpha(ctx, 0.85);
+			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.setAlpha(ctx, 1);
+			core.strokeRoundRect(ctx, 35, 70, core.__PIXELS__ - 70, 55, 3, "white");
+			core.fillRoundRect(ctx, 35.5, 71, core.__PIXELS__ - 71, 53, 3, "#555555");
+			core.ui.fillText(ctx, "设置", 185, 55, 'white', '20px hkbdt');
+			core.ui.fillText(ctx, "--常用设置--", 40, 145, '#FFE4B5', '16px Verdana');
+		}
+
+		const settings = [{
+			"name": "血瓶宝石显示数据",
+			"x": 40,
+			"y": 155,
+			"status": function () { return core.getFlag('itemDetail') ? '开' : '关' },
+			"func": function () {
+				core.setFlag('itemDetail', !core.getFlag('itemDetail'));
+				core.control.updateStatusBar();
+			},
+			"text": "在地图上显示即捡即用道具和装备增加的属性值。"
+		},
+		{
+			"name": "自动拾取",
+			"x": 40,
+			"y": 180,
+			"status": function () { return core.getFlag('autoGet') ? '开' : '关' },
+			"func": function () { core.setFlag('autoGet', !core.getFlag('autoGet')); },
+			"text": "每步后，自动拾取当前层可获得的道具。"
+		},
+		{
+			"name": "自动拾取(血瓶)",
+			"x": 40,
+			"y": 205,
+			"status": function () { return core.getFlag('autoGetHp') ? '开' : '关' },
+			"func": function () { core.setFlag('autoGetHp', !core.getFlag('autoGetHp')); },
+			"text": "开启时，可自动拾取血瓶。（需要打开自动拾取本身）"
+		},
+		{
+			"name": "自动拾取(攻防)",
+			"x": 40,
+			"y": 230,
+			"status": function () { return core.getFlag('autoGetAd') ? '开' : '关' },
+			"func": function () { core.setFlag('autoGetAd', !core.getFlag('autoGetAd')); },
+			"text": "开启时，可自动拾取攻防。（需要打开自动拾取本身）"
+		},
+		{
+			"name": "战斗速度",
+			"x": 40,
+			"y": 255,
+			"status": function () {
+				switch (core.getFlag('battleSpeed', 0)) {
+					case 0:
+						return '快';
+					case 1:
+						return '中';
+					default:
+						return '慢';
+				}
+			},
+			"func": function () {
+				switch (core.getFlag('battleSpeed', 0)) {
+					case 0:
+						core.setFlag('battleSpeed', 1);
+						break;
+					case 1:
+						core.setFlag('battleSpeed', 2);
+						break;
+					default:
+						core.setFlag('battleSpeed', 0);
+				}
+			},
+			"text": "调节战斗过程的速度"
+		},
+		{
+			"name": "快捷键",
+			"x": 40,
+			"y": 280,
+			"status": function () { return core.getFlag('xinHotkey') ? '新新' : 'h5' },
+			"func": function () { core.setFlag('xinHotkey', !core.getFlag('xinHotkey')); },
+			"text": "是否使用新新2原版的快捷键（具体可按L查看）。"
+		},
+		]
+
+		/**
+		 * @extends {MenuBase}
+		 */
+		class SettingMenu extends Menu{
+			constructor(){
+				super(ctx);
+				/** 当前选中的选项的名字
+				 * @type {string}
+				 */
+				this.pickedBtn = '';
+				/** 选项名称的顺序数组 */
+				this.choiceNameList = [];
+				/** 上方显示的提示信息 */
+				this.hint = '';
+			}
+
+			drawContent() {
+				drawSetting(ctx);
+				this.btnList.forEach((button)=>{
+					button.draw();
+				})
+				core.ui.drawTextContent(ctx, this.hint || '', {
+					left: 40, top: 75, bold: false, color: "white",
+					align: "left", fontSize: 12, maxWidth: 340
+				});
+				const pickedBtn = this.btnList.get(this.pickedBtn);
+				if (pickedBtn) {
+					core.drawUIEventSelector(0, "winskin.png",
+						pickedBtn.x, pickedBtn.y, pickedBtn.w, pickedBtn.h, 181);
+				}
+			}
+
+			// 清空画布
+			clear(){
+				core.deleteCanvas(this.name);
+				core.clearUIEventSelector(0);
+				this.endListen();
+			}
+		}	
+
+		function initSettingMenu() {
+			const settingMenu = new SettingMenu();
+			const btnList = new Map();
+
+			for (let i = 0, l = settings.length; i < l; i++) {
+				const info = settings[i];
+				const button = new Button(info.name, info.x, info.y, 150, 20);
+				button.status = info.status;
+				button._draw = function () {
+					core.ui.fillText(settingMenu.name, this.name + '：' + this.status(),
+						this.x, this.y + 15, 'white', '14px Verdana');
+				}
+				button.event = function () {
+					if (settingMenu.pickedBtn === this.name) {
+						core.status.route.push('cSet:' + i);
+						settings[i].func();
+					} else {
+						settingMenu.pickedBtn = this.name;
+						settingMenu.hint = settings[i].text;
+					}
+					settingMenu.drawContent();
+				}
+				btnList.set(info.name, button);
+				settingMenu.choiceNameList.push(info.name);
+			}
+			const quitButton = new Button('quit', 335, 40, 40, 16);
+			quitButton._draw = function () {
+				core.ui.fillText(ctx, '[退出]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
+			}
+			quitButton.event = function () { settingMenu.end(); }
+			btnList.set('quit', quitButton);
+			const openPreSetButton = new Button('openPreSet', 300, 140, 70, 25);
+			openPreSetButton._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '预设技能', x + 6, y + 16, '#555555', '14px Verdana');
+			};
+			btnList.set('openPreSet', openPreSetButton);
+			settingMenu.btnList = btnList;
+			settingMenu.keyEvent = function(keyCode){
+				const button = this.btnList.get(this.pickedBtn);
+				let settingIndex = this.choiceNameList.indexOf(this.pickedBtn);
+				// 处理按键事件
+				switch (keyCode) {
+					case 13:
+					case 32:
+					case 67: //回车，空格，C键
+						button.event();
+						break;
+					case 27: //Esc
+						this.end();
+						break;
+					case 37: // 左
+						break;
+					case 39: // 右
+						break;
+					case 38: // 上
+						if (settingIndex >= 1) {
+							this.pickedBtn = this.choiceNameList[settingIndex - 1];
+						}
+						this.drawContent();
+						break;
+					case 40: // 下
+						if (settingIndex < this.choiceNameList.length - 1) {
+							this.pickedBtn = this.choiceNameList[settingIndex + 1];
+						}
+						this.drawContent();
+						break;
+				}
+			}.bind(settingMenu);
+			return settingMenu;
+		}
+
+		function drawMenus() {
+			return new Promise((res)=> {
+				const settingMenu = initSettingMenu();
+				const preSetMenu = core.plugin.initPreSetMenu();
+				settingMenu.end = function(){
+					settingMenu.clear();
+					res();
+				}
+				preSetMenu.end = function(){
+					preSetMenu.clear();
+					res();
+				}
+				const openPreSetBtn = settingMenu.btnList.get('openPreSet');
+				openPreSetBtn.event = function(){
+					settingMenu.clear();
+					preSetMenu.init();
+				}
+				settingMenu.init();
+			});
+		}
+
+		this.changeSetting = async function () {
+			if (core.isReplaying()) return;
+			//禁止Esc打开菜单栏
+			core.setFlag('noOpenMenu', true);
+			core.lockControl();
+
+			await drawMenus();
+			core.unlockControl();
+			core.setFlag('noOpenMenu', false);
+		}
+
+		core.registerReplayAction('cSet', function (action) {
+			if (action.indexOf('cSet:') !== 0) return false;
+			const num = action.substring(5);
+			if (!settings || num >= settings.length) return false;
+			settings[num].func();
+			core.status.route.push(action);
+			core.replay();
+			return true;
+		});
+
+	},
+	"预设技能": function () {
+		/**
+		 * 变量解释： recordAction 下场战斗是否录制信息
+		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
+		 * preSetIndex 当前切换到了哪个预设方案 每次战斗前 将会读取该信息
+		 * hotkeyData {'2':'敌人名字' '3':'敌人名字'} 快捷键信息 每次按键时，将查找该信息
+		 * @example 
+		        let myData = {
+				'greenSlime':'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'redSlime': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'bat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'vampire': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'redBat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
+				'zombie':'bs:0s:1h:2M:3b:4F:5k:6R:10F', 
+			};
+			let hotkeyData = {'2':'greenSlime','4':'bat'}
+			core.setFlag('presetSkill', myData);
+			core.setFlag('hotkeyData', hotkeyData);
+		 */
+
+		const ctx = 'actionSet';
+
+		const Button = this.Button;
+		const Menu = this.Menu;
+
+		/**
+ 		 * 绘制选框背景
+		 * @param {string} ctx 画布名称
+ 		 */
+		function drawSetting(ctx) {
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.clearMap(ctx);
+			core.setAlpha(ctx, 0.85);
+			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
+			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
+			core.setAlpha(ctx, 1);
+			core.fillText(ctx, '设定快捷键后，按下Alt2~6切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '手机段点击底部工具栏即可。', 40, 80, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '4', 204, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '5', 236, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '6', 268, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '快捷键', 320, 110, 'white', '18px Verdana');
+			core.fillText(ctx, '分配快捷键', 70, 365, 'white', '18px Verdana');
+		}
+
+		const abbreviateList = {
+			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
+			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
+			'c':'critical'
+		};
+
+		/**
+		 * 绘制单个敌人的预设技能信息
+		 * @param {string} ctx 画布名称
+		 * @param {string} name 敌人名称
+		 * @param {string} data 对该敌人的预存技能信息，形如'bs:1c'
+		 * @param {number} x 绘制的x坐标
+		 * @param {number} y 绘制的y坐标
+		 */
+		function drawOneData(ctx, name, data, x, y) {
+			core.drawIcon(ctx, name, x - 10, y);
+			const actionObj = core.plugin.getActionObj(data);
+			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
+
+			for (let i = 0; i <= 5; i++) {
+				const xi = x + 32 * (i + 1);
+				if (xi > core.__PIXELS__) break;
+				const index = turnArr.indexOf(i.toString());
+				if (index !== -1) {
+					core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
+				}
+				if (Math.max(...turnArr) > 5) {
+					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
+				}
+			}
+			const hotkeyData = core.getFlag('hotkeyData', {});
+			const [hotkeys, hotKeyenemies] = [Object.keys(hotkeyData), Object.values(hotkeyData)];
+			const currEnemyIndex = hotKeyenemies.indexOf(name);
+			if (currEnemyIndex !== -1) core.drawIcon(ctx, 'btn' + hotkeys[currEnemyIndex], x + 268, y);
+		}
+
+		/**
+		 * @extends {MenuBase}
+		 */
+		class PresetMenu extends Menu{
+			constructor(){
+				super(ctx);
+				/** 当前在绘制第几页*/
+				this.page = 0;
+				/** 敌人对应的预设操作数据
+				 * @type {Object<string,string>}
+				 */
+				this.presetSkill = core.getFlag('presetSkill', {});
+				/** 敌人名字数组*/
+				this.targetList = Object.keys(this.presetSkill);
+				/** 敌人预设操作数组*/
+				this.actionList = Object.values(this.presetSkill);	
+				/** 单页面显示的怪物数据行数 */
+				this.rowCount = 5;
+				/** 当前在哪一行*/
+				this.row = 0;
+
+			}
+
+			drawContent() {
+				drawSetting(ctx);
+				const [x, y] = [64, 128];
+				const l = this.actionList.length;
+				const maxIndex = Math.min((this.page + 1) * this.rowCount, l);
+				let j = 0;
+				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
+					drawOneData(ctx, this.targetList[i], this.actionList[i], x, y + 32 * (j++));
+				}
+				if (l === 0) {
+					core.fillText(ctx, `还没有设置预设技能数据`,
+						60, 150, 'white', '14px Verdana');
+					core.fillText(ctx, `点击"记录"后和敌人战斗来添加数据！`,
+						60, 180, 'white', '14px Verdana');
+				}
+				if (l > this.rowCount) {
+					core.fillText(ctx, this.page + 1, 320, 328, 'white', '18px Verdana');
+				}
+				this.btnList.get('pageUp').disable = this.rowCount * (this.page + 1) >= l;
+				this.btnList.get('pageDown').disable = this.page === 0;
+				this.btnList.forEach((button) => { button.draw(); })
+			}
+
+			// 清空画布
+			clear(){
+				core.deleteCanvas(this.name);
+				core.clearUIEventSelector(0);
+				this.endListen();
+			}
+
+			/**
+			 * 开始录制下场战斗，并退出页面
+			 */
+			beginRecord(){
+				core.setFlag('recordAction',true);
+				this.end();
+			}
+
+			pageUp() {
+				const l = this.actionList.length;
+				if (this.rowCount * (this.page + 1) < l) {
+					this.page++;
+					this.drawContent();
+				}
+			}
+
+			pageDown() {
+				if (this.page > 0) {
+					this.page--;
+					this.drawContent();
+				}
+			}
+
+			/**
+			 * 根据name从presetSkill中移除一项数据
+			 */
+			deleteData(){
+				const currDataIndex = this.rowCount * this.page + this.row;
+				if (currDataIndex < this.targetList.length) {
+					const name = this.targetList[currDataIndex];
+					if (this.presetSkill.hasOwnProperty(name)){
+						delete this.presetSkill[name];
+						this.targetList = Object.keys(this.presetSkill);
+						/** 敌人预设操作数组*/
+						this.actionList = Object.values(this.presetSkill);	
+						core.setFlag('presetSkill', this.presetSkill);
+						this.drawContent();
+					}
+				}
+				else {
+					core.playSound('error.mp3');
+					core.drawTip('当前位置没有要删除的数据');
+				}
+			}
+
+			/**
+			 * 对当前选中的敌人数据设置其hotkey的值
+			 * @param {number} hotkey
+			 */
+			setHotKey(hotkey){
+				const currDataIndex = this.rowCount * this.page + this.row;
+				const hotkeyData = core.getFlag('hotkeyData', {});
+				if (currDataIndex >= 0 && currDataIndex < this.targetList.length) {
+					const enemyId = this.targetList[currDataIndex];
+					if (hotkeyData[hotkey] === enemyId) { // 重复选中即删除该快捷键
+						hotkeyData[hotkey] = '';
+					}
+					else hotkeyData[hotkey] = enemyId;
+				}
+				core.setFlag('hotkeyData', hotkeyData);
+				this.drawContent();
+			}
+		}
+
+		class IconButton extends Button{
+			constructor(name, x, y){
+				super(name, x, y, 32, 32);
+				super._draw = function(){
+					const [x, y] = [this.x, this.y];
+					core.drawIcon(ctx, this.name, x, y);
+				}
+			}
+		}
+
+		this.initPreSetMenu = function(){
+
+			let presetMenu = new PresetMenu();
+
+			const recordBtn = new Button('record', 64, 308, 145, 24),
+				deleteBtn = new Button('delete', 240, 308, 46, 24),
+				pageDownBtn = new Button('pageDown', 300, 310, 15, 15), // to be tested
+				pageUpBtn = new Button('pageUp', 340, 310, 15, 15),
+				selectBtn = new Button('select', 54, 128, 315, 160),
+				quitButton = new Button('quit', 335, 40, 40, 16),
+				hotkey2Btn = new IconButton('btn2', 170, 345, 32, 32),
+				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
+				hotkey4Btn = new IconButton('btn4', 230, 345, 32, 32),
+				hotkey5Btn = new IconButton('btn5', 260, 345, 32, 32),
+				hotkey6Btn = new IconButton('btn6', 290, 345, 32, 32);
+
+			recordBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
+			};
+			deleteBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '删除', x + 6, y + 16, '#555555', '16px Verdana');
+			};
+			pageDownBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillText(ctx, '<', x, y + 18, 'white', '18px Verdana'); 
+			};
+			pageUpBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillText(ctx, '>', x, y + 18, 'white', '18px Verdana');
+			};
+			selectBtn._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.drawUIEventSelector(0, "winskin.png", x, y + 32 * presetMenu.row, w, 32, 181);
+			}
+			quitButton._draw = function () {
+				core.ui.fillText(ctx, '[退出]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
+			}
+			quitButton.event = function () { presetMenu.end(); }
+
+			recordBtn.event = presetMenu.beginRecord.bind(presetMenu);;
+			deleteBtn.event = presetMenu.deleteData.bind(presetMenu);
+			pageDownBtn.event = presetMenu.pageDown.bind(presetMenu);
+			pageUpBtn.event = presetMenu.pageUp.bind(presetMenu);
+			hotkey2Btn.event = () => { presetMenu.setHotKey(2); }
+			hotkey3Btn.event = () => { presetMenu.setHotKey(3); }
+			hotkey4Btn.event = () => { presetMenu.setHotKey(4); }
+			hotkey5Btn.event = () => { presetMenu.setHotKey(5); }
+			hotkey6Btn.event = () => { presetMenu.setHotKey(6); }
+			selectBtn.event = function (x, y, px, py) {
+				for (let i = 0; i <= 4; i++)
+					if (py >= this.y + 32 * i && py <= this.y + 32 * (i + 1)) {
+						presetMenu.row = i;
+						presetMenu.drawContent();
+						break;
+					}
+			}
+
+			presetMenu.btnList = new Map([['record', recordBtn], ['delete', deleteBtn], 
+			['pageDown', pageDownBtn],['pageUp', pageUpBtn], ['select', selectBtn], 
+			['quit', quitButton],['hotkey2', hotkey2Btn],['hotkey2', hotkey2Btn], 
+			['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],['hotkey5', hotkey5Btn], 
+			['hotkey6', hotkey6Btn],]);
+
+			presetMenu.keyEvent = function (keyCode) {
+				switch (keyCode) {
+					case 27://Esc
+						presetMenu.end();
+						break;
+					case 37://Left
+						presetMenu.pageDown();
+						break;
+					case 39://Right
+						presetMenu.pageUp();
+						break;
+					case 38://Up
+						if (presetMenu.row > 0) {
+							presetMenu.row--;
+							presetMenu.drawContent();
+						}
+						break;
+					case 40://Down
+						if (presetMenu.row < presetMenu.rowCount - 1) {
+							presetMenu.row++;
+							presetMenu.drawContent();
+						}
+						break;
+					case 13://Enter
+					case 32://SpaceBar
+					case 67://C
+						presetMenu.beginRecord();
+						break;
+					case 46://Delete
+						presetMenu.deleteData();
+						break;
+					case 50:
+					case 51:
+					case 52:
+					case 53:
+					case 54: // num 2~6
+						presetMenu.setHotKey(keyCode - 48);
+						break;
+				}
+			}
+			return presetMenu;
+		}	 
 	},
     "成就": function () {
 		// 在此增加新插件
@@ -4801,6 +5148,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.animate = '';
 				/** 勇士盾牌的动画*/
 				this.heroAnimate = '';
+				/** 敌人本次是否释放异常状态*/
+				this.debuff = '';
 			}
 		}
 
@@ -4893,7 +5242,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (this.checkMiss()) atkStatus.miss = true;
 				else {
 					const { oriDamage, reflect } = this.checkHeroShield(hero, atkStatus);
-					this.execAtkEffect(hero, reflect);
+					this.execAtkEffect(hero, reflect); // 获取敌人攻击的附加效果（毒衰等）
 
 					this.addMana(hero); //本回合敌人未暴击，则它会回复气息
 
@@ -5103,7 +5452,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						}
 						super.execDebuff(action);
 					} else {
-						if (action === 'weak') hero.weakPoint += this.weakPoint;
+						if (action === 'weak') {
+							hero.weakPoint += this.weakPoint;
+							this.atkStatus.debuff = 'weak';
+						}
+						else if (action === 'poison') {
+							this.atkStatus.debuff = 'poison';
+						}
 						hero.execDebuff(action);
 					}
 				}
@@ -5470,6 +5825,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'weak':
 					core.setFlag('weakValue', hero.weakPoint); // 先获得衰弱点数再执行衰弱效果
 					if (!core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
+					console.log(111);
 					break;
 			}
 			core.setFlag('battleSpeed', (() => {
@@ -5669,7 +6025,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText(ctx, enemy.totalFatigue, tx - 30, ty + 3 * (textFontSize + lineHeight),
 				"orange", 'Bold 12px Arial');
 			core.setTextAlign(ctx, "right");
-			if (enemy.hasMisfortune) {
+			if (enemy.poisonPoss > 0 || enemy.weakPoss > 0) {
 				core.fillText(ctx, hero.misfortune, width - tx + 20, ty + 2 * (textFontSize + lineHeight),
 					"cyan", 'Bold12px Arial');
 			}
@@ -6177,6 +6533,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						damageE += 'crit';
 						princessDamageE += 'crit';
 					}
+					if (atkStatusE.debuff === 'poison') {
+						core.plugin.drawAnimateByPixel('gpoison', hx, hy);
+					}
+					else if (atkStatusE.debuff === 'weak'){
+						core.plugin.drawAnimateByPixel('gweak', hx, hy);
+					}
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
@@ -6437,7 +6799,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			else {
 				currPreset = battle.route;
 			}
-			console.log(currPreset)
 			if (currPreset.length > 2) {
 				presetSkill[id] = currPreset;
 				core.setFlag('presetSkill', presetSkill);
@@ -6736,346 +7097,4 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	}
 },
-    "预设技能": function () {
-
-		const abbreviateList = {
-			'b': 'I315', 's': 'I319', 'd': 'I318', 'h': 'I317', 'k': 'I316',
-			'M': 'I339', 'C': 'I321', 'R': 'I375', 'F': 'I322', 'E': 'I320',
-			'c':'critical'
-		};
-
-		if (false) {
-			let myData = {
-				'greenSlime':'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'redSlime': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'bat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'vampire': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'redBat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'zombie':'bs:0s:1h:2M:3b:4F:5k:6R:10F', 
-			};
-			
-			let hotkeyData = {'2':'greenSlime','4':'bat'}
-			core.setFlag('presetSkill', myData);
-			core.setFlag('hotkeyData', hotkeyData);
-			core.lockControl();
-			let as = core.plugin.initPreSetPage();
-			as.end = ()=>{
-				as.clear();
-				core.unlockControl();
-			}
-			as.drawContent();
-			as.beginListen();
-		}
-
-		this.test = function () {
-			core.lockControl();
-			let as = core.plugin.initPreSetPage();
-			as.end = () => {
-				as.clear();
-				core.unlockControl();
-			}
-			as.drawContent();
-			as.beginListen();
-		}
-
-		// 变量解释： recordAction 下场战斗是否录制信息
-		// presetSkill 当前保存的预设方案信息
-		// preSetIndex 当前切换到了哪个预设方案
-		// hotkeyData {'2':'敌人名字' '3':'敌人名字'}
-
-		const ctx = 'actionSet';
-		/**
- 		 * 绘制选框背景
-		 * @param {string} ctx 画布名称
- 		 */
-		function drawSetting(ctx) {
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
-			core.clearMap(ctx);
-			core.setAlpha(ctx, 0.85);
-			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
-			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
-			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
-			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
-			core.setAlpha(ctx, 1);
-			core.fillText(ctx, '设定快捷键后，按下Alt2~6切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
-			core.fillText(ctx, '手机段点击底部工具栏即可。', 40, 80, '#00DDFF', '14px Verdana');
-			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '4', 204, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '5', 236, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '6', 268, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '快捷键', 320, 110, 'white', '18px Verdana');
-			core.fillText(ctx, '分配快捷键', 70, 365, 'white', '18px Verdana');
-		}
-
-		/**
-		 * 绘制单个敌人的预设技能信息
-		 * @param {string} ctx 画布名称
-		 * @param {string} name 敌人名称
-		 * @param {string} data 对该敌人的预存技能信息，形如'bs:1c'
-		 * @param {number} x 绘制的x坐标
-		 * @param {number} y 绘制的y坐标
-		 */
-		function drawOneData(ctx, name, data, x, y) {
-			core.drawIcon(ctx, name, x - 10, y);
-			const actionObj = core.plugin.getActionObj(data);
-			const [turnArr, skillArr] = [Object.keys(actionObj), Object.values(actionObj)];
-
-			for (let i = 0; i <= 5; i++) {
-				const xi = x + 32 * (i + 1);
-				if (xi > core.__PIXELS__) break;
-				const index = turnArr.indexOf(i.toString());
-				if (index !== -1) {
-					core.drawIcon(ctx, abbreviateList[skillArr[index][0]], xi, y);
-				}
-				if (Math.max(...turnArr) > 5) {
-					core.fillText(ctx, '...', 293, y + 16, 'white', '16px Verdana');// 绘制一个省略号
-				}
-			}
-			const hotkeyData = core.getFlag('hotkeyData', {});
-			const [hotkeys, hotKeyenemies] = [Object.keys(hotkeyData), Object.values(hotkeyData)];
-			const currEnemyIndex = hotKeyenemies.indexOf(name);
-			if (currEnemyIndex !== -1) core.drawIcon(ctx, 'btn' + hotkeys[currEnemyIndex], x + 268, y);
-		}
-
-		/**
-		 * @type {ButtonBase}
-		 */
-		const Button = this.Button;
-		const Menu = this.Menu;
-
-		/**
-		 * @extends {MenuBase}
-		 */
-		class PresetMenu extends Menu{
-			constructor(){
-				super(ctx);
-				/** 当前在绘制第几页*/
-				this.page = 0;
-				/** 敌人对应的预设操作数据
-				 * @type {Object<string,string>}
-				 */
-				this.presetSkill = core.getFlag('presetSkill', {});
-				/** 敌人名字数组*/
-				this.targetList = Object.keys(this.presetSkill);
-				/** 敌人预设操作数组*/
-				this.actionList = Object.values(this.presetSkill);	
-				/** 单页面显示的怪物数据行数 */
-				this.rowCount = 5;
-				/** 当前在哪一行*/
-				this.row = 0;
-
-			}
-
-			drawContent() {
-				drawSetting(ctx);
-				const [x, y] = [64, 128];
-				const l = this.actionList.length;
-				const maxIndex = Math.min((this.page + 1) * this.rowCount, l);
-				let j = 0;
-				for (let i = this.page * this.rowCount; i < maxIndex; i++) {
-					drawOneData(ctx, this.targetList[i], this.actionList[i], x, y + 32 * (j++));
-				}
-				if (l === 0) {
-					core.fillText(ctx, `还没有设置预设技能数据`,
-						60, 150, 'white', '14px Verdana');
-					core.fillText(ctx, `点击"记录"后和敌人战斗来添加数据！`,
-						60, 180, 'white', '14px Verdana');
-				}
-				if (l > this.rowCount) {
-					core.fillText(ctx, this.page + 1, 320, 328, 'white', '18px Verdana');
-				}
-				this.btnList.get('pageUp').disable = this.rowCount * (this.page + 1) >= l;
-				this.btnList.get('pageDown').disable = this.page === 0;
-				this.btnList.forEach((button) => { button.draw(); })
-			}
-
-			// 清空画布
-			clear(){
-				core.deleteCanvas(this.name);
-				core.clearUIEventSelector(0);
-				this.endListen();
-			}
-
-			/**
-			 * 开始录制下场战斗，并退出页面
-			 */
-			beginRecord(){
-				core.setFlag('recordAction',true);
-				this.end();
-			}
-
-			pageUp() {
-				const l = this.actionList.length;
-				if (this.rowCount * (this.page + 1) < l) {
-					this.page++;
-					this.drawContent();
-				}
-			}
-
-			pageDown() {
-				if (this.page > 0) {
-					this.page--;
-					this.drawContent();
-				}
-			}
-
-			/**
-			 * 根据name从presetSkill中移除一项数据
-			 */
-			deleteData(){
-				const currDataIndex = this.rowCount * this.page + this.row;
-				if (currDataIndex < this.targetList.length) {
-					const name = this.targetList[currDataIndex];
-					if (this.presetSkill.hasOwnProperty(name)){
-						delete this.presetSkill[name];
-						this.targetList = Object.keys(this.presetSkill);
-						/** 敌人预设操作数组*/
-						this.actionList = Object.values(this.presetSkill);	
-						core.setFlag('presetSkill', this.presetSkill);
-						this.drawContent();
-					}
-				}
-				else {
-					core.playSound('error.mp3');
-					core.drawTip('当前位置没有要删除的数据');
-				}
-			}
-
-			/**
-			 * 对当前选中的敌人数据设置其hotkey的值
-			 * @param {number} hotkey
-			 */
-			setHotKey(hotkey){
-				const currDataIndex = this.rowCount * this.page + this.row;
-				const hotkeyData = core.getFlag('hotkeyData', {});
-				if (currDataIndex >= 0 && currDataIndex < this.targetList.length) {
-					const enemyId = this.targetList[currDataIndex];
-					if (hotkeyData[hotkey] === enemyId) { // 重复选中即删除该快捷键
-						hotkeyData[hotkey] = '';
-					}
-					else hotkeyData[hotkey] = enemyId;
-				}
-				core.setFlag('hotkeyData', hotkeyData);
-				this.drawContent();
-			}
-		}
-
-		class IconButton extends Button{
-			constructor(name, x, y){
-				super(name, x, y, 32, 32);
-				super._draw = function(){
-					const [x, y] = [this.x, this.y];
-					core.drawIcon(ctx, this.name, x, y);
-				}
-			}
-		}
-
-		this.initPreSetPage = function(){
-
-			let actionSet = new PresetMenu();
-
-			let recordBtn = new Button('record', 64, 308, 145, 24),
-				deleteBtn = new Button('delete', 240, 308, 46, 24),
-				pageDownBtn = new Button('pageDown', 300, 310, 15, 15), // to be tested
-				pageUpBtn = new Button('pageUp', 340, 310, 15, 15),
-				selectBtn = new Button('select', 54, 128, 315, 160),
-				hotkey2Btn = new IconButton('btn2', 170, 345, 32, 32),
-				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
-				hotkey4Btn = new IconButton('btn4', 230, 345, 32, 32),
-				hotkey5Btn = new IconButton('btn5', 260, 345, 32, 32),
-				hotkey6Btn = new IconButton('btn6', 290, 345, 32, 32);
-
-			recordBtn._draw = function () {
-				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
-				core.strokeRect(ctx, x, y, w, h, '#888888');;
-				core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
-			};
-			deleteBtn._draw = function () {
-				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
-				core.strokeRect(ctx, x, y, w, h, '#888888');;
-				core.fillText(ctx, '删除', x + 6, y + 16, '#555555', '16px Verdana');
-			};
-			pageDownBtn._draw = function () {
-				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillText(ctx, '<', x, y + 18, 'white', '18px Verdana'); 
-			};
-			pageUpBtn._draw = function () {
-				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.fillText(ctx, '>', x, y + 18, 'white', '18px Verdana');
-			};
-			selectBtn._draw = function () {
-				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-				core.drawUIEventSelector(0, "winskin.png", x, y + 32 * actionSet.row, w, 32, 181);
-			}
-
-			recordBtn.event = actionSet.beginRecord.bind(actionSet);;
-			deleteBtn.event = actionSet.deleteData.bind(actionSet);
-			pageDownBtn.event = actionSet.pageDown.bind(actionSet);
-			pageUpBtn.event = actionSet.pageUp.bind(actionSet);
-			hotkey2Btn.event = () => { actionSet.setHotKey(2); }
-			hotkey3Btn.event = () => { actionSet.setHotKey(3); }
-			hotkey4Btn.event = () => { actionSet.setHotKey(4); }
-			hotkey5Btn.event = () => { actionSet.setHotKey(5); }
-			hotkey6Btn.event = () => { actionSet.setHotKey(6); }
-			selectBtn.event = function (x, y, px, py) {
-				for (let i = 0; i <= 4; i++)
-					if (py >= this.y + 32 * i && py <= this.y + 32 * (i + 1)) {
-						actionSet.row = i;
-						actionSet.drawContent();
-						break;
-					}
-			}
-
-			actionSet.btnList = new Map([['record', recordBtn], ['delete', deleteBtn], ['pageDown', pageDownBtn],
-			['pageUp', pageUpBtn], ['select', selectBtn], ['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], 
-			['hotkey4', hotkey4Btn],['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn],]);
-
-			actionSet.keyEvent = function (keyCode) {
-				switch (keyCode) {
-					case 27://Esc
-						actionSet.end();
-						break;
-					case 37://Left
-						actionSet.pageDown();
-						break;
-					case 39://Right
-						actionSet.pageUp();
-						break;
-					case 38://Up
-						if (actionSet.row > 0) {
-							actionSet.row--;
-							actionSet.drawContent();
-						}
-						break;
-					case 40://Down
-						if (actionSet.row < actionSet.rowCount - 1) {
-							actionSet.row++;
-							actionSet.drawContent();
-						}
-						break;
-					case 13://Enter
-					case 32://SpaceBar
-					case 67://C
-						actionSet.beginRecord();
-						break;
-					case 46://Delete
-						actionSet.deleteData();
-						break;
-					case 50:
-					case 51:
-					case 52:
-					case 53:
-					case 54: // num 2~6
-						actionSet.setHotKey(keyCode - 48);
-						break;
-				}
-			}
-			return actionSet;
-		}	 
-	},
-    "楼传转移": undefined
 }
