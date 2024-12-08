@@ -3598,11 +3598,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.beginListen();
 				this.drawContent();
 			}
-
-			jumpOff() {
-				this.endListen();
-				this.clear();
-			}
 		}
 
 		/** 生成一个0到x的随机数 */
@@ -6697,6 +6692,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 实现多重楼传，杀掉已有的回城楼传 ?
 		 * 实现tips界面
 		 * 实现新的伤害跳出
+		 * 还原失败动画，开局的动画
 		 */
 
 		/**
