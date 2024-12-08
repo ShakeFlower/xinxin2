@@ -97,13 +97,9 @@ loader.prototype._load_async = function (callback) {
 // 加载字体文件
 loader.prototype._loadFonts = async function () {
     try {
-        console.time(1);
         const fontFileList = [new FontFace(
             "hkbdt",
             "url(project/fonts/hkbdt.ttf)",
-        ), new FontFace(
-            "Arial",
-            "url(project/fonts/Arial.ttf)"
         ), new FontFace(
             "qzzy",
             "url(project/fonts/qzzy.ttf)"
@@ -113,7 +109,6 @@ loader.prototype._loadFonts = async function () {
             await fontFile.load();
             document.fonts.add(fontFile);
         }
-        console.timeEnd(1);
     }
     catch (error) {
         console.log(error + ",load fonts failed!")

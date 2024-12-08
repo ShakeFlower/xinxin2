@@ -2556,11 +2556,28 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 						]
 					},
 					{
+						"text": "接收在线评论",
+						"action": [
+							{
+								"type": "function",
+								"function": "function(){\n// if (!core.isReplaying()) {\n// \tcore.plugin.getComment();\n// \tsetTimeout(core.plugin.drawCommentSign, 1000);\n// }\n}"
+							}
+						]
+					},
+					{
 						"text": "发送在线评论",
 						"action": [
 							{
 								"type": "function",
 								"function": "function(){\ncore.plugin.getAchievement(30);\n}"
+							},
+							{
+								"type": "input2",
+								"text": "请输入要发送的评论，文明友善发言，拒绝放假、剧透。发送后需要再次接收才能看见自己的评论。"
+							},
+							{
+								"type": "function",
+								"function": "function(){\n// if (!core.isReplaying()) {\n// \tcore.plugin.getComment();\n// \tsetTimeout(core.plugin.drawCommentSign, 1000);\n// }\n}"
 							}
 						]
 					},

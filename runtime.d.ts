@@ -777,7 +777,7 @@ declare class control {
     resumeBgm(resumeTime?: number): void
 
     /** 设置背景音乐的播放速度和音调 */
-    setBgmSpeed(speed: number, usePitch?: bool): void
+    setBgmSpeed(speed: number, usePitch?: boolean): void
 
     /** 设置音乐图标的显隐状态 */
     setMusicBtn(): void
@@ -1003,10 +1003,10 @@ declare class events {
      * @param time 移动用时，单位为毫秒。不填视为1秒
      * @param callback 图片移动完毕后的回调函数，可选
      */
-    rotateImage(code: number, center?: [number?, number?], angle: number, moveMode?: string, time?: number, callback?: () => void): void
+    rotateImage(code: number, center?: [number?, number?], angle?: number, moveMode?: string, time?: number, callback?: () => void): void
 
     /** 放缩一张图片 */
-    scaleImage(code: number, center?: [Number?, number?], scale: number, moveMode?: string, time?: number, callback?: () => void): void
+    scaleImage(code: number, center?: [Number?, number?], scale?: number, moveMode?: string, time?: number, callback?: () => void): void
 
     /**
      * 绘制一张动图或擦除所有动图
@@ -1263,7 +1263,7 @@ declare class events {
     clearTextBox(code: number): void
 
     /** 移动对话框 */
-    moveTextBox(code: number, loc: [number], relative: bool, moveMode?: string, time?: number, callback?: () => any): void
+    moveTextBox(code: number, loc: [number], relative: boolean, moveMode?: string, time?: number, callback?: () => any): void
 
     /** 设置文件别名 */
     setNameMap(name: string, value?: string): void
@@ -2157,7 +2157,7 @@ declare class ui {
     rotateCanvas(name: string, angle: number, centerX?: number, centerY?: number): void
 
     /** 删除一个自定义画布 */
-    deleteCanvas(name: string | ((name: string) => bool)): void
+    deleteCanvas(name: string | ((name: string) => boolean)): void
 
     /** 清空所有的自定义画布 */
     deleteAllCanvas(): void
@@ -2703,7 +2703,7 @@ declare class ButtonBase {
      * @param w 按钮的宽度
      * @param h 按钮的高度
      */
-    constructor(name: string, x: number, y: number, w: number, h: number): ButtonBase
+    constructor(name: string, x: number, y: number, w: number, h: number);
     /** 按钮名称 */
     name: string;
     /** 按钮左上角的x坐标 */
@@ -2738,7 +2738,7 @@ declare class MenuBase {
     /**
      * 构造函数
      */
-    constructor(name: string): MenuBase
+    constructor(name: string);
 
     /** 页面名称,将用作画布名称 */
     name: string
