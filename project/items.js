@@ -2644,8 +2644,8 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 		"cls": "constants",
 		"name": "查看成就",
 		"canUseItemEffect": "true",
-		"text": "你的当前成就点数为 ${flags.achieveScore}",
-		"useItemEffect": "core.plugin.openAchievementMenu();"
+		"text": "",
+		"useItemEffect": ""
 	},
 	"I490": {
 		"cls": "constants",

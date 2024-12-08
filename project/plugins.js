@@ -3750,7 +3750,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
     "自定义设置": function () {
 
 		const Button = this.Button;
-		const Menu = this.Menu;
 
 		const ctx = 'setting';
 
@@ -3851,7 +3850,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * @extends {MenuBase}
 		 */
-		class SettingMenu extends Menu {
+		class SettingMenu extends this.Menu {
 			constructor() {
 				super(ctx);
 				/** 当前选中的选项的名字
@@ -4041,10 +4040,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag('hotkeyData', hotkeyData);
 		 */
 
-		const ctx = 'actionSet';
+		const ctx = 'skillPreset';
 
 		const Button = this.Button;
-		const Menu = this.Menu;
 
 		/**
 			 * 绘制选框背景
@@ -4110,7 +4108,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * @extends {MenuBase}
 		 */
-		class PresetMenu extends Menu {
+		class PresetMenu extends this.Menu {
 			constructor() {
 				super(ctx);
 				/** 当前在绘制第几页*/
@@ -4456,7 +4454,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						+ '\r\\c\n' + list[this.pickedBtn][1];
 					core.ui.drawTextContent(ctx, str,
 						{
-							'left': 0, 'top': 337, 'align': 'center', 'fontSize': (this.pickedBtn === 7) ? 10 : 14,
+							'left': 0, 'top': 337, 'align': 'center',
+							'fontSize': ([0, 7, 17].includes(this.pickedBtn)) ? 10 : 14,
 						});
 					core.setTextAlign(ctx, 'start');
 				}
@@ -4494,6 +4493,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		this.resetFinish = function () {
 			if (core.isReplaying()) return;
 			core.setLocalStorage("finish", getdefaultList());
+			core.setLocalStorage("finishTime", getdefaultList());
 			core.playSound('achievement.mp3');
 			core.drawTip('成就已清空！');
 		}
@@ -6694,7 +6694,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * todolist:
-		 * 实现界面统一
 		 * 实现多重楼传，杀掉已有的回城楼传 ?
 		 * 实现tips界面
 		 * 实现新的伤害跳出
