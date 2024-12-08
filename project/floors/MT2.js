@@ -65,18 +65,6 @@ main.floors.MT2=
                     }
                 ]
             }
-        ],
-        "8,2": [
-            {
-                "type": "function",
-                "function": "function(){\nconst towerName = \"slmwarbyshadow\";\nvar form = new FormData();\nform.append('type', 1);\nform.append('towername', towerName);\nform.append('id', '2324');\nform.append('password', '77c8fd5ff49c370342e4472ebdda5903');\nutils.prototype.http(\n\t'POST', // 请求类型\n\t'https://h5mota.com/backend/tower/barrage.php', // 完整 URL\n\tform, // 表单数据\n\tfunction (response) { // 成功回调\n\t\tconsole.log(\"Success:\", response);\n\t},\n\tfunction (error) { // 错误回调\n\t\tconsole.error(\"Error:\", error);\n\t},\n\tnull, // MIME 类型 (如果不需要特别设置则为 null)\n\tnull, // 响应类型 (如果不需要特别设置则为 null)\n\tnull\n);\n}"
-            }
-        ],
-        "7,2": [
-            {
-                "type": "function",
-                "function": "function(){\nconst towerName = \"xinxin2\";\nvar form = new FormData();\nform.append('type', 2);\nform.append('towername', towerName);\nform.append('id', '2324');\nform.append('password', '77c8fd5ff49c370342e4472ebdda5903');\nform.append('comment', '测试');\nform.append('tags', [core.status.floorId, core.getHeroLoc('x'), core.getHeroLoc('y')]);\nutils.prototype.http(\n\t'POST', // 请求类型\n\t'https://h5mota.com/backend/tower/barrage.php', // 完整 URL\n\tform, // 表单数据\n\tfunction (response) { // 成功回调\n\t\tconsole.log(\"Success:\", response);\n\t},\n\tfunction (error) { // 错误回调\n\t\tconsole.error(\"Error:\", error);\n\t},\n\tnull, // MIME 类型 (如果不需要特别设置则为 null)\n\tnull, // 响应类型 (如果不需要特别设置则为 null)\n\tnull\n);\n}"
-            }
         ]
     },
     "changeFloor": {
@@ -96,7 +84,7 @@ main.floors.MT2=
     "map": [
     [343,343,343,343,343,343,343,343,343,343,343,343,343],
     [343, 21, 28,  0,202,  1, 88,  1,  1,344,  4,361,343],
-    [343, 32,  0,  1,205,  1,  0,418,418,  1,344,344,343],
+    [343, 32,  0,  1,205,  1,  0,  1,  1,  1,344,344,343],
     [343, 21,  0,  1,202,  1,  0,361,  0,201, 28,  4,343],
     [343, 27,201,  1,361,  1,  0,  0,  0,202,201, 27,343],
     [343,  1, 22,  1,  0,  1,  0,  0,  1,  4,344,  4,343],

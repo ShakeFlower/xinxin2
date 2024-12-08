@@ -187,6 +187,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.visitFloor(floorId);
 		}
 	}
+	if (!core.isReplaying()) {
+		core.plugin.clearCommentSign();
+		core.plugin.drawCommentSign();
+	}
 },
         "flyTo": function (toId, callback) {
 	// 楼层传送器的使用，从当前楼层飞往toId
@@ -2116,6 +2120,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.insertAction({ "type": "moveAction" }, null, null, null, true);
 	}
 
+	if (!core.isReplaying()) {
+		core.plugin.showComment(nowx, nowy);
+	}
 	// ------ 检查目标点事件 END ------ //
 
 	// 如需强行终止行走可以在这里条件判定：
@@ -2147,6 +2154,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.drawHero();
 		// 记录录像
 		core.status.route.push("move:" + x + ":" + y);
+
+		if (!core.isReplaying()) {
+			core.plugin.showComment(x, y);
+		}
 		// 统计信息
 		core.status.hero.statistics.moveDirectly++;
 		core.status.hero.statistics.ignoreSteps += ignoreSteps;

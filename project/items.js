@@ -2560,7 +2560,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 						"action": [
 							{
 								"type": "function",
-								"function": "function(){\n// if (!core.isReplaying()) {\n// \tcore.plugin.getComment();\n// \tsetTimeout(core.plugin.drawCommentSign, 1000);\n// }\n}"
+								"function": "function(){\nif (!core.isReplaying()) {\n\tcore.plugin.getComment();\n\tsetTimeout(core.plugin.drawCommentSign, 1000);\n}\n}"
 							}
 						]
 					},
@@ -2577,7 +2577,7 @@ var items_296f5d02_12fd_4166_a7c1_b5e830c9ee3a =
 							},
 							{
 								"type": "function",
-								"function": "function(){\n// if (!core.isReplaying()) {\n// \tcore.plugin.getComment();\n// \tsetTimeout(core.plugin.drawCommentSign, 1000);\n// }\n}"
+								"function": "function(){\nconst input = core.getFlag('input', '');\nconst tags = [core.status.floorId,\n\tcore.getHeroLoc().x.toString(), core.getHeroLoc().y.toString()\n]\nif (!core.isReplaying()) {\n\tcore.plugin.postComment(input, tags);\n}\n}"
 							}
 						]
 					},

@@ -3858,9 +3858,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			drawContent() {
 				drawSetting(ctx);
-				this.btnList.forEach((button) => {
-					button.draw();
-				})
+				this.btnList.forEach((button) => { button.draw(); })
 				core.ui.drawTextContent(ctx, this.hint || '', {
 					left: 40, top: 75, bold: false, color: "white",
 					align: "left", fontSize: 12, maxWidth: 340
@@ -3919,6 +3917,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.fillText(ctx, '预设技能', x + 6, y + 16, '#555555', '14px Verdana');
 			};
 			btnList.set('openPreSet', openPreSetButton);
+			const openAchieveButton = new Button('openAchieve', 300, 180, 70, 25);
+			openAchieveButton._draw = function () {
+				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+				core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+				core.strokeRect(ctx, x, y, w, h, '#888888');;
+				core.fillText(ctx, '成就一览', x + 6, y + 16, '#555555', '14px Verdana');
+			};
+			btnList.set('openAchieve', openAchieveButton);
 			settingMenu.btnList = btnList;
 			settingMenu.keyEvent = function (keyCode) {
 				const button = this.btnList.get(this.pickedBtn);
@@ -3958,6 +3964,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return new Promise((res) => {
 				const settingMenu = initSettingMenu();
 				const preSetMenu = core.plugin.initPreSetMenu();
+				const achieveMenu = core.plugin.initAchieveMenu();
 				settingMenu.end = function () {
 					settingMenu.clear();
 					res();
@@ -3966,10 +3973,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					preSetMenu.clear();
 					res();
 				}
+				achieveMenu.end = function () {
+					achieveMenu.clear();
+					res();
+				}
 				const openPreSetBtn = settingMenu.btnList.get('openPreSet');
 				openPreSetBtn.event = function () {
 					settingMenu.clear();
 					preSetMenu.init();
+				}
+				const openAchieveBtn = settingMenu.btnList.get('openAchieve');
+				openAchieveBtn.event = function () {
+					settingMenu.clear();
+					achieveMenu.init();
 				}
 				settingMenu.init();
 			});
@@ -4126,7 +4142,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 				this.btnList.get('pageUp').disable = this.rowCount * (this.page + 1) >= l;
 				this.btnList.get('pageDown').disable = this.page === 0;
-				this.btnList.forEach((button) => { button.draw(); })
+				this.btnList.forEach((button) => { button.draw(); });
 			}
 
 			// 清空画布
@@ -4255,7 +4271,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			quitButton.event = function () { presetMenu.end(); }
 
-			recordBtn.event = presetMenu.beginRecord.bind(presetMenu);;
+			recordBtn.event = presetMenu.beginRecord.bind(presetMenu);
 			deleteBtn.event = presetMenu.deleteData.bind(presetMenu);
 			pageDownBtn.event = presetMenu.pageDown.bind(presetMenu);
 			pageUpBtn.event = presetMenu.pageUp.bind(presetMenu);
@@ -4323,98 +4339,176 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	},
     "成就": function () {
-		// 在此增加新插件
 
 		const PX = core.__PIXELS__,
 			PY = core.__PIXELS__;
 
-		//， 成就界面
-		let // 成就列表 0索引 1名称 2完成前描述 3完成后的描述 4完成情况 （0为未完成 1-完成）
-			type = 1, // 当前类型
-			first = 0, // 成就栏中显示的第一个成就的数组索引
-			point = 0; //完成的成就数
 		// 定义成就
 		const list = [
-			[0, "幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福...", '2865'],
-			[1, "白银狙击手", "白银怪物？在我面前不值一提！", '2867'],
-			[2, "大难不死", "哇...不怕不怕...", '2869'],
-			[3, "肉盾", "一打十根本不成问题的呢", '2871'],
-			[4, "起死回生", "我感觉死去活来！！", '2873'],
-			[5, "炼金术师", "什么？我刚刚有撞到什么吗？硬硬的", '2875'],
-			[6, "冰冷的人", "不要离我这么远嘛...虽然我的身体很冰...", '2877'],
-			[7, "命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？", '2879'],
-			[8, "攻击姿态", "再硬的东西我都打得破！来试试看吧！", '2881'],
-			[9, "防守姿态", "有人能打破我的防守吗？", '2883'],
-			[10, "熔炉", "有了这东西打白银怪物就很有效率了", '2885'],
-			[11, "冰冷的手", "呼...手很冰...", '2887'],
-			[12, "三相之力", "白银怪物？杀个稀巴烂！", '2889'],
-			[13, "剑大师", "我的剑技很华丽吧", '2891'],
-			[14, "盾大师", "你有什么方法攻击我都有方法防守！", '2893'],
-			[15, "捐血站", "卖血！卖血！有人买吗？", '2895'],
-			[16, "持匙人", "这些锁匙是开哪些门的？", '2897'],
-			[17, "健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事...", '2899'],
-			[18, "一代宗师", "我要开班授徒的话有人会来加入吗？", '2901'],
-			[19, "宝石矿工", "干了这么久矿工，终于发现好东西了～～", '2903'],
-			[20, "国家大事", "什么事都不比国家大事重要吧！", '2905'],
-			[21, "职业冒险家", "去冒险就是要做足准备！", '2907'],
-			[22, "开采矿工", "嗄嗄...采矿其实颇辛苦的", '2909'],
-			[23, "心灵相通", "我知道你在想什么！", '2911'],
-			[24, "天上之住民", "传说以前的人都是能在空中飞翔的", '2913'],
-			[25, "透视", "嘻嘻...什么都看到了...", '2915'],
-			[26, "小叮当", "你其实是小叮当吧？！", '2917'],
-			[27, "异常状态", "初尝异常状态...感觉不错(嗯)", '2919'],
-			[28, "攻略本", "你一定是看着攻略玩的！", '2921'],
-			[29, "神之防护", "我的防御像神一般！直到我中了一箭...", '2923'],
-			[30, "出门靠朋友", "在家靠父母，出门靠朋友！", '2925'],
-			[31, "投入战斗", "热身差不多完毕了！！", '2927'],
-			[32, "见习剑士", "真想快点试试学到的剑术！", '2929'],
-			[33, "防守入门", "防守？是这样这样的吗？", '2931'],
-			[34, "圣水加护", "感谢圣水的帮助！", '2933'],
-			[35, "圣神的加护", "我简直像受到圣神般的帮助", 'N483', '2935'],
-			[36, "弑神者", "遇神杀神！！谁也阻不到我！", 'N484', '2937'],
-			[37, "勇者斗恶龙", "这是传说中的恶龙吗？太强大了", '2939'],
-			[38, "智能施法", "用技也要用得有技巧有智慧！你说对不？", '2941'],
-			[39, "我不打了！", "很麻烦！我不打了！！！！！！！！！！！", '2943'],
-			[40, "病入膏肓", "谁可来救救我.....啊！原来我袋中有药...", '2945'],
-			[41, "凝神储息", "......暂先时不要影响我......", '2947'],
-			[42, "大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈", '2949'],
-			[43, "学有所成", "只学不实践的话还是不太足够吧？", '2951'],
-			[44, "守财奴", "钱要用才是钱！钱！", '2953'],
+			["幻之虹币", "传说白银一族至高之宝，获得者将会得到白银怪物的无限祝福...", '2865'],
+			["白银狙击手", "白银怪物？在我面前不值一提！", '2867'],
+			["大难不死", "哇...不怕不怕...", '2869'],
+			["肉盾", "一打十根本不成问题的呢", '2871'],
+			["起死回生", "我感觉死去活来！！", '2873'],
+			["炼金术师", "什么？我刚刚有撞到什么吗？硬硬的", '2875'],
+			["冰冷的人", "不要离我这么远嘛...虽然我的身体很冰...", '2877'],
+			["命运窥视者", "我从水晶球中看到我的命运了...什么？！这水晶球不是这样使用的吗？", '2879'],
+			["攻击姿态", "再硬的东西我都打得破！来试试看吧！", '2881'],
+			["防守姿态", "有人能打破我的防守吗？", '2883'],
+			["熔炉", "有了这东西打白银怪物就很有效率了", '2885'],
+			["冰冷的手", "呼...手很冰...", '2887'],
+			["三相之力", "白银怪物？杀个稀巴烂！", '2889'],
+			["剑大师", "我的剑技很华丽吧", '2891'],
+			["盾大师", "你有什么方法攻击我都有方法防守！", '2893'],
+			["捐血站", "卖血！卖血！有人买吗？", '2895'],
+			["持匙人", "这些锁匙是开哪些门的？", '2897'],
+			["健谈的人", "我真的很喜欢跟别人说个不停，不好了！忘了要先做正经事...", '2899'],
+			["一代宗师", "我要开班授徒的话有人会来加入吗？", '2901'],
+			["宝石矿工", "干了这么久矿工，终于发现好东西了～～", '2903'],
+			["国家大事", "什么事都不比国家大事重要吧！", '2905'],
+			["职业冒险家", "去冒险就是要做足准备！", '2907'],
+			["开采矿工", "嗄嗄...采矿其实颇辛苦的", '2909'],
+			["心灵相通", "我知道你在想什么！", '2911'],
+			["天上之住民", "传说以前的人都是能在空中飞翔的", '2913'],
+			["透视", "嘻嘻...什么都看到了...", '2915'],
+			["小叮当", "你其实是小叮当吧？！", '2917'],
+			["异常状态", "初尝异常状态...感觉不错(嗯)", '2919'],
+			["攻略本", "你一定是看着攻略玩的！", '2921'],
+			["神之防护", "我的防御像神一般！直到我中了一箭...", '2923'],
+			["出门靠朋友", "在家靠父母，出门靠朋友！", '2925'],
+			["投入战斗", "热身差不多完毕了！！", '2927'],
+			["见习剑士", "真想快点试试学到的剑术！", '2929'],
+			["防守入门", "防守？是这样这样的吗？", '2931'],
+			["圣水加护", "感谢圣水的帮助！", '2933'],
+			["圣神的加护", "我简直像受到圣神般的帮助", '2935'],
+			["弑神者", "遇神杀神！！谁也阻不到我！", '2937'],
+			["勇者斗恶龙", "这是传说中的恶龙吗？太强大了", '2939'],
+			["智能施法", "用技也要用得有技巧有智慧！你说对不？", '2941'],
+			["我不打了！", "很麻烦！我不打了！！！！！！！！！！！", '2943'],
+			["病入膏肓", "谁可来救救我.....啊！原来我袋中有药...", '2945'],
+			["凝神储息", "......暂时先不要影响我......", '2947'],
+			["大屠杀", "杀啊杀啊，所有怪物都逃不出我的手掌心！哈哈", '2949'],
+			["学有所成", "只学不实践的话还是不太足够吧？", '2951'],
+			["守财奴", "钱要用才是钱！钱！", '2953'],
 		];
-		const defaultList = Array(list.length).fill(0);
+		function getdefaultList() { return Array(list.length).fill(0); }
 
-		// 统计已完成成就数量
-		function getAchPoint(finish) {
-			let point = 0;
-			for (let i = 0; i < list.length; i++) {
-				// 获得完成情况
-				if (finish[i] > 0) { point++; }
+		const ctx = 'achievement';
+
+		function drawSetting(ctx) {
+			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.clearMap(ctx);
+			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.ui.fillText(ctx, "成就", 185, 55, 'white', '20px Verdana');
+
+			let row = 0, column = 0;
+			for (let i = 0, l = list.length; i < l; i++) {
+				core.setAlpha(ctx, finish[i] ? 1 : 0.2);
+				core.drawImage(ctx, list[i][2] + '.png', 50 + 40 * column, 70 + 40 * row, 36, 36);
+				if (++column > 7) {
+					column = 0;
+					row++;
+				}
 			}
-			return point;
+		}
+
+		const Button = this.Button;
+
+		/**
+		 * @extends {MenuBase}
+		 */
+		class AchieveMenu extends this.Menu {
+			constructor() {
+				super();
+				/** 画布名称 */
+				this.name = 'achievement'
+				// 当前选中了第几个徽章，-1表示未选中
+				this.pickedBtn = -1;
+			}
+
+			drawContent() {
+				drawSetting(this.name);
+				const finish = core.getLocalStorage("finish", getdefaultList());
+				if (this.pickedBtn >= 0 && this.pickedBtn < list.length) {
+					core.setTextAlign(ctx, 'center');
+					core.strokeRoundRect(ctx, 35, 335, core.__PIXELS__ - 70, 45, 3, "white");
+					core.fillRoundRect(ctx, 35.5, 336, core.__PIXELS__ - 71, 43, 3, "#555555");
+					core.ui.fillText(ctx, list[this.pickedBtn][0], 208, 324, 'white', '20px Verdana');
+					const finishTime = core.getLocalStorage("finishTime", getdefaultList());
+					let finishInfo = '已完成';
+					const currTime = finishTime[this.pickedBtn];
+					if (typeof currTime === 'object') {
+						finishInfo = '已于' + currTime.year + '/' + currTime.month + '/' + currTime.day
+							+ ' ' + currTime.hours + '时' + currTime.minutes + '分' + currTime.seconds + '秒' + '完成';
+					}
+					let str = '\\c[12]' + (finish[this.pickedBtn] ? ('\r[lime]' + finishInfo) : '\r[tomato]未完成')
+						+ '\r\\c\n' + list[this.pickedBtn][1];
+					core.ui.drawTextContent(ctx, str,
+						{
+							'left': 0, 'top': 337, 'align': 'center', 'fontSize': (this.pickedBtn === 7) ? 10 : 14,
+						});
+					core.setTextAlign(ctx, 'start');
+				}
+				this.btnList.forEach((button) => { button.draw(); });
+			}
+		}
+
+		this.initAchieveMenu = function () {
+			const achieveMenu = new AchieveMenu();
+			const chooseBtn = new Button('choose', 50, 70, 320, 240),
+				quitButton = new Button('quit', 335, 40, 40, 16);
+
+			quitButton._draw = function () {
+				core.ui.fillText(ctx, '[退出]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
+			}
+			chooseBtn.event = function (x, y, px, py) {
+				const row = Math.floor((px - 50) / 40),
+					column = Math.floor((py - 70) / 40),
+					index = 8 * column + row;
+				if (index >= 0 && index < list.length) {
+					if (achieveMenu.pickedBtn === index) {
+						achieveMenu.pickedBtn = -1;
+					}
+					else achieveMenu.pickedBtn = index;
+				}
+				achieveMenu.drawContent();
+			}
+			quitButton.event = function () { achieveMenu.end(); }
+
+			achieveMenu.btnList = new Map([['choose', chooseBtn], ['quit', quitButton]]);
+			return achieveMenu;
 		}
 
 		// 重置成就获得情况
 		this.resetFinish = function () {
 			if (core.isReplaying()) return;
-			core.setLocalStorage("finish", defaultList);
+			core.setLocalStorage("finish", getdefaultList());
 			core.playSound('achievement.mp3');
 			core.drawTip('成就已清空！');
-
-		}
-
-		this.hasAchievement = function (index) {
-			if (core.isReplaying()) return false;
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-			return finish[index] > 0;
 		}
 
 		// 获得成就
 		this.getAchievement = function (index, test) {
 			if (core.hasFlag("debug") || core.isReplaying()) return;
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
+			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
 			if (finish[index] > 0 && !test) return; // 成就已完成
 			finish[index] = 1;
 			core.setLocalStorage("finish", finish);
+
+			let finishTime = core.getLocalStorage("finishTime", getdefaultList());
+			const now = new Date();
+			const currTime = {
+				year: now.getFullYear(),
+				month: ('0' + (now.getMonth() + 1)).slice(-2),
+				day: ('0' + now.getDate()).slice(-2),
+				hours: ('0' + now.getHours()).slice(-2),
+				minutes: ('0' + now.getMinutes()).slice(-2),
+				seconds: ('0' + now.getSeconds()).slice(-2),
+			}
+			finishTime[index] = currTime;
+			core.setLocalStorage("finishTime", finishTime);
 
 			const canvas = "achievementEffect";
 			core.playSound('achievement.mp3');
@@ -4422,10 +4516,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setTextAlign(canvas, "center");
 			core.drawWindowSkin("winskin.png", canvas,
 				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-			core.drawImage(canvas, list[index][3].toString() + '.png', 126, 80); // 换成各自的图标
+			core.drawImage(canvas, list[index][2].toString() + '.png', 126, 80); // 换成各自的图标
 			core.fillText(canvas, "获得成就", 230, 120 * 13 / 15,
 				"cyan", "24px " + core.status.globalAttribute.font);
-			core.fillText(canvas, list[index][1], 220, 160 * 13 / 15,
+			core.fillText(canvas, list[index][0], 220, 160 * 13 / 15,
 				"#FFFFFF", "20px " + core.status.globalAttribute.font);
 			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
 				delete core.animateFrame.asyncId[fade];
@@ -4434,145 +4528,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}, 1000);
 			core.animateFrame.asyncId[fade] = true;
 		};
-
-		// 绘制成就页面
-		function drawAchievement() {
-			let finish = core.getLocalStorage("finish", defaultList); // 完成情况
-			// 创建和清空画布
-			core.createCanvas("achievement", 0, 0, PX, PY, 130);
-			core.clearMap("achievement");
-			core.drawWindowSkin("winskin.png", "achievement", 0, 0, PX, PY)
-			// 背景
-			core.fillRect("achievement", 0, 0, PX, PY, [0, 0, 0, 0.9]);
-			core.drawLine("achievement", 0, 70, PX, 70, "#BBBBBB", 3);
-			core.drawLine("achievement", 0, 121, PX, 121, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 173, PX, 173, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 225, PX, 225, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 277, PX, 277, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 329, PX, 329, "#BBBBBB", 1);
-			core.drawLine("achievement", 0, 381, PX, 381, "#BBBBBB", 3);
-			core.setTextAlign("achievement", "center");
-			core.fillText("achievement", "名称", 28, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "描述", 217, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "完成情况", 377, 65, "#FFFFFF", "15px " + core.status.globalAttribute.font);
-			core.setTextAlign("achievement", "left");
-			core.fillText("achievement", "当前成就完成：" + getAchPoint(finish) + '/20', 234, 401, "#FFFFFF", "18px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "↓", 165, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "↑", 199, 401, "#FFFFFF", "20px " + core.status.globalAttribute.font);
-			// 绘制成就类型
-
-			core.fillText("achievement", "成就一览", 180, 43, [255, 255, 255, 1], "22px " + core.status.globalAttribute.font);
-			core.fillText("achievement", "[退出]", 350, 43, [255, 255, 255, 1], "18px " + core.status.globalAttribute.font);
-
-			drawDetail(list, finish);
-		}
-
-		// 绘制成就信息
-		function drawDetail(achType, finish) {
-			for (let i = first; i < 6 + first; i++) {
-				if (achType[i] == null) break;
-				// 名称
-				core.setTextAlign("achievement", "left");
-				if (finish[i] === 0) {
-					core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, [200, 200, 200, 0.6], "20px " + core.status.globalAttribute.font, 120);
-				} else {
-					core.fillText("achievement", achType[i][1], 9, 52 * (i - first) + 104, "#FFFFFF", "20px " + core.status.globalAttribute.font, 120);
-				}
-				// 说明
-				if (finish[i] === 0) {
-					let config = {
-						left: 129,
-						top: 52 * (i - first) + 89,
-						maxWidth: 227,
-						color: [200, 200, 200, 0.5],
-						fontSize: 15,
-					},
-						height = core.getTextContentHeight(achType[i][2], config);
-					if (height > 25) {
-						config.top -= 10;
-					}
-					core.drawTextContent("achievement", achType[i][2], config);
-				} else { // 自动放缩
-					let config = {
-						left: 129,
-						top: 52 * (i - first) + 89,
-						maxWidth: 227,
-						color: "#FFFFFF",
-						fontSize: 15,
-					},
-						height = core.getTextContentHeight(achType[i][2], config);
-					if (height > 25) {
-						config.top -= 10;
-					}
-					core.drawTextContent("achievement", achType[i][2], config);
-				}
-				// 成就点
-				core.setTextAlign("achievement", "center");
-				if (finish[i] === 0) {
-					core.setAlpha("achievement", 0.3);
-					core.drawImage("achievement", achType[i][3] + '.png', 377, 52 * (i - first) + 80, 32, 32);
-					core.setAlpha("achievement", 1);
-				} else {
-					core.drawImage("achievement", achType[i][3] + '.png', 377, 52 * (i - first) + 80, 32, 32);
-				}
-			}
-		}
-
-		function drawAchievementMenu() {
-			return new Promise((res) => {
-				function finish() {
-					core.deleteCanvas('achievement');
-					core.unregisterAction('ondown', 'achievementMenuClick');
-					core.unregisterAction('keyDown', 'achievementMenuKey');
-					res();
-				}
-
-				core.registerAction('ondown', 'achievementMenuClick', (x, y, px, py) => {
-					if (px >= 147 && px <= 182 && py >= 377 && py <= 402) { // 下翻
-						if (first <= list.length - 7) first++;
-					} else if (px >= 191 && px <= 225 && py >= 377 && py <= 402) { // 上翻
-						if (first != 0) {
-							first--;
-						}
-					} else {
-						if (px >= 350 && px <= 400 && py >= 25 && py <= 45) { // 退出
-							finish();
-							return;
-						}
-					}
-					drawAchievement();
-				}, 100);
-
-				core.registerAction('keyDown', 'achievementMenuKey', (keyCode) => {
-					switch (keyCode) {
-						case 38: // Up
-							if (first !== 0) first--;
-							break;
-						case 40: // Down
-							if (first <= list.length - 7) first++;
-							break;
-						case 27: // Esc
-						case 81: // q
-						case 8: // BackSpace
-							finish();
-							return;
-					}
-					drawAchievement();
-				}, 100);
-
-				drawAchievement();
-			})
-		}
-
-		this.openAchievementMenu = async function () {
-			if (core.isReplaying()) return;
-			core.setFlag('noOpenMenu', true); //禁止Esc打开菜单栏
-			core.lockControl();
-			await drawAchievementMenu();
-			core.setFlag('noOpenMenu', false);
-			core.unlockControl();
-		}
-
 	},
     "动态火焰": function () {
 
@@ -4736,95 +4691,95 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	},
     "跳字插件": function () {
-		// 在此增加新插件
+	// 在此增加新插件
 
-		let sTextList = new Set([]);
-		const canvas = 'scroll';
-		const gravity = 0.2;
+	let sTextList = new Set([]);
+	const canvas = 'scroll';
+	const gravity = 0.2;
 
-		function drawScrollingText() {
-			core.ui.clearMap(canvas);
-			sTextList.forEach(
-				function (currText) {
-					core.setAlpha(canvas, currText.alpha);
-					core.fillText(canvas, currText.text, currText.x, currText.y,
-						currText.style, currText.font, currText.maxWidth)
-				}
-			)
-		}
-
-		class ScrollingText {
-			constructor(text, args) {
-				this.text = text;
-				this.x = args.x || 0;
-				this.y = args.y || 0;
-				this.x0 = args.x || 0;
-				this.y0 = args.y || 0;
-				this.style = args.style;
-				this.font = args.font;
-				this.maxWidth = args.maxWidth;
-				this.type = args.type || 'line';
-				this.vx = args.vx || 0;
-				this.vy = args.vy || 0;
-				this.t = 0;
-				this.tmax = args.tmax || 1000;
-				this.alpha = args.alpha || 1;
+	function drawScrollingText() {
+		core.ui.clearMap(canvas);
+		sTextList.forEach(
+			function (currText) {
+				core.setAlpha(canvas, currText.alpha);
+				core.fillText(canvas, currText.text, currText.x, currText.y,
+					currText.style, currText.font, currText.maxWidth)
 			}
-		}
+		)
+	}
 
-		this.addScrollingText = function (text, args) {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			let sText = new ScrollingText(text, args);
-			sTextList.add(sText);
+	class ScrollingText {
+		constructor(text, args) {
+			this.text = text;
+			this.x = args.x || 0;
+			this.y = args.y || 0;
+			this.x0 = args.x || 0;
+			this.y0 = args.y || 0;
+			this.style = args.style;
+			this.font = args.font;
+			this.maxWidth = args.maxWidth;
+			this.type = args.type || 'line';
+			this.vx = args.vx || 0;
+			this.vy = args.vy || 0;
+			this.t = 0;
+			this.tmax = args.tmax || 1000;
+			this.alpha = args.alpha || 1;
 		}
+	}
 
-		function updateScrollingText() {
-			sTextList.forEach(function (currText) {
-				switch (currText.type) {
-					case 'line':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						break;
-					case 'projectile':
-						currText.x += currText.vx;
-						currText.y += currText.vy;
-						currText.vy += gravity;
-						break;
-					case 'down':
-						if (currText.t < currText.tmax / 2) {
-							currText.x += currText.vx;
-							currText.y += currText.vy;
-						} else {
-							if (currText.alpha > 0.05)
-								currText.alpha -= 0.05;
-						}
+	this.addScrollingText = function (text, args) {
+		if (core.isReplaying()) return;
+		if (!core.getFlag('popDamage')) return;
+		let sText = new ScrollingText(text, args);
+		sTextList.add(sText);
+	}
+
+	function updateScrollingText() {
+		sTextList.forEach(function (currText) {
+			switch (currText.type) {
+			case 'line':
+				currText.x += currText.vx;
+				currText.y += currText.vy;
+				break;
+			case 'projectile':
+				currText.x += currText.vx;
+				currText.y += currText.vy;
+				currText.vy += gravity;
+				break;
+			case 'down':
+				if (currText.t < currText.tmax / 2) {
+					currText.x += currText.vx;
+					currText.y += currText.vy;
+				} else {
+					if (currText.alpha > 0.05)
+						currText.alpha -= 0.05;
 				}
-				currText.t++;
-				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-					currText.t > currText.tmax) {
-					sTextList.delete(currText);
-				}
-			})
-		}
-
-		// 每次切换楼层后执行
-		this.clearScrollingText = function () {
-			sTextList.clear();
-		}
-
-		core.plugin.registerAnimationInterval('scrollText', 10, () => {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			if (!core.dymCanvas[canvas]) {
-				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
 			}
-			updateScrollingText();
-			drawScrollingText();
-		});
+			currText.t++;
+			if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
+				currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
+				currText.t > currText.tmax) {
+				sTextList.delete(currText);
+			}
+		})
+	}
 
-	},
+	// 每次切换楼层后执行
+	this.clearScrollingText = function () {
+		sTextList.clear();
+	}
+
+	core.plugin.registerAnimationInterval('scrollText', 10, () => {
+		if (core.isReplaying()) return;
+		if (!core.getFlag('popDamage')) return;
+		if (!core.dymCanvas[canvas]) {
+			core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+		}
+		updateScrollingText();
+		drawScrollingText();
+	});
+
+},
     "回合制战斗": function () {
 
 		// #region 回合制战斗的具体过程 **************************************************
@@ -6730,9 +6685,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * 改进弹幕系统 改成core.http
+		 * todolist:
 		 * 实现界面统一
-		 * 实现多重楼传，杀掉已有的回城楼传
+		 * 实现弹幕功能
+		 * 实现多重楼传，杀掉已有的回城楼传 ?
 		 * 实现tips界面
 		 * 实现新的伤害跳出
 		 */
@@ -6762,7 +6718,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {Battle} battle
 		 */
 		function setPresetSkill(battle) {
-			console.log(111);
 			let presetSkill = core.getFlag('presetSkill', {});
 			const enemy = battle.enemy;
 			const [id, combo, maxTurn] = [enemy.id, enemy.combo, battle.turn];
@@ -6945,168 +6900,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	},
     "弹幕插件": function () {
 	// 在此增加新插件
-	if (core.isReplaying()) return;
-
-	// 		axios
-	// 			.post('/backend/tower/barrage.php', {})
-	// 			.then(function (res) { })
-	// 			.catch(function () { })
-
-	const towerName = "xinxin2";
-	const request = axios.create({
-		baseURL: 'https://h5mota.com',
-		timeout: 1000,
-		headers: {
-			"Content-Type": "application/x-www-form-urlencoded",
-			"Access-Control-Allow-Origin": "*",
-		}
-	})
-
-	//tags格式：[楼层名,x,y]
-
-	function reason(message) {
-		if (typeof (message) === 'string') return message;
-		else return '';
-	}
-
-	this.postComment = function (comment, tags) {
-		if (core.isReplaying()) return;
-		if (tags == null || tags == undefined) { tags = []; }
-		var form = new FormData();
-		form.append('type', 2);
-		form.append('towername', towerName);
-		form.append('comment', comment);
-		form.append('tags', tags);
-		form.append('id', 2324);
-		form.append('password', '77c8fd5ff49c370342e4472ebdda5903');
-
-		request({
-				method: 'post',
-				url: '/backend/tower/barrage.php',
-				data: form
-			})
-			.then(res => {
-				if (res?.data?.code === 0) {
-					core.drawTip('提交成功！')
-					core.playSound('item.mp3');
-				} else {
-					core.drawTip('提交失败！' + reason(res?.data?.message));
-					core.playSound('error.mp3');
-				}
-			})
-			.catch(err => {
-				core.drawTip('提交失败！' + reason(err?.message));
-				core.playSound('error.mp3');
-			})
-	}
-
-	this.getComment = function () {
-		if (core.isReplaying()) return;
-		var form = new FormData();
-		form.append('type', 1);
-		form.append('towername', towerName);
-		form.append('id', 2324);
-		form.append('password', '77c8fd5ff49c370342e4472ebdda5903');
-
-		request({
-				method: 'post',
-				url: '/backend/tower/barrage.php',
-				data: form
-			})
-			.then(res => {
-				console.log(res);
-				core.drawTip('接收成功！')
-				core.playSound('item.mp3');
-				let commentCollection = {};
-				const commentList = res?.data?.list;
-				for (let i = 0, l = commentList.length; i <= l - 1; i++) {
-					if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
-					const commentTags = commentList[i].tags;
-					const cFloorId = commentTags.split(',')[0],
-						cX = parseInt(commentTags.split(',')[1]),
-						cY = parseInt(commentTags.split(',')[2]);
-					if (0 <= cX && cX <= core._WIDTH_ - 1 && 0 <= cY && cY <= core._HEIGHT_ - 1 && core.floorIds.includes(cFloorId)) {
-						if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
-						const str = cX + ',' + cY;
-						if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
-						commentCollection[cFloorId][str].push(commentList[i]?.comment);
-					}
-				}
-				core.setFlag('commentCollection', commentCollection);
-			})
-			.catch(err => {
-				console.log(err);
-				core.drawTip('接收失败' + reason(err?.message));
-				core.playSound('error.mp3');
-			})
-	}
-
-	this.drawCommentSign = function () {
-		if (!core.getFlag('comment') || core.isReplaying()) return;
-		let commentCollection = core.getFlag('commentCollection', {}),
-			floorId = core.status.floorId;
-		core.createCanvas('sign', 0, 0, core._PX_, core._PY_, 120);
-		core.setOpacity('sign', 0.6);
-		if (commentCollection.hasOwnProperty(floorId)) {
-			for (let pos in commentCollection[floorId]) {
-				if (commentCollection[floorId][pos].length > 0) {
-					for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
-						if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
-							const x = pos.split(',')[0],
-								y = pos.split(',')[1];
-							core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	this.clearCommentSign = function () {
-		core.deleteCanvas('sign');
-	}
-
-	function pickComment(commentArr, showNum = 5) {
-		let showList = [];
-		if (commentArr.length <= showNum) { showList = commentArr; } else {
-			for (let i = 0; i <= showNum - 1; i++) {
-				const l = commentArr.length,
-					n = core.plugin.dice(l - 1);
-				showList.push(commentArr[n]);
-				commentArr.splice(n, 1);
-			}
-		}
-		return showList;
-	}
-
-	function drawComment(commentArr) {
-		for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
-			core.events.popStr(commentArr[i], 'white', core._PX_ + 20 * Math.random(),
-				core.plugin.dice(i + 1) * core._PY_ / (l + 1) + 40 * Math.random(), -2 + Math.random());
-		}
-	}
-
-	this.showComment = function (x, y) {
-		if (!core.getFlag('comment') || core.isReplaying()) return;
-		const commentCollection = core.getFlag('commentCollection', {});
-		const floorId = core.status.floorId,
-			str = x + ',' + y;
-		if (commentCollection.hasOwnProperty(floorId) &&
-			commentCollection[floorId].hasOwnProperty(str)) {
-			let commentArr = commentCollection[floorId][str].concat();
-			const showNum = 5;
-			const commentArrPicked = pickComment(commentArr, showNum);
-			drawComment(commentArrPicked);
-		}
-	}
-},
-    "弹幕插件2": function () {
-	// 在此增加新插件
 	const towerName = "xinxin2";
 
 	utils.prototype.http = function (type, url, formData, success, error, mimeType, responseType, onprogress, timeout) {
-		var xhr = new XMLHttpRequest();
+		let xhr = new XMLHttpRequest();
 		xhr.open(type, url, true);
 
 		xhr.timeout = timeout;
@@ -7138,20 +6935,24 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		else xhr.send();
 	}
 
-	this.getComment2 = function () {
+	this.getComment = function () {
 		let form = new FormData();
 		form.append('type', 1);
 		form.append('towername', towerName);
-		core.http(
+		utils.prototype.http(
 			'POST',
 			'https://h5mota.com/backend/tower/barrage.php',
 			form,
 			function (res) {
-				console.log("Success:", res);
+				res = JSON.parse(res);
+				console.log(res);
+				console.log(typeof res);
+				console.log(res["list"]);
 				core.drawTip('接收成功！')
 				core.playSound('item.mp3');
 				let commentCollection = {};
-				const commentList = res?.data?.list;
+				const commentList = res?.list;
+				console.log(commentList);
 				for (let i = 0, l = commentList.length; i <= l - 1; i++) {
 					if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
 					const commentTags = commentList[i].tags;
@@ -7169,16 +6970,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.setFlag('commentCollection', commentCollection);
 			},
 			function (err) {
-				console.error("Error:", err);
-				core.drawTip('接收失败' + reason(err?.message));
+				console.error(err);
+				core.drawTip('接收失败' + err?.message);
 				core.playSound('error.mp3');
 			},
 			null, null, null, 1000
 		);
 	}
 
-	this.postComment2 = function (comment, tags) {
-		var form = new FormData();
+	this.postComment = function (comment, tags) {
+		let form = new FormData();
 		form.append('type', 2);
 		form.append('towername', towerName);
 		form.append('comment', comment);
@@ -7188,18 +6989,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'https://h5mota.com/backend/tower/barrage.php',
 			form,
 			function (res) {
-				console.log("Success:", res);
-				if (res?.data?.code === 0) {
+				console.log(res);
+				if (res?.code === 0) {
 					core.drawTip('提交成功！')
 					core.playSound('item.mp3');
 				} else {
-					core.drawTip('提交失败！' + reason(res?.data?.message));
+					core.drawTip('提交失败！' + res?.message);
 					core.playSound('error.mp3');
 				}
 			},
 			function (err) {
-				console.error("Error:", err);
-				core.drawTip('接收失败' + reason(err?.message));
+				console.error(err);
+				core.drawTip('接收失败' + err?.message);
 				core.playSound('error.mp3');
 			},
 			null, null, null, 1000
