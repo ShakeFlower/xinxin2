@@ -106,14 +106,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"HG15",
 			"HG16",
 			"HG17",
-			"HG18",
-			"TU1",
-			"TU2",
-			"TU3",
-			"TU4",
-			"TU4b",
-			"TU5",
-			"TU5b"
+			"HG18"
 		],
 		"floorPartitions": [],
 		"images": [
