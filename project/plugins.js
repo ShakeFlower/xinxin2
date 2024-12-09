@@ -6840,11 +6840,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setTextAlign(ctx, "left");
 
 			// 绘制属性
-			core.fillText(ctx, '体力：', tx, ty, "white", textFont);
-			core.fillText(ctx, '攻击力：', tx, ty + textFontSize + lineHeight, "white", textFont);
-			core.fillText(ctx, '防御力：', tx, ty + 2 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '疲劳：', tx, ty + 3 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '气息：', tx - 50, ty + 4 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '体力', tx, ty, "white", textFont);
+			core.fillText(ctx, '攻击力', tx, ty + textFontSize + lineHeight, "white", textFont);
+			core.fillText(ctx, '防御力', tx, ty + 2 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '疲劳', tx, ty + 3 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '气息', tx - 50, ty + 4 * (textFontSize + lineHeight), "white", textFont);
 
 			core.setTextAlign(ctx, "left");
 			core.fillText(ctx, enemy.totalFatigue, tx - 30, ty + 3 * (textFontSize + lineHeight),
@@ -7551,7 +7551,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 每回合您攻击敌人和被攻击时都会回复气息。（展示： 角色挨打的动画 气息条，圈起来火焰）
 		 * 气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2
 		 * 下一页 跳过 -> 明白了 退出
-		 * 您可以在背包背包图标里的设置\i[xxx]中调整是否显示此提示信息。（）
+		 * 您可以在背包图标里的设置\i[xxx]中调整是否显示此提示信息。（）
 		 * 如果您是这个游戏的老手，您可以选择“跳过提示”
 		 * 
 		 * 技能与疲劳
@@ -7559,7 +7559,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
 		 * 
 		 * 岩浆
-		 * 岩浆会对你造成伤害
+		 * 走到岩浆上时，你会受到伤害
 		 * 当地图上存在岩浆阻碍时，使用快捷商店会立即触发传送！
 		 * 
 		 * 异常状态
@@ -7568,10 +7568,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 
 		 * 中毒会使你每走一步都掉血（并禁用楼传和快捷商店），衰弱会扣减你的攻防。
 		 * 你可以使用一些手段来解除异常状态!（瓶子）
-		 * 
-		 * 同层楼传
-		 * 当你在同一层连续使用楼传时，第一次会落在默认的楼传落点（以黄框表示）。
-		 * 若当前存在其它可到达的传送点（橙框），反复进行同层楼传将依次抵达这些地方
 		 * 
 		 * 实现新的伤害跳出
 		 * too hard 尝试一下高级动画插件 好的话弹幕绘制和成就界面跳出也可以改成这个 
