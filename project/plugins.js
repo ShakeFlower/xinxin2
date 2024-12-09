@@ -5878,7 +5878,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						hdamage = Math.round(1.3 * Math.max(this.atk - enemy.def, 1));
 						if (!hasSpecial(enemy.special, 64)) //魔神些多的死寂光环下角色不加气
 							this.mana += Math.round(enemy.mana / 2);
-						enemy.mana -= Math.round(enemy.mana / 2);
+						enemy.mana = 0;
 						atkStatus.animate = "gsw2";
 						break;
 					case 'd': //深红
@@ -6130,10 +6130,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const atkStatus = this.atkStatus;
 				const especial = this.special;
 				// 判断敌人是否暴击atkStatus.crit
-				if (this.mana >= this.manamax && hero.def - this.atk < hero.defm) {
-					//满气息时怪物释放必杀，但若不能破防主角则永远不会释放
+				if (this.mana >= this.manamax) {
+					//满气息时怪物释放必杀，
 					if (core.hasSpecial(especial, 91)) {
 						// 剑大师不会释放必杀
+						return;
+					}
+					if (hero.def - this.atk < hero.defm && !hasSpecial(this.special, [2, 55, 60, 61, 62, 63, 64, 65, 66])) {
+						// 不能破防主角则永远不会释放必杀，魔攻和弓手除外
 						return;
 					}
 					let critRatio = 2;
@@ -7554,12 +7558,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * 剑技 装备某个剑技后，条件满足时Z会亮起，此时可以发动对应技能
 		 * 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
 		 * 
+		 * 岩浆
+		 * 岩浆会对你造成伤害
+		 * 当地图上存在岩浆阻碍时，使用快捷商店会立即触发传送！
+		 * 
 		 * 异常状态
 		 * 一些特殊敌人有概率对你释放异常状态，这会增加你的异常计数
 		 * 每当异常计数达到100时，异常状态将被立即触发
 		 * 
 		 * 中毒会使你每走一步都掉血（并禁用楼传和快捷商店），衰弱会扣减你的攻防。
-		 * 你可以使用一些手段来解除异常状态!
+		 * 你可以使用一些手段来解除异常状态!（瓶子）
 		 * 
 		 * 同层楼传
 		 * 当你在同一层连续使用楼传时，第一次会落在默认的楼传落点（以黄框表示）。
@@ -7970,77 +7978,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"快捷楼传": function () {
-		// core.maps.canMoveDirectly
-
-		// 皇宫可以考虑平面楼传？
+	"楼传判定":function(){
 		/**
-		 * 我们有两个需求，一个是判断能不能到快捷商店（能否到达某个楼梯口）
-		 * 一个是判断当前层哪些楼梯口可到达
+		 * 快捷商店不用楼传一次的条件：当前直接可达某个楼梯口
 		 */
-
-		function canReachQuickShop() {
-			if (!core.status.thisMap) return false;
-			if (core.hasFlag('poison')) return false;
-			if (core.status.thisMap.blocks.some((ele) => ele.event.id === 'E337')) return false;
-
-		}
-
-		function canReachPoint(x1,y1,floorId1,x2,y2,floorId2) {
-			if (core.hasFlag('poison')) return false;
-			if (floorId1 === floorId2) return core.maps.canMoveDirectly()
-		}
-
-		this.canAccess = function (fromX,fromY,destX,destY) {
-			let locs = [[destX,destY]]
-			let ans = [], number = locs.length;
-		
-			if (!core.maps._canMoveDirectly_checkGlobal()) {
-				for (let i = 0; i < number; ++i) ans.push(-1);
-				return ans;
-			}
-			for (let i = 0; i < number; ++i) {
-				if (locs[i][0] == fromX && locs[i][1] == fromY) {
-					ans.push(0);
-					number--;
-				}
-				else if (locs[i][0] < 0 || locs[i][0] >= core.bigmap.width || locs[i][1] < 0 || locs[i][1] >= core.bigmap.height) {
-					ans.push(-1);
-					number--;
-				}
-				else ans.push(null);
-			}
-			if (number == 0) return ans;
-		
-			// 检查起点事件
-			if (!core.maps._canMoveDirectly_checkStartPoint(fromX, fromY)) {
-				for (let i in ans) {
-					if (ans[i] == null) ans[i] = -1;
-				}
-				return ans;
-			}
-		
-			return core.maps._canMoveDirectly_bfs(fromX, fromY, locs, number, ans);
-		}
-
-		function bfs(startingNode, getNeighbors) {
-			const visited = new Set(); 
-			const queue = []; 
-
-			visited.add(startingNode);
-			queue.push(startingNode);
-
-			while (queue.length > 0) {
-				const node = queue.shift(); 
-
-				const neighbors = getNeighbors || [];
-				for (let neighbor of neighbors) {
-					if (!visited.has(neighbor)) {
-						visited.add(neighbor);
-						queue.push(neighbor);
-					}
-				}
-			}
+		this.canGoQuickShop = function () {
+			const floorId = core.status.floorId;
+			core.extractBlocks(floorId);
+			const blocks = core.status.maps[floorId].blocks;
+			return blocks.some((block) =>
+				!block.disable && ['downFloor', 'upFloor'].includes(block.event.id)
+				&& core.maps.canMoveDirectly(block.x, block.y)
+			)
 		}
 	}
 }

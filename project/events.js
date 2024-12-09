@@ -424,19 +424,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -585,19 +591,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -899,19 +911,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -1060,19 +1078,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -1181,19 +1205,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -1280,19 +1310,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -1584,19 +1620,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -1745,19 +1787,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -2088,19 +2136,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
@@ -2219,19 +2273,25 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"true": [
 					{
 						"type": "if",
-						"condition": "core.status.maps[core.status.floorId].underGround",
+						"condition": "(!core.plugin.canGoQuickShop())",
 						"true": [
 							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "upFloor"
-							}
-						],
-						"false": [
-							{
-								"type": "changeFloor",
-								"floorId": ":now",
-								"stair": "downFloor"
+								"type": "if",
+								"condition": "core.status.maps[core.status.floorId].underGround",
+								"true": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "upFloor"
+									}
+								],
+								"false": [
+									{
+										"type": "changeFloor",
+										"floorId": ":now",
+										"stair": "downFloor"
+									}
+								]
 							}
 						]
 					}
