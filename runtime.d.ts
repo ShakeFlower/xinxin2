@@ -2763,9 +2763,6 @@ declare class MenuBase {
 
     /** 初始化绘制页面 */
     init(): void
-
-    /** 跳转至其它页面，清空画布和监听事件 */
-    jumpOff(): void
 }
 
 type core = {
@@ -2901,6 +2898,11 @@ type core = {
      * @example core.floors[core.status.floorId].events // 获得本楼层的所有自定义事件
      */
     floors: { [key: string]: Floor }
+
+    /** 
+     * 楼层名的数组
+     */
+    floorIds: string[]
 
     control: control
     loader: loader

@@ -4052,8 +4052,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
 			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
 			core.setAlpha(ctx, 1);
-			core.fillText(ctx, '设定快捷键后，按下Alt2~6切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
-			core.fillText(ctx, '手机段点击底部工具栏即可。', 40, 80, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '设定快捷键后，按下Alt2~7切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '手机段点击画面底部工具栏的空白处即可。', 40, 80, '#00DDFF', '14px Verdana');
 			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
@@ -4241,7 +4241,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
 				hotkey4Btn = new IconButton('btn4', 230, 345, 32, 32),
 				hotkey5Btn = new IconButton('btn5', 260, 345, 32, 32),
-				hotkey6Btn = new IconButton('btn6', 290, 345, 32, 32);
+				hotkey6Btn = new IconButton('btn6', 290, 345, 32, 32),
+				hotkey7Btn = new IconButton('btn7', 320, 345, 32, 32);
 
 			recordBtn._draw = function () {
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
@@ -4281,6 +4282,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			hotkey4Btn.event = () => { presetMenu.setHotKey(4); }
 			hotkey5Btn.event = () => { presetMenu.setHotKey(5); }
 			hotkey6Btn.event = () => { presetMenu.setHotKey(6); }
+			hotkey7Btn.event = () => { presetMenu.setHotKey(7); }
 			selectBtn.event = function (x, y, px, py) {
 				for (let i = 0; i <= 4; i++)
 					if (py >= this.y + 32 * i && py <= this.y + 32 * (i + 1)) {
@@ -4294,7 +4296,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			['pageDown', pageDownBtn], ['pageUp', pageUpBtn], ['select', selectBtn],
 			['quit', quitButton], ['hotkey2', hotkey2Btn], ['hotkey2', hotkey2Btn],
 			['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn], ['hotkey5', hotkey5Btn],
-			['hotkey6', hotkey6Btn],]);
+			['hotkey6', hotkey6Btn], ['hotkey7', hotkey7Btn]]);
 
 			presetMenu.keyEvent = function (keyCode) {
 				switch (keyCode) {
@@ -4481,6 +4483,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			quitButton.event = function () { achieveMenu.end(); }
 
 			achieveMenu.btnList = new Map([['choose', chooseBtn], ['quit', quitButton]]);
+			achieveMenu.keyEvent = function (keyCode) {
+				// 处理按键事件
+				if (keyCode === 27) this.end();
+			}.bind(settingMenu);
 			return achieveMenu;
 		}
 
@@ -4532,6 +4538,100 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}, 1000);
 			core.animateFrame.asyncId[fade] = true;
 		};
+	},
+	"引导界面":function(){
+		const ctx = 'tutorial';
+		const Button = this.Button;
+		/**
+		 * @extends MenuBase
+		 */
+		class TutorialMenu extends this.Menu{
+			constructor() {
+				super(ctx);
+				/** 当前绘制的图片列表 */
+				this.pageList = [];
+				/** 当前绘制的是第几页 */
+				this.page = 0;
+			}
+
+			drawContent() {
+				// 绘制一张图片 
+				// 绘制一个按钮
+				if (this.page >= 0 && this.page < this.pageList.length) {
+					core.ui.drawBackground(100, 100, 100, 100);
+					core.drawImage(ctx, this.pageList[this.page], 10, 10, 100, 100);
+				}
+				this.btnList.forEach((btn) => { btn.draw(); })
+			}
+
+			nextPage(){
+				if (this.page<this.pageList.length-1){
+					this.page++;
+				}
+				if (this.page===this.pageList.length-1){
+					this.btnList.get('next').disable = true;
+				}
+				this.drawContent();
+			}
+		}
+
+		function initTutorialMenu() {
+			return new Promise((res)=>{
+				const tutorialMenu = new TutorialMenu();
+				function quit(){
+					tutorialMenu.clear();
+					res();
+				}
+
+				const nextButton = new Button('next');
+				nextButton.draw = () => {
+					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+					core.strokeRect(ctx, x, y, w, h, '#888888');;
+					core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
+				};
+				nextButton.event = tutorialMenu.nextPage.bind(tutorialMenu);
+				const quitButton = new Button('quit');
+				quitButton.draw = () => { 
+					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+					core.strokeRect(ctx, x, y, w, h, '#888888');;
+					core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
+				};
+				quitButton.event = quit;
+				tutorialMenu.btnList = new Map([['next', nextButton], ['quit', quitButton]]);
+				tutorialMenu.keyEvent = function(keyCode){
+					switch (keyCode) {
+						case 13:
+						case 32:
+						case 67: //回车，空格，C键
+						case 39: // 右
+							if (this.page === this.pageList.length - 1) {
+								this.clear();
+								res();
+							}
+							else this.nextPage();
+						case 2:
+						case 27: //Esc
+							quit();
+							break;
+
+					}
+				};
+			});
+		}
+
+		this.drawTutorialMenu = async function(){
+			if (core.isReplaying()) return;
+			// if (!core.getFlag('tutorial',false)) return;
+			//禁止Esc打开菜单栏
+			core.setFlag('noOpenMenu', true);
+			core.lockControl();
+
+			await initTutorialMenu();
+			core.unlockControl();
+			core.setFlag('noOpenMenu', false);
+		}
 	},
     "动态火焰": function () {
 
@@ -4782,7 +4882,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		updateScrollingText();
 		drawScrollingText();
 	});
-
 },
     "回合制战斗": function () {
 
@@ -4796,7 +4895,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_fatigue;
 			/** 将要被冻结的回合数*/
 			freeze = 0;
-			/** 状态，分为'normal''poisoned','weak'*/
+			/** 状态，分为'normal''poison','weak'
+			 * @type {('normal'|'poison'|'weak')} 
+			 */
 			status = 'normal';
 			get mana() {
 				return this._mana;
@@ -4864,7 +4965,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.def -= 5;
 						break;
 					case 'poison':
-						this.status = 'poisoned';
+						this.status = 'poison';
 						break;
 					case 'weak':
 						this.status = 'weak';
@@ -4889,6 +4990,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			heal = 0;
 		}
 
+		/**
+		 * @extends {ActorBase}
+		 */
 		class Hero extends ActorBase {
 			/** 公主的体力值 */
 			hpmax = core.status.hero.hpmax;
@@ -5112,6 +5216,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		/**
+		 * @extends {ActorBase}
+		 */
 		class Enemy extends ActorBase {
 			/** 敌人本场战斗累计造成的伤害 */
 			totalDamage = 0;
@@ -5216,7 +5323,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					//// 结算反射盾效果
 					if (reflect) { //反射盾
 						let reflectDamage = Math.round(oriDamage / 2.6 + hero.atk / 10);
-						if (this.status === 'poisoned') reflectDamage += 25; // 反弹中毒会多弹25血
+						if (this.status === 'poison') reflectDamage += 25; // 反弹中毒会多弹25血
 						atkStatus.reflectDamage = reflectDamage;
 						this.hp -= reflectDamage;
 						if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
@@ -5450,9 +5557,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		class Battle {
-			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 'quit'临阵脱逃*/
+			/** 本场战斗的状态 'pending'进行中 'win'勇士胜利 'lose'勇士失败 'quit'临阵脱逃
+			 * @type {('pending'|'win'|'lose'|'quit')}
+			 */
 			status = 'pending';
-			/** 战斗的默认行进速度 quick - 快 normal -中 slow - 慢*/
+			/** 战斗的默认行进速度 quick - 快 normal -中 slow - 慢
+			 *  @type {('quick'|'normal'|'slow')}
+			 */
 			speed = (() => {
 				switch (core.getFlag('battleSpeed', 1)) {
 					case 0: return 'quick';
@@ -5464,12 +5575,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			waitTime = 500;
 			/** 玩家在各回合的出招信息(BattleSkill)，将被写入录像 
 			 * @type {string}
-			*/
+			 */
 			route = 'bs';
 
 			/** 按钮列表 
-			 * @type {Array<Button>}
-			*/
+			 * @type {Array<StatusButton>}
+			 */
 			btnList = generateBtnList(this);
 			/**
 			 * Battle构造函数
@@ -5779,7 +5890,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
 			switch (hero.status) {
-				case 'poisoned':
+				case 'poison':
 					if (!core.hasFlag('poison') && !core.hasFlag('weak')) core.triggerDebuff('get', 'poison');
 					break;
 				case 'weak':
@@ -5838,7 +5949,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			if (hero.hp < 200 || hero.hpmax < 50) core.plugin.getAchievement(2);
 			if (hero.smartCast) core.plugin.getAchievement(38);
-			if (hero.state === 'poisoned' || hero.state === 'weak') core.plugin.getAchievement(27);
+			if (hero.status === 'poison' || hero.status === 'weak') core.plugin.getAchievement(27);
 
 			const blockList = {
 				swordEmperor: 398,
@@ -6107,84 +6218,68 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
-		 * 按钮，点击时触发特定事件
+		 * 拥有status属性的按钮类
+		 * @extends {ButtonBase}
 		 */
-		class Button {
-			/**
-			 * @param {string} name 按钮名称
-			 * @param {number} x 按钮判定区左上角的x坐标
-			 * @param {number} y 按钮判定区左上角的y坐标
-			 * @param {number} w 按钮判定区的宽度
-			 * @param {number} h 按钮判定区的高度
-			 * @param {Function} event 点击按钮时触发的事件
-			 */
-			constructor(name, x, y, w, h, event) {
-				/** 按钮名称 */
-				this.name = name;
-				/** 按钮判定区左上角的x坐标 */
-				this.x = x;
-				/** 按钮判定区左上角的y坐标 */
-				this.y = y;
-				/** 按钮判定区的宽度 */
-				this.w = w;
-				/** 按钮判定区的高度 */
-				this.h = h;
-				/** 点击按钮时触发的事件 */
-				this.event = event;
-				/** 按钮状态,分为'unavailable','available','pending' */
-				this.status = 'available';
+		class StatusButton extends this.Button {
+			constructor(name, x, y, w, h) {
+				super(name, x, y, w, h);
+				/** 按钮状态,分为'unavailable','available','pending' 
+				 * @type {('unavailable'|'available'|'pending')}
+				*/
+				this.skillStatus = 'available';
 			}
 		}
 
 		/** 生成按钮对象 
 		 * @param {Battle} battle
-		 * @returns {Array<Button>}
+		 * @returns {Array<StatusButton>}
 		 */
 		function generateBtnList(battle) {
 			return [
-				new Button('btn1', 52, 320, 32, 32, () => {
+				new StatusButton('btn1', 52, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('b');
 					else if (core.hasItem('I327')) battle.execUserAction('M');
 				}),
-				new Button('btn2', 52, 320, 32, 32, () => {
+				new StatusButton('btn2', 52, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('b');
 					else if (core.hasItem('I327')) battle.execUserAction('M');
 				}),
-				new Button('btn3', 116, 320, 32, 32, () => {
+				new StatusButton('btn3', 116, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('d');
 					else if (core.hasItem('I327')) battle.execUserAction('R');
 				}),
-				new Button('btn4', 148, 320, 32, 32, () => {
+				new StatusButton('btn4', 148, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('h');
 					else if (core.hasItem('I327')) battle.execUserAction('F');
 				}),
-				new Button('btn5', 180, 320, 32, 32, () => {
+				new StatusButton('btn5', 180, 320, 32, 32, () => {
 					if (core.hasItem('I325')) battle.execUserAction('k');
 					else if (core.hasItem('I327')) battle.execUserAction('E');
 				}),
-				new Button('sword', 212, 320, 32, 32, () => {
+				new StatusButton('sword', 212, 320, 32, 32, () => {
 					if (!battle.hero.swordEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备剑技');
 					} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
 				}),
-				new Button('shield', 244, 320, 32, 32, () => {
+				new StatusButton('shield', 244, 320, 32, 32, () => {
 					if (!battle.hero.shieldEquiped) {
 						core.playSound('error.mp3');
 						core.drawTip('当前未装备盾技');
 					} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
 				}),
-				new Button('crit', 276, 320, 32, 32, () => battle.execUserAction('c')),
-				new Button('breathe', 308, 320, 32, 32, () => battle.execUserAction('v')),
-				new Button('quick', 0, 0, 32, 32, () => battle.speed = 'quick'),
-				new Button('normal', 32, 0, 32, 32, () => battle.speed = 'normal'),
-				new Button('slow', 64, 0, 32, 32, () => battle.speed = 'slow'),
+				new StatusButton('crit', 276, 320, 32, 32, () => battle.execUserAction('c')),
+				new StatusButton('breathe', 308, 320, 32, 32, () => battle.execUserAction('v')),
+				new StatusButton('quick', 0, 0, 32, 32, () => battle.speed = 'quick'),
+				new StatusButton('normal', 32, 0, 32, 32, () => battle.speed = 'normal'),
+				new StatusButton('slow', 64, 0, 32, 32, () => battle.speed = 'slow'),
 			];
 		}
 
 		/**
 		 * 更新按钮状态
-		 * @param {Button} btn 
+		 * @param {StatusButton} btn 
 		 * @param {Battle} battle 
 		 */
 		function updateButtonStatus(btn, battle) {
@@ -6194,84 +6289,84 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			switch (btn.name) {
 				case 'btn1':
 					if (core.hasItem('I325')) {
-						if (swordSkill === 'b') btn.status = 'pending';
-						else if (battle.canExecAction('b').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (swordSkill === 'b') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('b').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					else if (core.hasItem('I327')) {
-						if (shieldSkill === 'M') btn.status = 'pending';
-						else if (battle.canExecAction('M').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (shieldSkill === 'M') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('M').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					break;
 				case 'btn2':
 					if (core.hasItem('I325')) {
-						if (swordSkill === 's') btn.status = 'pending';
-						else if (battle.canExecAction('s').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (swordSkill === 's') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('s').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					else if (core.hasItem('I327')) {
-						if (shieldSkill === 'C') btn.status = 'pending';
-						else if (battle.canExecAction('C').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (shieldSkill === 'C') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('C').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					break;
 				case 'btn3':
 					if (core.hasItem('I325')) {
-						if (swordSkill === 'd') btn.status = 'pending';
-						else if (battle.canExecAction('d').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (swordSkill === 'd') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('d').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					else if (core.hasItem('I327')) {
-						if (shieldSkill === 'R') btn.status = 'pending';
-						else if (battle.canExecAction('R').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (shieldSkill === 'R') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('R').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					break;
 				case 'btn4':
 					if (core.hasItem('I325')) {
-						if (swordSkill === 'h') btn.status = 'pending';
-						else if (battle.canExecAction('h').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (swordSkill === 'h') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('h').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					else if (core.hasItem('I327')) {
-						if (shieldSkill === 'F') btn.status = 'pending';
-						else if (battle.canExecAction('F').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (shieldSkill === 'F') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('F').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					break;
 				case 'btn5':
 					if (core.hasItem('I325')) {
-						if (swordSkill === 'k') btn.status = 'pending';
-						else if (battle.canExecAction('k').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (swordSkill === 'k') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('k').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					else if (core.hasItem('I327')) {
-						if (shieldSkill === 'E') btn.status = 'pending';
-						else if (battle.canExecAction('E').success) btn.status = 'available';
-						else btn.status = 'unavailable';
+						if (shieldSkill === 'E') btn.skillStatus = 'pending';
+						else if (battle.canExecAction('E').success) btn.skillStatus = 'available';
+						else btn.skillStatus = 'unavailable';
 					}
 					break;
 				case 'sword':
-					if (swordSkill !== '' && swordSkill !== 'c') btn.status = 'pending';
+					if (swordSkill !== '' && swordSkill !== 'c') btn.skillStatus = 'pending';
 					else if (battle.canExecAction(equipList[hero.swordEquiped]).success)
-						btn.status = 'available';
-					else btn.status = 'unavailable';
+						btn.skillStatus = 'available';
+					else btn.skillStatus = 'unavailable';
 					break;
 				case 'shield':
-					if (shieldSkill !== '') btn.status = 'pending';
+					if (shieldSkill !== '') btn.skillStatus = 'pending';
 					else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
-						btn.status = 'available';
-					else btn.status = 'unavailable';
+						btn.skillStatus = 'available';
+					else btn.skillStatus = 'unavailable';
 					break;
 				case 'crit':
-					if (swordSkill === 'c') btn.status = 'pending';
-					else if (battle.canExecAction('c').success) btn.status = 'available';
-					else btn.status = 'unavailable';
+					if (swordSkill === 'c') btn.skillStatus = 'pending';
+					else if (battle.canExecAction('c').success) btn.skillStatus = 'available';
+					else btn.skillStatus = 'unavailable';
 					break;
 				case 'breathe':
-					if (battle.canExecAction('v').success) btn.status = 'available';
-					else btn.status = 'unavailable';
+					if (battle.canExecAction('v').success) btn.skillStatus = 'available';
+					else btn.skillStatus = 'unavailable';
 					break;
 			}
 		}
@@ -6332,17 +6427,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						break;
 					case 'sword':
 						core.drawImage(ctx, 'iconSword.png', x + 6, 6, 20, 20);
+						core.fillText(ctx, 'Z', x + 20, 28, 'red', 'Bold 12px Arial');
 						break;
 					case 'shield':
 						core.drawImage(ctx, 'iconShield.png', x + 6, 6, 20, 20);
+						core.fillText(ctx, 'X', x + 20, 28, 'red', 'Bold 12px Arial');
 						break;
 					case 'crit':
 						core.drawImage(ctx, 'pong.png', x + 3, 2, 28, 28);
+						core.fillText(ctx, 'C', x + 20, 28, 'red', 'Bold 12px Arial');
 						break;
 					case 'breathe':
 						core.drawImage(ctx, 'iconBreathe.png', x + 4, 4, 24, 24);
 						core.fillText(ctx, hero.deepBreath.toString(),
-							x + 13, 19, 'blue', 'Bold 10px Arial');
+							x + 13, 19, 'red', 'Bold 10px Arial');
+						core.fillText(ctx, 'V', x + 20, 28, 'red', 'Bold 12px Arial');
 						break;
 				}
 				if (btn.status === 'unavailable') core.setAlpha(ctx, 1);

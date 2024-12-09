@@ -196,7 +196,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 楼层传送器的使用，从当前楼层飞往toId
 	// 如果不能飞行请返回false
 
-	var fromId = core.status.floorId;
+	let fromId = core.status.floorId;
 
 	// 检查能否飞行
 	if (!core.status.maps[fromId].canFlyFrom || !core.status.maps[toId].canFlyTo || !core.hasVisitedFloor(toId)) {
@@ -205,17 +205,17 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		return false;
 	}
 
-	var xieyan = false;
+	let evilEye = false;
 	core.status.thisMap.blocks.forEach(function (b) {
-		if (b.event.cls == 'enemys' && core.hasSpecial(b.event.id, 50)) xieyan = true;
+		if (b.event.cls == 'enemys' && core.hasSpecial(b.event.id, 50)) evilEye = true;
 	});
-	if (xieyan) {
+	if (evilEye) {
 		core.playSound('操作失败');
 		core.drawTip("当前层有邪眼怪物，无法使用黄金之羽根！", 'fly');
 		return false;
 	}
 
-	if (flags.poison) {
+	if (core.hasFlag('poison')) {
 		if (fromId.indexOf("B") >= 0 && toId.indexOf("B") >= 0);
 		else if (fromId.indexOf("S") >= 0 && toId.indexOf("S") >= 0);
 		else if (fromId.indexOf("MT") >= 0 && toId.indexOf("MT") >= 0);
@@ -230,12 +230,8 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 所有激活过的楼层传送点 allflyPoints
 	const flyPoints = core.getFlag('allflyPoints', null);
 	// 首先思考一下怎么实现
-	// 首先，allflyPoints应当记录非地上层的所有传送点{'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
-	// {'MTx':[[1,1],[1,2]],'MTy':[[3,4],[5,6]]}
-	// 每手动走一次传送点，对应的hasGet设为True
-	// 每传过来一次 显然currFrom 要变化 不论是楼传进来还是走进来
-	// 同层传送 取currFrom的下一项
-	// 走楼梯传不存在loc 直存在stair 需要研究它怎么获取楼梯的
+	// 假设有一个function 能获取当前所有可能的楼传落点
+	// 这个是绑定另一个更复杂的东西的实现的？
 
 	// 平面塔模式
 	var stair = null,
