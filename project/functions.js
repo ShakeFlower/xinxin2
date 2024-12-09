@@ -233,6 +233,27 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	// 假设有一个function 能获取当前所有可能的楼传落点
 	// 这个是绑定另一个更复杂的东西的实现的？
 
+	// 思考一个问题 
+	// 有一栋大楼，层数为f，它的每一层都是一个迷宫，并且分布着若干个楼梯
+	// 它的结构类似如下格式
+	// floor1:[upstair1,upstair2,upstair3,...]
+	// floor2[downstair1,downstair2,downstair3,...，upstair5,upstair6,...,]
+	// floor3[downstair5,downstair6,..,upstair9,upstair10,...]
+	// ...
+	// floor99:[downstair201,downstair202,downstair203,...]
+	// 有两种操作：上下楼和同层行动。
+	// 楼梯x分为上楼梯和下楼梯，跨层行动时，下一层的上楼梯可以，且仅可以达到上一层的下楼梯，反过来也一样
+	// 也就是说，跨层行动时，upstair5可以且仅可以到达downstair5
+	// 显然，第一层只有上楼梯，最高层只有下楼梯
+	// 在同一层内，你有一个函数canAccess(stair1,stair) 可用于判断两个楼梯之间是否可以走通
+	// 例如 canAccess(downstair5,upstair9)返回true，说明只在同一层内行动，是可以在downstair5和upstair9之间往来的
+	// 任给两个楼梯，如何判断它们之间是否联通？
+	// floor1:[upstair1,upstair2,upstair3,...]
+	// floor2[downstair1,downstair2,downstair3,...，upstair5,upstair6,...,]
+	// floor3[downstair5,downstair6,..,upstair9,upstair10,...]
+	// ...
+	// floor9:[downstair201,downstair202,downstair203,...]
+
 	// 平面塔模式
 	var stair = null,
 		loc = null;

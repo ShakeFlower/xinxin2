@@ -1,7 +1,7 @@
 /// <reference path = "../runtime.d.ts" />
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
-    "init": function () {
+	"init": function () {
 
 		console.log("插件编写测试");
 
@@ -1300,7 +1300,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "shop": function () {
+	"shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1485,7 +1485,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-    "removeMap": function () {
+	"removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1572,7 +1572,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-    "fiveLayers": function () {
+	"fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1727,7 +1727,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-    "itemShop": function () {
+	"itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2033,7 +2033,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "heroFourFrames": function () {
+	"heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2088,7 +2088,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-    "startCanvas": function () {
+	"startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2174,7 +2174,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "自动拾取": function () {
+	"自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2307,7 +2307,737 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-    "新版道具栏": function () {
+	"高级动画": function () {
+		// -------------------- 插件说明 -------------------- //
+
+		// github仓库：https://github.com/unanmed/animate
+		// npm包名：mutate-animate
+		// npm地址：https://www.npmjs.com/package/mutate-animate
+
+		// 不要去尝试读这个插件，这个插件是经过了打包的，不是人类可读的(
+		// 想读的话可以去github读
+
+		// 该插件是一个轻量型多功能动画插件，可以允许你使用内置或自定义的速率曲线或轨迹等
+		// 除此之外，你还可以自定义绘制函数，来让你的动画可视化
+
+		// -------------------- 安装说明 -------------------- //
+
+		// 直接复制到插件中即可，注意所有插件中不能出现插件名为animate的插件
+		// 该插件分为动画和渐变两部分，教程分开，动画在前，渐变在后
+
+		// -------------------- 动画使用教程 -------------------- //
+
+		// 1. 首先创建一个异步函数
+		//   async function ani() { }
+
+		// 2. 引入插件中的类和函数，引入内容要看个人需求，所有可用的函数在本插件末尾可以看到
+		//   const { Animation, linear, bezier, circle, hyper, trigo, power, inverseTrigo, shake, sleep } = core.plugin.animate
+
+		// 3. 在函数内部创建一个动画
+		//   const animate = new Animation();
+
+		// 4. 为动画创建一个绘制函数，这里以绘制一个矩形为例，当然也可以使用core.fillRect替代ctx.fillRect来绘制矩形
+		//   const ctx = core.createCanvas('animate', 0, 0, 416, 416, 100);
+		//   ctx.save();
+		//   const fn = () => {
+		//      ctx.restore();
+		//      ctx.save();
+		//      ctx.clearRect(0, 0, 800, 800);
+		//      ctx.translate(animate.x, animate.y);
+		//      ctx.rotate(animate.angle * Math.PI / 180);
+		//      const size = animate.size;
+		//      ctx.fillRect(-30 * size, -30 * size, 60 * size, 60 * size);
+		//   }
+		//   animate.ticker.add(fn);
+
+		// 5. 执行动画
+
+		//   下面先对一些概念进行解释
+
+		//   动画分为很多种，内置的有move(移动至某一点)  rotate(旋转)  scale(放缩)  moveAs(以指定路径移动)  shake(震动)
+		//   对于不同的动画种类，其所对应的属性也不同，move moveAs shake均对应x和y这两个属性
+		//   rotate对应angle，scale对应size。你也可以自定义属性，这个之后会提到
+
+		//   除了执行动画之外，这里还提供了三个等待函数，可以等待某个动画执行完毕，以及一个等待指定时长的函数
+		//   分别是animate.n(等待指定数量的动画执行完毕)
+		//   animate.w(等待指定类型的动画执行完毕，也可以是自定义类型)
+		//   animate.all(等待所有动画执行完毕)
+		//   sleep(等待指定时长)
+
+		//   执行动画时，要求一个渐变函数，当然这个插件内置了非常丰富的渐变函数，也就是速率曲线。
+
+		//   线性渐变函数  linear()，该函数返回一个线性变化函数
+
+		//   三角渐变函数  trigo('sin' | 'sec', EaseMode)，该函数返回一个指定属性的三角函数变化函数
+		//       其中EaseMode可以填'in' 'out' 'in-out' 'center'
+		//       分别表示 慢-快  快-慢  慢-快-慢  快-慢-快
+
+		//   幂函数渐变  power(n, EaseMode)，该函数返回一个以x^n变化的函数，n是指数
+
+		//   双曲渐变函数  hyper('sin' | 'tan' | 'sec', EaseMode)，该函数返回一个双曲函数，分别是双曲正弦、双曲正切、双曲正割
+
+		//   反三角渐变函数  inverseTrigo('sin' | 'tan', EaseMode)，该函数返回一个反三角函数
+
+		//   贝塞尔曲线渐变函数  bezier(...cps)，参数为贝塞尔曲线的控制点纵坐标（横坐标不能自定义，毕竟一个时刻不能对应多个速率）
+		//       示例：bezier(0.4, 0.2, 0.7); // 三个控制点的四次贝塞尔曲线渐变函数
+
+		//   了解完渐变函数以后，这里还有一个特殊的渐变函数-shake
+		//   shake(power, timing)，这个函数是一个震荡函数，会让一个值来回变化，实现震动的效果
+		//       其中power是震动的最大值，timing是渐变函数，描述了power在震动时大小的变化
+
+		//   下面，我们就可以进行动画的执行了，我们以 运动 + 旋转 + 放缩为例
+
+		//   animate.mode(hyper('sin', 'out'))  // 设置渐变函数为 双曲正弦 快 -> 慢，注意不能加分号
+		//       .time(1000)  // 设置动画的执行时间为1000毫秒
+		//       .move(300, 300)  // 移动至[300, 300]的位置
+		//       .relative()  // 设置相对模式为相对之前，与之前为相加的关系
+		//       .mode(power(3, 'center'))  // 设置为 x^3 快-慢-快 的渐变函数
+		//       .time(3000)
+		//       .rotate(720)  // 旋转720度
+		//       .absolute()  // 设置相对模式为绝对
+		//       .mode(trigo('sin', 'in'))  // 设置渐变函数为 正弦 慢 -> 快
+		//       .time(1500)
+		//       .scale(3);  // 放缩大小至3倍
+
+		//   这样，我们就把三种基础动画都执行了一遍，同时，这种写法非常直观，出现问题时也可以很快地找到问题所在
+		//   下面，我们需要等待动画执行完毕，因为同一种动画不可能同时执行两个
+
+		//   await animate.n(1); // 等待任意一个动画执行完毕，别把await忘了
+		//   await animate.w('scale'); // 等待放缩动画执行完毕
+		//   await animate.all(); // 等待所有动画执行完毕
+		//   await sleep(1000); // 等待1000毫秒
+
+		//   下面，还有一个特殊的动画函数-moveAs
+		//   这是一个非常强大的函数，它允许你让你的物体按照指定路线运动
+		//   说到这，我们需要先了解一下运动函数。
+		//   该插件内置了两个运动函数，分别是圆形运动和贝塞尔曲线运动
+
+		//   圆形运动 circle(r, n, timing, inverse)，r是圆的半径，n是圈数，timing描述半径大小的变化，inverse说明了是否翻转timing函数，后面三个可以不填
+
+		//   贝塞尔曲线 bezierPath(start, end, ...cps)
+		//       其中start和end是起点和结束点，应当填入[x, y]数组，cps是控制点，也是[x, y]数组
+		//       示例：bezierPath([0, 0], [200, 200], [100, 50], [300, 150], [200, 180]);
+		//       这是一个起点为 [0, 0]，终点为[200, 200]，有三个控制点的四次贝塞尔曲线
+
+		//   下面，我们就可以使用路径函数了
+
+		//   animate.mode(hyper('sin', 'in-out'))  // 设置渐变曲线
+		//       .time(5000)
+		//       .relative()  // 设置为相对模式，这个比较必要，不然的话很可能出现瞬移
+		//       .moveAs(circle(100, 5, linear()))  // 创建一个5圈的半径从0至100逐渐变大的圆轨迹（是个螺旋线）并让物体沿着它运动
+		//       
+		//   最后，还有一个震动函数 shake(x, y)，x和y表示了在横向上和纵向上的震动幅度，1表示为震动幅度的100%
+		//   示例：
+		//   animate.mode(shake(5, hyper('sin', 'in')), true) // 这里第二个参数说明是震动函数
+		//       .time(2000)
+		//       .shake(1, 0.5)
+
+		//   这样，所有内置动画就已经介绍完毕
+
+		// 6. 自定义动画属性
+
+		//   本插件允许你自定义一个动画属性，但功能可能不会像自带的属性那么强大
+		//   你可以在创建动画之后使用animate.register(key, init)来注册一个自定义属性
+		//   其中key是自定义属性的名称，init是自定义属性的初始值，这个值应当在0-1之间变化
+
+		//   你可以通过animate.value[key]来获取你注册的自定义属性
+
+		//   对于自定义属性的动画，你应当使用animate.apply(key, n, first)
+		//   其中，key是你的自定义属性的名称，n是其目标值，first是一个布尔值，说明了是否将该动画插入到目前所有的动画之前，即每帧会优先执行该动画
+
+		//   下面是一个不透明度的示例
+
+		//   animate.register('opacity', 1); // 这句话应该放到刚创建动画之后
+
+		//   ctx.globalAlpha = animate.value.opacity; // 这句话应当放到每帧绘制的函数里面，放在绘制之前
+
+		//   animate.mode(bezier(0.9, 0.1, 0.05))  // 设置渐变函数
+		//       .time(2000)
+		//       .absolute()
+		//       .apply('opacity', 0.3);  // 将不透明度按照渐变曲线更改为0.3
+
+		// 7. 运行动画
+
+		//   还记得刚开始定义的async function 吗，直接调用它就能执行动画了！
+		//   示例：ani(); // 执行刚刚写的所有动画
+
+		// 8. 自定义速率曲线和路径
+
+		//   该插件中，速率曲线和路径均可自定义
+
+		//   对于速率曲线，其类型为  (input: number) => number
+		//   它接受一个范围在 0-1 的值，输出一个 0-1 的值，表示了动画的完成度，1表示动画已完成，0表示动画刚开始（当前大于1小于0也不会报错，也会执行相应的动画）
+
+		//   对于路径，其类型为  (input: number) => [number, number]
+		//   它与速率曲线类似，接收一个 0-1 的值，输出一个坐标数组
+
+		// 9. 多个属性绑定
+
+		//   该插件中，你可以绑定多个动画属性，你可以使用ani.bind(...attr)来绑定。
+		//   绑定之后，这三个动画属性可以被一个返回了长度为3的数组的渐变函数执行。
+		//   绑定使用ani.bind，设置渐变函数仍然使用ani.mode，注意它与单个动画属性是分开的，也就是它不会影响正常的渐变函数。
+		//   然后使用ani.applyMulti即可执行动画
+
+		//   例如：
+		//   // 自定义的一个三属性渐变函数
+		//   function b(input) {
+		//       return [input * 100, input ** 2 * 100, input ** 3 * 100];
+		//   }
+		//   ani.bind('a', 'b', 'c') // 这样会绑定abc这三个动画属性
+		//       .mode(b) // 自定义的一个返回了长度为3的数组的函数
+		//       .time(5000)
+		//       .absolute()
+		//       .applyMulti(); // 执行这个动画
+
+		// 9. 监听  动画的生命周期钩子
+
+		//   这个插件还允许你去监听动画的状态，可以监听动画的开始、结束、运行
+		//   你可以使用 animate.listen(type, fn)来监听，fn的类型是 (a: Animation, type: string) => void
+		//   当然，一般情况下你不会用到这个功能，插件中已经帮你包装了三个等待函数，他们就是以这些监听为基础的
+
+		// 10. 自定义时间获取函数
+
+		//   你可以修改ani.getTime来修改动画的时间获取函数，例如想让动画速度变成一半可以写ani.getTime = () => Date.now() / 2
+		//   这样可以允许你随意控制动画的运行速度，暂停，甚至是倒退。该值默认为`Date.now`
+
+		// -------------------- 渐变使用教程 -------------------- //
+
+		// 相比于动画，渐变属于一种较为简便的动画，它可以让你在设置一个属性后使属性缓慢变化值目标值而不是突变至目标值
+		// 现在假设你已经了解了动画的使用，下面我们来了解渐变。
+
+		// 1. 创建一个渐变实例
+		//   与动画类似，你需要使用new来实例化一个渐变，当然别忘了引入
+		//   const { Transition } = core.plugin.animate;
+		//   const tran = new Transition();
+
+		// 2. 绘制
+		//   const ctx = core.createCanvas('transition', 0, 0, 416, 416, 100);
+		//   ctx.save();
+		//   const fn = () => {
+		//      ctx.restore();
+		//      ctx.save();
+		//      ctx.clearRect(0, 0, 800, 800);
+		//      ctx.beginPath();
+		//      ctx.arc(tran.value.x, tran.value.y, 50, 0, Math.PI * 2); // 使用tran.value.xxx获取当前的属性
+		//      ctx.fill();
+		//      // 当然也可以用样板的api，例如core.fillCircle();等
+		//   }
+		//   animate.ticker.add(fn);
+
+		// 3. 设置渐变
+		//   同样，与动画类似，你可以使用tran.time()设置渐变时间，使用tran.mode()设置渐变函数，使用tran.absolute()和tran.relative()设置相对模式
+		//   例如：
+		//   tran.time(1000)
+		//       .mode(hyper('sin', 'out'))
+		//       .absolute();
+
+		// 4. 初始化渐变属性
+		//   与动画不同的是，动画在执行一个自定义属性前都需要register，而渐变不需要。
+		//   你可以通过tran.value.xxx = yyy来设置动画属性或使用tran.transition('xxx', yyy)来设置
+		//   你的首次赋值即是初始化了渐变属性，这时是不会执行渐变的，例如：
+		//   tran.value.x = 200;
+		//   tran.transition('y', 200);
+		//   上述例子便是将 x 和 y 初始化成了200
+
+		// 5. 执行渐变
+		//   初始化完成后，便可以直接执行渐变了，有两种方法
+		//   tran.value.x = 400; // 将 x 缓慢移动至400
+		//   tran.transition('y', 400); // 将 y 缓慢移动至400
+
+		// 6. 自定义时间获取函数
+		//   与动画类似，你依然可以通过修改tran.getTime来修改时间获取函数
+
+		if (main.replayChecking) return core.plugin.animate = {};
+
+		var M = Object.defineProperty;
+		var E = (n, s, t) => s in n ? M(n, s, { enumerable: !0, configurable: !0, writable: !0, value: t }) : n[s] = t;
+		var o = (n, s, t) => (E(n, typeof s != "symbol" ? s + "" : s, t), t);
+		let b = [];
+		const k = (n) => {
+			for (const s of b)
+				if (s.status === "running")
+					try {
+						for (const t of s.funcs)
+							t(n - s.startTime);
+					} catch (t) {
+						s.destroy(), console.error(t);
+					}
+			requestAnimationFrame(k);
+		};
+		requestAnimationFrame(k);
+		class I {
+			constructor() {
+				o(this, "funcs", []);
+				o(this, "status", "stop");
+				o(this, "startTime", 0);
+				this.status = "running", b.push(this), requestAnimationFrame((s) => this.startTime = s);
+			}
+			add(s, t = !1) {
+				return t ? this.funcs.unshift(s) : this.funcs.push(s), this;
+			}
+			remove(s) {
+				const t = this.funcs.findIndex((e) => e === s);
+				if (t === -1)
+					throw new ReferenceError(
+						"You are going to remove nonexistent ticker function."
+					);
+				return this.funcs.splice(t, 1), this;
+			}
+			clear() {
+				this.funcs = [];
+			}
+			destroy() {
+				this.clear(), this.stop();
+			}
+			stop() {
+				this.status = "stop", b = b.filter((s) => s !== this);
+			}
+		}
+		class F {
+			constructor() {
+				o(this, "timing");
+				o(this, "relation", "absolute");
+				o(this, "easeTime", 0);
+				o(this, "applying", {});
+				o(this, "getTime", Date.now);
+				o(this, "ticker", new I());
+				o(this, "value", {});
+				o(this, "listener", {});
+				this.timing = (s) => s;
+			}
+			async all() {
+				if (Object.values(this.applying).every((s) => s === !0))
+					throw new ReferenceError("There is no animates to be waited.");
+				await new Promise((s) => {
+					const t = () => {
+						Object.values(this.applying).every((e) => e === !1) && (this.unlisten("end", t), s("all animated."));
+					};
+					this.listen("end", t);
+				});
+			}
+			async n(s) {
+				const t = Object.values(this.applying).filter((i) => i === !0).length;
+				if (t < s)
+					throw new ReferenceError(
+						`You are trying to wait ${s} animate, but there are only ${t} animate animating.`
+					);
+				let e = 0;
+				await new Promise((i) => {
+					const r = () => {
+						e++, e === s && (this.unlisten("end", r), i(`${s} animated.`));
+					};
+					this.listen("end", r);
+				});
+			}
+			async w(s) {
+				if (this.applying[s] === !1)
+					throw new ReferenceError(`The ${s} animate is not animating.`);
+				await new Promise((t) => {
+					const e = () => {
+						this.applying[s] === !1 && (this.unlisten("end", e), t(`${s} animated.`));
+					};
+					this.listen("end", e);
+				});
+			}
+			listen(s, t) {
+				var e, i;
+				(i = (e = this.listener)[s]) != null || (e[s] = []), this.listener[s].push(t);
+			}
+			unlisten(s, t) {
+				const e = this.listener[s].findIndex((i) => i === t);
+				if (e === -1)
+					throw new ReferenceError(
+						"You are trying to remove a nonexistent listener."
+					);
+				this.listener[s].splice(e, 1);
+			}
+			hook(...s) {
+				const t = Object.entries(this.listener).filter(
+					(e) => s.includes(e[0])
+				);
+				for (const [e, i] of t)
+					for (const r of i)
+						r(this, e);
+			}
+		}
+		function T(n) {
+			return n != null;
+		}
+		async function R(n) {
+			return new Promise((s) => setTimeout(s, n));
+		}
+		class Y extends F {
+			constructor() {
+				super();
+				o(this, "shakeTiming");
+				o(this, "path");
+				o(this, "multiTiming");
+				o(this, "value", {});
+				o(this, "size", 1);
+				o(this, "angle", 0);
+				o(this, "targetValue", {
+					system: {
+						move: [0, 0],
+						moveAs: [0, 0],
+						resize: 0,
+						rotate: 0,
+						shake: 0,
+						"@@bind": []
+					},
+					custom: {}
+				});
+				o(this, "animateFn", {
+					system: {
+						move: [() => 0, () => 0],
+						moveAs: () => 0,
+						resize: () => 0,
+						rotate: () => 0,
+						shake: () => 0,
+						"@@bind": () => 0
+					},
+					custom: {}
+				});
+				o(this, "ox", 0);
+				o(this, "oy", 0);
+				o(this, "sx", 0);
+				o(this, "sy", 0);
+				o(this, "bindInfo", []);
+				this.timing = (t) => t, this.shakeTiming = (t) => t, this.multiTiming = (t) => [t, t], this.path = (t) => [t, t], this.applying = {
+					move: !1,
+					scale: !1,
+					rotate: !1,
+					shake: !1
+				}, this.ticker.add(() => {
+					const { running: t } = this.listener;
+					if (T(t))
+						for (const e of t)
+							e(this, "running");
+				});
+			}
+			get x() {
+				return this.ox + this.sx;
+			}
+			get y() {
+				return this.oy + this.sy;
+			}
+			mode(t, e = !1) {
+				return typeof t(0) == "number" ? e ? this.shakeTiming = t : this.timing = t : this.multiTiming = t, this;
+			}
+			time(t) {
+				return this.easeTime = t, this;
+			}
+			relative() {
+				return this.relation = "relative", this;
+			}
+			absolute() {
+				return this.relation = "absolute", this;
+			}
+			bind(...t) {
+				return this.applying["@@bind"] === !0 && this.end(!1, "@@bind"), this.bindInfo = t, this;
+			}
+			unbind() {
+				return this.applying["@@bind"] === !0 && this.end(!1, "@@bind"), this.bindInfo = [], this;
+			}
+			move(t, e) {
+				return this.applying.move && this.end(!0, "move"), this.applySys("ox", t, "move"), this.applySys("oy", e, "move"), this;
+			}
+			rotate(t) {
+				return this.applySys("angle", t, "rotate"), this;
+			}
+			scale(t) {
+				return this.applySys("size", t, "resize"), this;
+			}
+			shake(t, e) {
+				this.applying.shake === !0 && this.end(!0, "shake"), this.applying.shake = !0;
+				const { easeTime: i, shakeTiming: r } = this, h = this.getTime();
+				if (this.hook("start", "shakestart"), i <= 0)
+					return this.end(!1, "shake"), this;
+				const l = () => {
+					const c = this.getTime() - h;
+					if (c > i) {
+						this.ticker.remove(l), this.applying.shake = !1, this.sx = 0, this.sy = 0, this.hook("end", "shakeend");
+						return;
+					}
+					const a = c / i, m = r(a);
+					this.sx = m * t, this.sy = m * e;
+				};
+				return this.ticker.add(l), this.animateFn.system.shake = l, this;
+			}
+			moveAs(t) {
+				this.applying.moveAs && this.end(!0, "moveAs"), this.applying.moveAs = !0, this.path = t;
+				const { easeTime: e, relation: i, timing: r } = this, h = this.getTime(), [l, u] = [this.x, this.y], [c, a] = (() => {
+					if (i === "absolute")
+						return t(1);
+					{
+						const [d, f] = t(1);
+						return [l + d, u + f];
+					}
+				})();
+				if (this.hook("start", "movestart"), e <= 0)
+					return this.end(!1, "moveAs"), this;
+				const m = () => {
+					const f = this.getTime() - h;
+					if (f > e) {
+						this.end(!0, "moveAs");
+						return;
+					}
+					const v = f / e, [g, w] = t(r(v));
+					i === "absolute" ? (this.ox = g, this.oy = w) : (this.ox = l + g, this.oy = u + w);
+				};
+				return this.ticker.add(m, !0), this.animateFn.system.moveAs = m, this.targetValue.system.moveAs = [c, a], this;
+			}
+			register(t, e) {
+				if (typeof this.value[t] == "number")
+					return this.error(
+						`Property ${t} has been regietered twice.`,
+						"reregister"
+					);
+				this.value[t] = e, this.applying[t] = !1;
+			}
+			apply(t, e, i = !1) {
+				this.applying[t] === !0 && this.end(!1, t), t in this.value || this.error(
+					`You are trying to execute nonexistent property ${t}.`
+				), this.applying[t] = !0;
+				const r = this.value[t], h = this.getTime(), { timing: l, relation: u, easeTime: c } = this, a = u === "absolute" ? e - r : e;
+				if (this.hook("start"), c <= 0)
+					return this.end(!1, t), this;
+				const m = () => {
+					const f = this.getTime() - h;
+					if (f > c) {
+						this.end(!1, t);
+						return;
+					}
+					const v = f / c, g = l(v);
+					this.value[t] = r + g * a;
+				};
+				return this.ticker.add(m, i), this.animateFn.custom[t] = m, this.targetValue.custom[t] = a + r, this;
+			}
+			applyMulti(t = !1) {
+				this.applying["@@bind"] === !0 && this.end(!1, "@@bind"), this.applying["@@bind"] = !0;
+				const e = this.bindInfo, i = e.map((m) => this.value[m]), r = this.getTime(), { multiTiming: h, relation: l, easeTime: u } = this, c = h(1);
+				if (c.length !== i.length)
+					throw new TypeError(
+						`The number of binded animate attributes and timing function returns's length does not match. binded: ${e.length}, timing: ${c.length}`
+					);
+				if (this.hook("start"), u <= 0)
+					return this.end(!1, "@@bind"), this;
+				const a = () => {
+					const d = this.getTime() - r;
+					if (d > u) {
+						this.end(!1, "@@bind");
+						return;
+					}
+					const f = d / u, v = h(f);
+					e.forEach((g, w) => {
+						l === "absolute" ? this.value[g] = v[w] : this.value[g] = i[w] + v[w];
+					});
+				};
+				return this.ticker.add(a, t), this.animateFn.custom["@@bind"] = a, this.targetValue.system["@@bind"] = c, this;
+			}
+			applySys(t, e, i) {
+				i !== "move" && this.applying[i] === !0 && this.end(!0, i), this.applying[i] = !0;
+				const r = this[t], h = this.getTime(), l = this.timing, u = this.relation, c = this.easeTime, a = u === "absolute" ? e - r : e;
+				if (this.hook("start", `${i}start`), c <= 0)
+					return this.end(!1, i);
+				const m = () => {
+					const f = this.getTime() - h;
+					if (f > c) {
+						this.end(!0, i);
+						return;
+					}
+					const v = f / c, g = l(v);
+					this[t] = r + a * g, t !== "oy" && this.hook(i);
+				};
+				this.ticker.add(m, !0), t === "ox" ? this.animateFn.system.move[0] = m : t === "oy" ? this.animateFn.system.move[1] = m : this.animateFn.system[i] = m, i === "move" ? (t === "ox" && (this.targetValue.system.move[0] = a + r), t === "oy" && (this.targetValue.system.move[1] = a + r)) : i !== "shake" && (this.targetValue.system[i] = a + r);
+			}
+			error(t, e) {
+				throw e === "repeat" ? new Error(
+					`Cannot execute the same animation twice. Info: ${t}`
+				) : e === "reregister" ? new Error(
+					`Cannot register an animated property twice. Info: ${t}`
+				) : new Error(t);
+			}
+			end(t, e) {
+				if (t === !0)
+					if (this.applying[e] = !1, e === "move" ? (this.ticker.remove(this.animateFn.system.move[0]), this.ticker.remove(this.animateFn.system.move[1])) : e === "moveAs" ? this.ticker.remove(this.animateFn.system.moveAs) : e === "@@bind" ? this.ticker.remove(this.animateFn.system["@@bind"]) : this.ticker.remove(
+						this.animateFn.system[e]
+					), e === "move") {
+						const [i, r] = this.targetValue.system.move;
+						this.ox = i, this.oy = r, this.hook("moveend", "end");
+					} else if (e === "moveAs") {
+						const [i, r] = this.targetValue.system.moveAs;
+						this.ox = i, this.oy = r, this.hook("moveend", "end");
+					} else
+						e === "rotate" ? (this.angle = this.targetValue.system.rotate, this.hook("rotateend", "end")) : e === "resize" ? (this.size = this.targetValue.system.resize, this.hook("resizeend", "end")) : e === "@@bind" ? this.bindInfo.forEach((r, h) => {
+							this.value[r] = this.targetValue.system["@@bind"][h];
+						}) : (this.sx = 0, this.sy = 0, this.hook("shakeend", "end"));
+				else
+					this.applying[e] = !1, this.ticker.remove(this.animateFn.custom[e]), this.value[e] = this.targetValue.custom[e], this.hook("end");
+			}
+		}
+		class j extends F {
+			constructor() {
+				super();
+				o(this, "now", {});
+				o(this, "target", {});
+				o(this, "transitionFn", {});
+				o(this, "value");
+				o(this, "handleSet", (t, e, i) => (this.transition(e, i), !0));
+				o(this, "handleGet", (t, e) => this.now[e]);
+				this.timing = (t) => t, this.value = new Proxy(this.target, {
+					set: this.handleSet,
+					get: this.handleGet
+				});
+			}
+			mode(t) {
+				return this.timing = t, this;
+			}
+			time(t) {
+				return this.easeTime = t, this;
+			}
+			relative() {
+				return this.relation = "relative", this;
+			}
+			absolute() {
+				return this.relation = "absolute", this;
+			}
+			transition(t, e) {
+				if (e === this.target[t])
+					return this;
+				if (!T(this.now[t]))
+					return this.now[t] = e, this;
+				this.applying[t] && this.end(t, !0), this.applying[t] = !0, this.hook("start");
+				const i = this.getTime(), r = this.easeTime, h = this.timing, l = this.now[t], u = e + (this.relation === "absolute" ? 0 : l), c = u - l;
+				this.target[t] = u;
+				const a = () => {
+					const d = this.getTime() - i;
+					if (d >= r) {
+						this.end(t);
+						return;
+					}
+					const f = d / r;
+					this.now[t] = h(f) * c + l, this.hook("running");
+				};
+				return this.transitionFn[t] = a, r <= 0 ? (this.end(t), this) : (this.ticker.add(a), this);
+			}
+			end(t, e = !1) {
+				const i = this.transitionFn[t];
+				if (!T(i))
+					throw new ReferenceError(
+						`You are trying to end an ended transition: ${t}`
+					);
+				this.ticker.remove(this.transitionFn[t]), delete this.transitionFn[t], this.applying[t] = !1, this.hook("end"), e || (this.now[t] = this.target[t]);
+			}
+		}
+		const x = (...n) => n.reduce((s, t) => s + t, 0), y = (n) => {
+			if (n === 0)
+				return 1;
+			let s = n;
+			for (; n > 1;)
+				n--, s *= n;
+			return s;
+		}, A = (n, s) => Math.round(y(s) / (y(n) * y(s - n))), p = (n, s, t = (e) => 1 - s(1 - e)) => n === "in" ? s : n === "out" ? t : n === "in-out" ? (e) => e < 0.5 ? s(e * 2) / 2 : 0.5 + t((e - 0.5) * 2) / 2 : (e) => e < 0.5 ? t(e * 2) / 2 : 0.5 + s((e - 0.5) * 2) / 2, $ = Math.cosh(2), z = Math.acosh(2), V = Math.tanh(3), P = Math.atan(5);
+		function O() {
+			return (n) => n;
+		}
+		function q(...n) {
+			const s = [0].concat(n);
+			s.push(1);
+			const t = s.length, e = Array(t).fill(0).map((i, r) => A(r, t - 1));
+			return (i) => {
+				const r = e.map((h, l) => h * s[l] * (1 - i) ** (t - l - 1) * i ** l);
+				return x(...r);
+			};
+		}
+		function U(n, s) {
+			if (n === "sin") {
+				const t = (i) => Math.sin(i * Math.PI / 2);
+				return p(s, (i) => 1 - t(1 - i), t);
+			}
+			if (n === "sec") {
+				const t = (i) => 1 / Math.cos(i);
+				return p(s, (i) => t(i * Math.PI / 3) - 1);
+			}
+			throw new TypeError(
+				"Unexpected parameters are delivered in trigo timing function."
+			);
+		}
+		function C(n, s) {
+			if (!Number.isInteger(n))
+				throw new TypeError(
+					"The first parameter of power timing function only allow integer."
+				);
+			return p(s, (e) => e ** n);
+		}
+		function G(n, s) {
+			if (n === "sin")
+				return p(s, (e) => (Math.cosh(e * 2) - 1) / ($ - 1));
+			if (n === "tan") {
+				const t = (i) => Math.tanh(i * 3) * 1 / V;
+				return p(s, (i) => 1 - t(1 - i), t);
+			}
+			if (n === "sec") {
+				const t = (i) => 1 / Math.cosh(i);
+				return p(s, (i) => 1 - (t(i * z) - 0.5) * 2);
+			}
+			throw new TypeError(
+				"Unexpected parameters are delivered in hyper timing function."
+			);
+		}
+		function N(n, s) {
+			if (n === "sin") {
+				const t = (i) => Math.asin(i) / Math.PI * 2;
+				return p(s, (i) => 1 - t(1 - i), t);
+			}
+			if (n === "tan") {
+				const t = (i) => Math.atan(i * 5) / P;
+				return p(s, (i) => 1 - t(1 - i), t);
+			}
+			throw new TypeError(
+				"Unexpected parameters are delivered in inverse trigo timing function."
+			);
+		}
+		function B(n, s = () => 1) {
+			let t = -1;
+			return (e) => (t *= -1, e < 0.5 ? n * s(e * 2) * t : n * s((1 - e) * 2) * t);
+		}
+		function D(n, s = 1, t = [0, 0], e = 0, i = (h) => 1, r = !1) {
+			return (h) => {
+				const l = s * h * Math.PI * 2 + e * Math.PI / 180, u = Math.cos(l), c = Math.sin(l), a = n * i(i(r ? 1 - h : h));
+				return [a * u + t[0], a * c + t[1]];
+			};
+		}
+		function H(n, s, ...t) {
+			const e = [n].concat(t);
+			e.push(s);
+			const i = e.length, r = Array(i).fill(0).map((h, l) => A(l, i - 1));
+			return (h) => {
+				const l = r.map((c, a) => c * e[a][0] * (1 - h) ** (i - a - 1) * h ** a), u = r.map((c, a) => c * e[a][1] * (1 - h) ** (i - a - 1) * h ** a);
+				return [x(...l), x(...u)];
+			};
+		}
+
+		if ('animate' in core.plugin) throw new ReferenceError(`插件中已存在名为animate的属性！`);
+
+		core.plugin.animate = {
+			Animation: Y,
+			AnimationBase: F,
+			Ticker: I,
+			Transition: j,
+			sleep: R,
+			circle: D,
+			bezierPath: H,
+			linear: O,
+			bezier: q,
+			trigo: U,
+			power: C,
+			hyper: G,
+			inverseTrigo: N,
+			shake: B
+		}
+
+	},
+	"新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -3297,7 +4027,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -3464,7 +4194,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "切装事件": function () {
+	"切装事件": function () {
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
 			if (!this.canEquip(equipId, true)) {
@@ -3531,7 +4261,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		items.prototype.quickSaveEquip = items.prototype.quickLoadEquip;
 	},
-    "工具": function () {
+	"工具": function () {
 		// 工具函数和类
 		/**
 		 * @type {ButtonBase}
@@ -3547,6 +4277,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				this._draw = () => { };
 				this.event = (x, y, px, py) => { };
+				this.status = () => { };
 			}
 
 			draw() {
@@ -3742,7 +4473,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-    "自定义设置": function () {
+	"自定义设置": function () {
 
 		const Button = this.Button;
 
@@ -3837,7 +4568,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			"x": 40,
 			"y": 305,
 			"status": function () { return core.getFlag('comment') ? '开' : '关' },
-			"func": function () { core.setFlag('comment', !core.getFlag('comment'));  },
+			"func": function () { core.setFlag('comment', !core.getFlag('comment')); },
 			"text": "是否接收并显示在线留言。"
 		},
 		]
@@ -4015,7 +4746,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "预设技能": function () {
+	"预设技能": function () {
 		/**
 		 * 变量解释： recordAction 下场战斗是否录制信息
 		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
@@ -4341,7 +5072,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return presetMenu;
 		}
 	},
-    "成就": function () {
+	"成就": function () {
 
 		const PX = core.__PIXELS__,
 			PY = core.__PIXELS__;
@@ -4539,13 +5270,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.animateFrame.asyncId[fade] = true;
 		};
 	},
-	"引导界面":function(){
+	"引导界面": function () {
 		const ctx = 'tutorial';
 		const Button = this.Button;
 		/**
 		 * @extends MenuBase
 		 */
-		class TutorialMenu extends this.Menu{
+		class TutorialMenu extends this.Menu {
 			constructor() {
 				super(ctx);
 				/** 当前绘制的图片列表 */
@@ -4564,11 +5295,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.btnList.forEach((btn) => { btn.draw(); })
 			}
 
-			nextPage(){
-				if (this.page<this.pageList.length-1){
+			nextPage() {
+				if (this.page < this.pageList.length - 1) {
 					this.page++;
 				}
-				if (this.page===this.pageList.length-1){
+				if (this.page === this.pageList.length - 1) {
 					this.btnList.get('next').disable = true;
 				}
 				this.drawContent();
@@ -4576,9 +5307,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		function initTutorialMenu() {
-			return new Promise((res)=>{
+			return new Promise((res) => {
 				const tutorialMenu = new TutorialMenu();
-				function quit(){
+				function quit() {
 					tutorialMenu.clear();
 					res();
 				}
@@ -4592,7 +5323,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				};
 				nextButton.event = tutorialMenu.nextPage.bind(tutorialMenu);
 				const quitButton = new Button('quit');
-				quitButton.draw = () => { 
+				quitButton.draw = () => {
 					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
 					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
 					core.strokeRect(ctx, x, y, w, h, '#888888');;
@@ -4600,7 +5331,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				};
 				quitButton.event = quit;
 				tutorialMenu.btnList = new Map([['next', nextButton], ['quit', quitButton]]);
-				tutorialMenu.keyEvent = function(keyCode){
+				tutorialMenu.keyEvent = function (keyCode) {
 					switch (keyCode) {
 						case 13:
 						case 32:
@@ -4621,7 +5352,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 
-		this.drawTutorialMenu = async function(){
+		this.drawTutorialMenu = async function () {
 			if (core.isReplaying()) return;
 			// if (!core.getFlag('tutorial',false)) return;
 			//禁止Esc打开菜单栏
@@ -4633,7 +5364,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag('noOpenMenu', false);
 		}
 	},
-    "动态火焰": function () {
+	"动态火焰": function () {
 
 		////// canvas创建 //////
 		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
@@ -4794,96 +5525,116 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
 		}
 	},
-    "跳字插件": function () {
-	// 在此增加新插件
+	"跳字插件": function () {
+		// 在此增加新插件
 
-	let sTextList = new Set([]);
-	const canvas = 'scroll';
-	const gravity = 0.2;
+		/**
+		 * @type {Set<ScrollingText>}
+		 */
+		let sTextList = new Set([]);
+		const canvas = 'scroll';
+		const gravity = 0.2;
 
-	function drawScrollingText() {
-		core.ui.clearMap(canvas);
-		sTextList.forEach(
-			function (currText) {
-				core.setAlpha(canvas, currText.alpha);
-				core.fillText(canvas, currText.text, currText.x, currText.y,
-					currText.style, currText.font, currText.maxWidth)
-			}
-		)
-	}
-
-	class ScrollingText {
-		constructor(text, args) {
-			this.text = text;
-			this.x = args.x || 0;
-			this.y = args.y || 0;
-			this.x0 = args.x || 0;
-			this.y0 = args.y || 0;
-			this.style = args.style;
-			this.font = args.font;
-			this.maxWidth = args.maxWidth;
-			this.type = args.type || 'line';
-			this.vx = args.vx || 0;
-			this.vy = args.vy || 0;
-			this.t = 0;
-			this.tmax = args.tmax || 1000;
-			this.alpha = args.alpha || 1;
+		function drawScrollingText() {
+			core.ui.clearMap(canvas);
+			sTextList.forEach(
+				function (currText) {
+					core.setAlpha(canvas, currText.alpha);
+					core.fillText(canvas, currText.text, currText.x, currText.y,
+						currText.style, currText.font, currText.maxWidth)
+				}
+			)
 		}
-	}
 
-	this.addScrollingText = function (text, args) {
-		if (core.isReplaying()) return;
-		if (!core.getFlag('popDamage')) return;
-		let sText = new ScrollingText(text, args);
-		sTextList.add(sText);
-	}
-
-	function updateScrollingText() {
-		sTextList.forEach(function (currText) {
-			switch (currText.type) {
-			case 'line':
-				currText.x += currText.vx;
-				currText.y += currText.vy;
-				break;
-			case 'projectile':
-				currText.x += currText.vx;
-				currText.y += currText.vy;
-				currText.vy += gravity;
-				break;
-			case 'down':
-				if (currText.t < currText.tmax / 2) {
-					currText.x += currText.vx;
-					currText.y += currText.vy;
-				} else {
-					if (currText.alpha > 0.05)
-						currText.alpha -= 0.05;
+		function getFontSize(fontString) {
+			let parts = fontString.split(' ');
+			for (let i = 0; i < parts.length; i++) {
+				if (parts[i].includes('px')) {
+					return Number(parts[i].replace('px', ''));
 				}
 			}
-			currText.t++;
-			if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-				currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-				currText.t > currText.tmax) {
-				sTextList.delete(currText);
-			}
-		})
-	}
-
-	// 每次切换楼层后执行
-	this.clearScrollingText = function () {
-		sTextList.clear();
-	}
-
-	core.plugin.registerAnimationInterval('scrollText', 10, () => {
-		if (core.isReplaying()) return;
-		if (!core.getFlag('popDamage')) return;
-		if (!core.dymCanvas[canvas]) {
-			core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+			return NaN;
 		}
-		updateScrollingText();
-		drawScrollingText();
-	});
-},
-    "回合制战斗": function () {
+
+		function setFontSize(fontString, newSize) {
+			let parts = fontString.split(' ');
+
+			for (let i = 0; i < parts.length; i++) {
+				if (parts[i].includes('px')) {
+					parts[i] = newSize + 'px';
+				}
+			}
+			return parts.join(' ');
+		}
+
+		class ScrollingText {
+			constructor(text, args) {
+				this.text = text;
+				this.x = args.x || 0;
+				this.y = args.y || 0;
+				this.x0 = args.x || 0;
+				this.y0 = args.y || 0;
+				this.style = args.style;
+				this.font = args.font;
+
+				this.maxWidth = args.maxWidth;
+				this.type = args.type || 'line';
+				this.vx = args.vx || 0;
+				this.vy = args.vy || 0;
+				this.t = 0;
+				this.tmax = args.tmax || 1000;
+				this.alpha = args.alpha || 1;
+			}
+		}
+
+		this.addScrollingText = function (text, args) {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			let sText = new ScrollingText(text, args);
+			sTextList.add(sText);
+		}
+
+		function updateScrollingText() {
+			sTextList.forEach(function (currText) {
+				switch (currText.type) {
+					case 'line':
+						break;
+					case 'projectile':
+						currText.vy += gravity;
+						break;
+					case 'down':
+						if (currText.t >= currText.tmax / 2) {
+							[currText.vx, currText.vy] = [0, 0];
+							if (currText.alpha > 0.05) currText.alpha -= 0.05;
+						}
+				}
+				currText.x += currText.vx;
+				currText.y += currText.vy;
+				currText.t++;
+				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
+					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
+					currText.t > currText.tmax) {
+					sTextList.delete(currText);
+				}
+			})
+		}
+
+		// 每次切换楼层后执行
+		this.clearScrollingText = function () {
+			sTextList.clear();
+		}
+
+		core.plugin.registerAnimationInterval('scrollText', 10, () => {
+			if (core.isReplaying()) return;
+			if (!core.getFlag('popDamage')) return;
+			if (!core.dymCanvas[canvas]) {
+				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
+			}
+			updateScrollingText();
+			drawScrollingText();
+		});
+	},
+	"回合制战斗": function () {
 
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
@@ -6397,11 +7148,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				updateButtonStatus(btn, battle); // 更新按钮状态
 
 				let backGround = 'yellowBall.png';
-				if (btn.status === 'unavailable') {
+				if (btn.skillStatus === 'unavailable') {
 					backGround = 'grayBall.png';
 					core.setAlpha(ctx, 0.4);
 				}
-				else if (btn.status === 'pending') backGround = 'redBall.png';
+				else if (btn.skillStatus === 'pending') backGround = 'redBall.png';
 				core.drawImage(ctx, backGround, x, 0);
 
 				switch (btn.name) {
@@ -6444,7 +7195,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.fillText(ctx, 'V', x + 20, 28, 'red', 'Bold 12px Arial');
 						break;
 				}
-				if (btn.status === 'unavailable') core.setAlpha(ctx, 1);
+				if (btn.skillStatus === 'unavailable') core.setAlpha(ctx, 1);
 			}
 		}
 
@@ -6999,9 +7750,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 		// #endregion
 	},
-    "弹幕插件": function () {
-	
-	const towerName = "xinxin2";
+	"弹幕插件": function () {
+
+		const towerName = "xinxin2";
 		let W, H, WIDTH, HEIGHT;
 		if (core._WIDTH_ && core._HEIGHT_) {
 			[W, H] = [core._WIDTH_, core._HEIGHT_];
@@ -7019,174 +7770,174 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 
-	utils.prototype.http = function (type, url, formData, success, error, mimeType, responseType, onprogress, timeout) {
-		let xhr = new XMLHttpRequest();
-		xhr.open(type, url, true);
+		utils.prototype.http = function (type, url, formData, success, error, mimeType, responseType, onprogress, timeout) {
+			let xhr = new XMLHttpRequest();
+			xhr.open(type, url, true);
 
-		xhr.timeout = timeout;
-		if (mimeType) xhr.overrideMimeType(mimeType);
-		if (responseType) xhr.responseType = responseType;
-		xhr.onload = function (e) {
-			if (xhr.status == 200) {
-				if (success) success(xhr.response);
-			} else {
-				if (error) error("HTTP " + xhr.status);
-			}
-		};
-		xhr.onprogress = function (e) {
-			if (e.lengthComputable) {
-				if (onprogress) onprogress(e.loaded, e.total);
-			}
-		}
-		xhr.onabort = function () {
-			if (error) error("Abort");
-		}
-		xhr.ontimeout = function () {
-			if (error) error("Timeout");
-		}
-		xhr.onerror = function () {
-			if (error) error("Error on Connection");
-		}
-		if (formData)
-			xhr.send(formData);
-		else xhr.send();
-	}
-
-	this.getComment = function () {
-		let form = new FormData();
-		form.append('type', 1);
-		form.append('towername', towerName);
-		utils.prototype.http(
-			'POST',
-			'https://h5mota.com/backend/tower/barrage.php',
-			form,
-			function (res) {
-				res = JSON.parse(res);
-				console.log(res);
-				core.drawTip('接收成功！')
-				core.playSound('item.mp3');
-				let commentCollection = {};
-				const commentList = res?.list;
-				for (let i = 0, l = commentList.length; i <= l - 1; i++) {
-					if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
-					const commentTags = commentList[i].tags;
-					const cFloorId = commentTags.split(',')[0],
-						cX = parseInt(commentTags.split(',')[1]),
-						cY = parseInt(commentTags.split(',')[2]);
-					if (0 <= cX && cX <= W - 1 && 0 <= cY &&
-						cY <= H - 1 && core.floorIds.includes(cFloorId)) {
-						if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
-						const str = cX + ',' + cY;
-						if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
-						commentCollection[cFloorId][str].push(commentList[i]?.comment);
-					}
-				}
-				core.setFlag('commentCollection', commentCollection);
-			},
-			function (err) {
-				err = JSON.parse(err);
-				console.error(err);
-				core.drawTip('接收失败' + err?.message);
-				core.playSound('error.mp3');
-			},
-			null, null, null, 1000
-		);
-	}
-
-	this.postComment = function (comment, tags) {
-		let form = new FormData();
-		form.append('type', 2);
-		form.append('towername', towerName);
-		form.append('comment', comment);
-		form.append('tags', tags);
-		utils.prototype.http(
-			'POST',
-			'https://h5mota.com/backend/tower/barrage.php',
-			form,
-			function (res) {
-				res = JSON.parse(res);
-				console.log(res);
-				if (res?.code === 0) {
-					core.drawTip('提交成功！')
-					core.playSound('item.mp3');
+			xhr.timeout = timeout;
+			if (mimeType) xhr.overrideMimeType(mimeType);
+			if (responseType) xhr.responseType = responseType;
+			xhr.onload = function (e) {
+				if (xhr.status == 200) {
+					if (success) success(xhr.response);
 				} else {
-					core.drawTip('提交失败！' + res?.message);
-					core.playSound('error.mp3');
+					if (error) error("HTTP " + xhr.status);
 				}
-			},
-			function (err) {
-				err = JSON.parse(err);
-				console.error(err);
-				core.drawTip('接收失败' + err?.message);
-				core.playSound('error.mp3');
-			},
-			null, null, null, 1000
-		);
-	}
+			};
+			xhr.onprogress = function (e) {
+				if (e.lengthComputable) {
+					if (onprogress) onprogress(e.loaded, e.total);
+				}
+			}
+			xhr.onabort = function () {
+				if (error) error("Abort");
+			}
+			xhr.ontimeout = function () {
+				if (error) error("Timeout");
+			}
+			xhr.onerror = function () {
+				if (error) error("Error on Connection");
+			}
+			if (formData)
+				xhr.send(formData);
+			else xhr.send();
+		}
 
-	this.drawCommentSign = function () {
-		if (!core.getFlag('comment') || core.isReplaying()) return;
-		let commentCollection = core.getFlag('commentCollection', {}),
-			floorId = core.status.floorId;
-		core.createCanvas('sign', 0, 0, WIDTH, HEIGHT, 120);
-		core.setOpacity('sign', 0.6);
-		if (commentCollection.hasOwnProperty(floorId)) {
-			for (let pos in commentCollection[floorId]) {
-				if (commentCollection[floorId][pos].length > 0) {
-					for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
-						if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
-							const x = pos.split(',')[0],
-								y = pos.split(',')[1];
-							core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
-							break;
+		this.getComment = function () {
+			let form = new FormData();
+			form.append('type', 1);
+			form.append('towername', towerName);
+			utils.prototype.http(
+				'POST',
+				'https://h5mota.com/backend/tower/barrage.php',
+				form,
+				function (res) {
+					res = JSON.parse(res);
+					console.log(res);
+					core.drawTip('接收成功！')
+					core.playSound('item.mp3');
+					let commentCollection = {};
+					const commentList = res?.list;
+					for (let i = 0, l = commentList.length; i <= l - 1; i++) {
+						if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
+						const commentTags = commentList[i].tags;
+						const cFloorId = commentTags.split(',')[0],
+							cX = parseInt(commentTags.split(',')[1]),
+							cY = parseInt(commentTags.split(',')[2]);
+						if (0 <= cX && cX <= W - 1 && 0 <= cY &&
+							cY <= H - 1 && core.floorIds.includes(cFloorId)) {
+							if (!commentCollection.hasOwnProperty(cFloorId)) { commentCollection[cFloorId] = {}; }
+							const str = cX + ',' + cY;
+							if (!commentCollection[cFloorId].hasOwnProperty(str)) { commentCollection[cFloorId][str] = []; }
+							commentCollection[cFloorId][str].push(commentList[i]?.comment);
+						}
+					}
+					core.setFlag('commentCollection', commentCollection);
+				},
+				function (err) {
+					err = JSON.parse(err);
+					console.error(err);
+					core.drawTip('接收失败' + err?.message);
+					core.playSound('error.mp3');
+				},
+				null, null, null, 1000
+			);
+		}
+
+		this.postComment = function (comment, tags) {
+			let form = new FormData();
+			form.append('type', 2);
+			form.append('towername', towerName);
+			form.append('comment', comment);
+			form.append('tags', tags);
+			utils.prototype.http(
+				'POST',
+				'https://h5mota.com/backend/tower/barrage.php',
+				form,
+				function (res) {
+					res = JSON.parse(res);
+					console.log(res);
+					if (res?.code === 0) {
+						core.drawTip('提交成功！')
+						core.playSound('item.mp3');
+					} else {
+						core.drawTip('提交失败！' + res?.message);
+						core.playSound('error.mp3');
+					}
+				},
+				function (err) {
+					err = JSON.parse(err);
+					console.error(err);
+					core.drawTip('接收失败' + err?.message);
+					core.playSound('error.mp3');
+				},
+				null, null, null, 1000
+			);
+		}
+
+		this.drawCommentSign = function () {
+			if (!core.getFlag('comment') || core.isReplaying()) return;
+			let commentCollection = core.getFlag('commentCollection', {}),
+				floorId = core.status.floorId;
+			core.createCanvas('sign', 0, 0, WIDTH, HEIGHT, 120);
+			core.setOpacity('sign', 0.6);
+			if (commentCollection.hasOwnProperty(floorId)) {
+				for (let pos in commentCollection[floorId]) {
+					if (commentCollection[floorId][pos].length > 0) {
+						for (let i = 0, l = commentCollection[floorId][pos].length; i <= l - 1; i++) {
+							if (!(commentCollection[floorId][pos][i].match(/^[ ]*$/))) {
+								const x = pos.split(',')[0],
+									y = pos.split(',')[1];
+								core.drawImage('sign', 'sign.png', 32 * x, 32 * y);
+								break;
+							}
 						}
 					}
 				}
 			}
 		}
-	}
 
-	this.clearCommentSign = function () {
-		core.deleteCanvas('sign');
-	}
+		this.clearCommentSign = function () {
+			core.deleteCanvas('sign');
+		}
 
-	function pickComment(commentArr, showNum = 5) {
-		let showList = [];
-		if (commentArr.length <= showNum) { showList = commentArr; } else {
-			for (let i = 0; i <= showNum - 1; i++) {
-				const l = commentArr.length,
-					n = core.plugin.dice(l - 1);
-				showList.push(commentArr[n]);
-				commentArr.splice(n, 1);
+		function pickComment(commentArr, showNum = 5) {
+			let showList = [];
+			if (commentArr.length <= showNum) { showList = commentArr; } else {
+				for (let i = 0; i <= showNum - 1; i++) {
+					const l = commentArr.length,
+						n = core.plugin.dice(l - 1);
+					showList.push(commentArr[n]);
+					commentArr.splice(n, 1);
+				}
+			}
+			return showList;
+		}
+
+		function drawComment(commentArr) {
+			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
+				core.plugin.addScrollingText(commentArr[i], {
+					'x': WIDTH + 20 * Math.random(),
+					'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
+					'vx': -2 + Math.random(),
+					'style': 'white',
+					'font': '18px Verdana'
+				});
 			}
 		}
-		return showList;
-	}
 
-	function drawComment(commentArr) {
-		for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
-			core.plugin.addScrollingText(commentArr[i], {
-				'x': WIDTH + 20 * Math.random(),
-				'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
-				'vx': -2 + Math.random(),
-				'style': 'white',
-				'font':'18px Verdana'
-			});
+		this.showComment = function (x, y) {
+			if (!core.getFlag('comment') || core.isReplaying()) return;
+			const commentCollection = core.getFlag('commentCollection', {});
+			const floorId = core.status.floorId,
+				str = x + ',' + y;
+			if (commentCollection.hasOwnProperty(floorId) &&
+				commentCollection[floorId].hasOwnProperty(str)) {
+				let commentArr = commentCollection[floorId][str].concat();
+				const showNum = 5;
+				const commentArrPicked = pickComment(commentArr, showNum);
+				drawComment(commentArrPicked);
+			}
 		}
 	}
-
-	this.showComment = function (x, y) {
-		if (!core.getFlag('comment') || core.isReplaying()) return;
-		const commentCollection = core.getFlag('commentCollection', {});
-		const floorId = core.status.floorId,
-			str = x + ',' + y;
-		if (commentCollection.hasOwnProperty(floorId) &&
-			commentCollection[floorId].hasOwnProperty(str)) {
-			let commentArr = commentCollection[floorId][str].concat();
-			const showNum = 5;
-			const commentArrPicked = pickComment(commentArr, showNum);
-			drawComment(commentArrPicked);
-		}
-	}
-}
 }
