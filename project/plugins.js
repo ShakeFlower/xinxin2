@@ -7541,8 +7541,38 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * todolist:
 		 * 实现多重楼传，杀掉已有的回城楼传 ?
 		 * 实现tips界面
+		 * 重要的是文案
+		 * 3F 警告标志
+		 * 标题：气息
+		 * 每回合您攻击敌人和被攻击时都会回复气息。（展示： 角色挨打的动画 气息条，圈起来火焰）
+		 * 气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2
+		 * 下一页 跳过 -> 明白了 退出
+		 * 您可以在背包背包图标里的设置\i[xxx]中调整是否显示此提示信息。（）
+		 * 如果您是这个游戏的老手，您可以选择“跳过提示”
+		 * 
+		 * 技能与疲劳
+		 * 剑技 装备某个剑技后，条件满足时Z会亮起，此时可以发动对应技能
+		 * 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
+		 * 
+		 * 异常状态
+		 * 一些特殊敌人有概率对你释放异常状态，这会增加你的异常计数
+		 * 每当异常计数达到100时，异常状态将被立即触发
+		 * 
+		 * 中毒会使你每走一步都掉血（并禁用楼传和快捷商店），衰弱会扣减你的攻防。
+		 * 你可以使用一些手段来解除异常状态!
+		 * 
+		 * 同层楼传
+		 * 当你在同一层连续使用楼传时，第一次会落在默认的楼传落点（以黄框表示）。
+		 * 若当前存在其它可到达的传送点（橙框），反复进行同层楼传将依次抵达这些地方
+		 * 
 		 * 实现新的伤害跳出
+		 * too hard 尝试一下高级动画插件 好的话弹幕绘制和成就界面跳出也可以改成这个 
+		 * 要自己实现故事板那也太恶心，太恶劣了？
 		 * 还原失败动画，开局的动画
+		 * 待确认：疲劳和毒衰计数要不要叠
+		 * 待确认：淡薄的绘制优化
+		 * 待确认：老复刻版的bug
+		 * 待确认：毒衰的UI
 		 */
 
 		/**
@@ -7937,6 +7967,79 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const showNum = 5;
 				const commentArrPicked = pickComment(commentArr, showNum);
 				drawComment(commentArrPicked);
+			}
+		}
+	},
+	"快捷楼传": function () {
+		// core.maps.canMoveDirectly
+
+		// 皇宫可以考虑平面楼传？
+		/**
+		 * 我们有两个需求，一个是判断能不能到快捷商店（能否到达某个楼梯口）
+		 * 一个是判断当前层哪些楼梯口可到达
+		 */
+
+		function canReachQuickShop() {
+			if (!core.status.thisMap) return false;
+			if (core.hasFlag('poison')) return false;
+			if (core.status.thisMap.blocks.some((ele) => ele.event.id === 'E337')) return false;
+
+		}
+
+		function canReachPoint(x1,y1,floorId1,x2,y2,floorId2) {
+			if (core.hasFlag('poison')) return false;
+			if (floorId1 === floorId2) return core.maps.canMoveDirectly()
+		}
+
+		this.canAccess = function (fromX,fromY,destX,destY) {
+			let locs = [[destX,destY]]
+			let ans = [], number = locs.length;
+		
+			if (!core.maps._canMoveDirectly_checkGlobal()) {
+				for (let i = 0; i < number; ++i) ans.push(-1);
+				return ans;
+			}
+			for (let i = 0; i < number; ++i) {
+				if (locs[i][0] == fromX && locs[i][1] == fromY) {
+					ans.push(0);
+					number--;
+				}
+				else if (locs[i][0] < 0 || locs[i][0] >= core.bigmap.width || locs[i][1] < 0 || locs[i][1] >= core.bigmap.height) {
+					ans.push(-1);
+					number--;
+				}
+				else ans.push(null);
+			}
+			if (number == 0) return ans;
+		
+			// 检查起点事件
+			if (!core.maps._canMoveDirectly_checkStartPoint(fromX, fromY)) {
+				for (let i in ans) {
+					if (ans[i] == null) ans[i] = -1;
+				}
+				return ans;
+			}
+		
+			return core.maps._canMoveDirectly_bfs(fromX, fromY, locs, number, ans);
+		}
+
+		function bfs(startingNode, getNeighbors) {
+			const visited = new Set(); 
+			const queue = []; 
+
+			visited.add(startingNode);
+			queue.push(startingNode);
+
+			while (queue.length > 0) {
+				const node = queue.shift(); 
+
+				const neighbors = getNeighbors || [];
+				for (let neighbor of neighbors) {
+					if (!visited.has(neighbor)) {
+						visited.add(neighbor);
+						queue.push(neighbor);
+					}
+				}
 			}
 		}
 	}
