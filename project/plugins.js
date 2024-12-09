@@ -5905,6 +5905,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						hdamage = Math.max(this.atk - enemy.def, 1);
 						break;
 				}
+				if (enemy.def - this.atk > this.atkm) {
+					hdamage = 0;
+					atkStatus.animate = 'gcanthit';
+				}
 				return hdamage;
 			}
 
@@ -6093,7 +6097,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const atkStatus = this.atkStatus;
 				if (hasSpecial(this.special, [2, 60, 61, 62, 63, 64, 65, 66])) atkStatus.damage = this.atk; // 魔攻
 				else {
-					if (hero.def - this.atk >= hero.defm) atkStatus.damage = 0; // 防临界
+					if (hero.def - this.atk >= hero.defm) {
+						atkStatus.damage = 0; // 防临界
+						atkStatus.animate = 'gcanthit';
+					}
 					else atkStatus.damage = Math.max(this.atk - hero.def, 1);
 				}
 			}
@@ -6191,7 +6198,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						atkStatus.heroAnimate = "gsh4";
 						break;
 					case 'E': //贤者结界
-						this.hero.hpmax += Math.round(1.5 * damage);
+						hero.hpmax += Math.round(1.5 * damage);
 						atkStatus.heroAnimate = "gsh5";
 						break;
 					default:
@@ -6881,7 +6888,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillText(ctx, '气息:', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
 			if (atkBuff > 0) core.fillText(ctx, '+' + atkBuff.toString(), 260, 78, "cyan", '8px Verdana');
 			if (defBuff > 0) core.fillText(ctx, '+' + defBuff.toString(), 260, 100, "red", '8px Verdana');
-			else if (defBuff < 0) core.fillText(ctx, '-' + -defBuff.toString(), 260, 100, "red", '8px Verdana');
+			else if (defBuff < 0) core.fillText(ctx, '-' + (-defBuff).toString(), 260, 100, "red", '8px Verdana');
 
 			core.setTextAlign(ctx, "left");
 			core.fillText(ctx, enemy.hp, tx + 50, ty + 2, "white", numFont);
@@ -7271,6 +7278,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'skeletonPriest': { 'x': 10 },
 			'E436': { 'x': -40 },
 			'E447': { 'x': -50, 'y': -50 },
+			'gsh3':{ 'x': -30 },
 		},
 			/** 在公主图标上播放的动画的偏移量 */
 			princessOffsetList = {
@@ -7280,7 +7288,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			},
 			/** 在敌人图标上播放的动画的偏移量 */
 			enemyOffsetList = {
+				'gcanthit': { 'y': -10 },
 				'gsw1': { 'y': -40 },
+				'gsw2':{ 'y': -10 },
 			};
 
 		/**
@@ -7321,8 +7331,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					break;
 				case 'enemy':
 					if (atkStatusE.frozen) break;
-					const eid = battle.enemy.id;
-					let [ohx, ohy, opx, opy] = [0, 0, 0, 0];
+					const eid = battle.enemy.id,
+						sid = atkStatusE.heroAnimate || '';
+					let [ohx, ohy, opx, opy, osx, osy] = [0, 0, 0, 0, 0, 0];
 					if (heroOffsetList.hasOwnProperty(eid)) {
 						currOffset = heroOffsetList[eid];
 						[ohx, ohy] = [currOffset.x || 0, currOffset.y || 0];
@@ -7330,6 +7341,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (princessOffsetList.hasOwnProperty(eid)) {
 						currOffset = princessOffsetList[eid];
 						[opx, opy] = [currOffset.x || 0, currOffset.y || 0];
+					}
+					if (heroOffsetList.hasOwnProperty(sid)) {
+						currOffset = heroOffsetList[sid];
+						[osx, osy] = [currOffset.x || 0, currOffset.y || 0];
 					}
 					if (atkStatusE.miss) {  // 这里播放miss的动画
 						if (['hero', 'all', 'bounce'].includes(atkStatusE.aim)) {
@@ -7354,7 +7369,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
-						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx, hy);
+						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx + osx, hy + osy);
 						core.plugin.addScrollingText(damageE, {
 							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
@@ -7975,6 +7990,49 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	},
 	"楼传判定":function(){
+
+		function canMove(sx, sy, destX, destY) {
+			let ans = -1;
+			const canMoveArray = core.maps.generateMovableArray(),
+				blocksObj = core.maps.getMapBlocksObj(),
+				bgMap = core.maps.getBgMapArray();
+
+			let visited = [], queue = [];
+			visited[sx + "," + sy] = 0;
+			queue.push(sx + "," + sy);
+
+			while (queue.length > 0) {
+				const now = queue.shift().split(","), x = parseInt(now[0]), y = parseInt(now[1]);
+				for (let direction in core.utils.scan) {
+					if (!core.inArray(canMoveArray[x][y], direction)) continue;
+					const nx = x + core.utils.scan[direction].x,
+						ny = y + core.utils.scan[direction].y,
+						nindex = nx + "," + ny;
+					if (visited[nindex]) continue;
+					if (core.onSki(bgMap[ny][nx])) continue;
+					if (!core.maps._canMoveDirectly_checkNextPoint(blocksObj, nx, ny)) continue;
+					visited[nindex] = visited[now] + 1;
+					if (destX === nx && destY === ny) {
+						// 不可以绿点为终点
+						const block = blocksObj[nx + "," + ny];
+						if (['downFloor', 'upFloor'].includes(block.event.id)) {
+							ans = visited[nindex];
+						}
+						else if (block && !block.disable && block.event.trigger) {
+							ans = -1;
+						} else {
+							ans = visited[nindex];
+						}
+						return ans;
+					}
+					queue.push(nindex);
+				}
+			}
+			if (ans === null || ans == undefined) ans[i] = -1;
+
+			return ans;
+		}
+
 		/**
 		 * 快捷商店不用楼传一次的条件：当前直接可达某个楼梯口
 		 */
@@ -7984,7 +8042,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const blocks = core.status.maps[floorId].blocks;
 			return blocks.some((block) =>
 				!block.disable && ['downFloor', 'upFloor'].includes(block.event.id)
-				&& core.maps.canMoveDirectly(block.x, block.y)
+				&& canMove(core.getHeroLoc('x'), core.getHeroLoc('y'),
+					block.x, block.y) !== -1
 			)
 		}
 	}
