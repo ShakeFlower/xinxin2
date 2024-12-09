@@ -5217,7 +5217,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			achieveMenu.keyEvent = function (keyCode) {
 				// 处理按键事件
 				if (keyCode === 27) this.end();
-			}.bind(settingMenu);
+			}.bind(achieveMenu);
 			return achieveMenu;
 		}
 
@@ -6341,7 +6341,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			route = 'bs';
 
 			/** 按钮列表 
-			 * @type {Array<StatusButton>}
+			 * @type {Array<ButtonBase>}
 			 */
 			btnList = generateBtnList(this);
 			/**
@@ -6979,23 +6979,25 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		const Button = this.Button;
 		/**
 		 * 拥有status属性的按钮类
 		 * @extends {ButtonBase}
 		 */
 		class StatusButton extends this.Button {
-			constructor(name, x, y, w, h) {
+			constructor(name, x, y, w, h, event) {
 				super(name, x, y, w, h);
 				/** 按钮状态,分为'unavailable','available','pending' 
 				 * @type {('unavailable'|'available'|'pending')}
 				*/
+				this.event = event;
 				this.skillStatus = 'available';
 			}
 		}
 
 		/** 生成按钮对象 
 		 * @param {Battle} battle
-		 * @returns {Array<StatusButton>}
+		 * @returns {Array<ButtonBase>}
 		 */
 		function generateBtnList(battle) {
 			return [
@@ -7033,7 +7035,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}),
 				new StatusButton('crit', 276, 320, 32, 32, () => battle.execUserAction('c')),
 				new StatusButton('breathe', 308, 320, 32, 32, () => battle.execUserAction('v')),
-				new StatusButton('quick', 0, 0, 32, 32, () => battle.speed = 'quick'),
+				new StatusButton('quick', 0, 0, 32, 32, () => {
+					battle.speed = 'quick'
+					console.log(battle.speed)
+				}),
 				new StatusButton('normal', 32, 0, 32, 32, () => battle.speed = 'normal'),
 				new StatusButton('slow', 64, 0, 32, 32, () => battle.speed = 'slow'),
 			];
@@ -7278,7 +7283,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'skeletonPriest': { 'x': 10 },
 			'E436': { 'x': -40 },
 			'E447': { 'x': -50, 'y': -50 },
-			'gsh3':{ 'x': -30 },
+			'gsh3': { 'x': -30 },
 		},
 			/** 在公主图标上播放的动画的偏移量 */
 			princessOffsetList = {
@@ -7290,7 +7295,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			enemyOffsetList = {
 				'gcanthit': { 'y': -10 },
 				'gsw1': { 'y': -40 },
-				'gsw2':{ 'y': -10 },
+				'gsw2': { 'y': -10 },
 			};
 
 		/**
@@ -7488,7 +7493,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				) {
 					button.event(x, y, px, py);
 				}
-			});
+			}
+			);
 			drawSkillButton(battle); //每次点击重绘所有按钮
 			drawSpeedButton(battle);
 		}
@@ -7989,7 +7995,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"楼传判定":function(){
+	"楼传判定": function () {
 
 		function canMove(sx, sy, destX, destY) {
 			let ans = -1;
