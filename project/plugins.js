@@ -5788,6 +5788,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			constructor() {
 				super(core.status.hero.hp, core.status.hero.atk, core.status.hero.def,
 					core.status.hero.manamax, core.status.hero.mana, core.getFlag('weakValue', 0));
+
 				/** 一管气息的容量 */
 				this.permana = this.manamax / 6;
 				/** 本次攻击的状态 
@@ -6651,15 +6652,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (route.length > 3) core.status.route.push(route);
 			}
 			core.status.hero.statistics.battleDamage += battle.enemy.totalDamage;
+
+			// 获取毒衰状态
+			core.setFlag('weakValue', hero.weakPoint); // 先获得衰弱点数再执行衰弱效果
 			switch (hero.status) {
 				case 'poison':
 					if (!core.hasFlag('poison') && !core.hasFlag('weak')) core.triggerDebuff('get', 'poison');
 					break;
 				case 'weak':
-					core.setFlag('weakValue', hero.weakPoint); // 先获得衰弱点数再执行衰弱效果
 					if (!core.hasFlag('poison') && !core.hasFlag('weak')) core.triggerDebuff('get', 'weak');
 					break;
 			}
+
 			core.setFlag('battleSpeed', (() => {
 				if (battle.speed === 'quick') return 0;
 				else if (battle.speed === 'normal') return 1;
@@ -6667,6 +6671,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			})());
 			if (hero.swordEquiped !== core.getEquip(0)) core.loadEquip(hero.swordEquiped);
 			if (hero.shieldEquiped !== core.getEquip(1)) core.loadEquip(hero.shieldEquiped);
+
+
 			switch (battle.status) {
 				case 'win':
 					const info = battle.enemy.info,
