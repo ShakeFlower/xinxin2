@@ -5633,6 +5633,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			updateScrollingText();
 			drawScrollingText();
 		});
+
+
+		this.test = function () {
+			const { Animation, hyper } = core.plugin.animate
+			const ani = new Animation();
+			ani.register('x', 0);
+			ani.ticker.add(() => {
+				core.createCanvas('test', 0, 0, 416, 416,200);
+				core.fillText('test', 'test', ani.value.x, 100, 'white', '16px Verdana');
+			})
+			ani.mode(hyper('tan', 'center'))
+			.time(1000)
+			.absolute()
+			.apply('x',400);
+		}
 	},
 	"回合制战斗": function () {
 
