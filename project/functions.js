@@ -1615,11 +1615,9 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
         "triggerDebuff": function (action, type) {
 	// 毒衰咒效果的获得与解除
 	// action：获得还是解除；'get'表示获得，'remove'表示解除
-	// type：一个数组表示获得了哪些毒衰咒效果；poison, weak，curse
-
+	// type：获得了哪些毒衰咒效果；poison, weak，curse
 	// type改为字符串 不允许是数组
 
-	// 疑似老版本就没处理这个问题
 	if (action === 'get') {
 		if (type === 'poison') {
 			if (core.hasFlag('weak')) return;
@@ -1643,59 +1641,6 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 			core.setFlag('weakValue', 0);
 		}
 	}
-
-	/**
-	if (!(type instanceof Array)) type = [type];
-
-	if (action == 'get') {
-
-		if (core.inArray(type, 'poison') && !core.hasFlag("poison") && (flags.bugFix || !core.hasFlag('weak'))) {
-			// 获得毒效果
-			core.setFlag('poison', true);
-		}
-		if (core.inArray(type, 'weak') && (flags.bugFix || !core.hasFlag('poison'))) {
-			// 获得衰效果
-			core.setFlag('weak', true);
-			if (core.values.weakValue >= 1) {
-				// >=1，直接扣数值
-				core.addStatus('atk', -core.getFlag('weakV', 1));
-				core.addStatus('def', -core.getFlag('weakV', 1));
-				core.addFlag('weakValue', core.getFlag('weakV', 1));
-			} else {
-				// <1，扣比例
-				core.addBuff('atk', -core.values.weakValue);
-				core.addBuff('def', -core.values.weakValue);
-			}
-		}
-		if (core.inArray(type, 'curse') && !core.hasFlag('curse')) {
-			// 获得咒效果
-			core.setFlag('curse', true);
-		}
-	} else if (action == 'remove') {
-		if (core.inArray(type, "poison") && core.hasFlag("poison")) {
-			// 移除毒效果
-			core.setFlag("poison", false);
-		}
-		if (core.inArray(type, "weak") && core.hasFlag("weak")) {
-			// 移除衰效果
-			core.setFlag("weak", false);
-			if (core.values.weakValue >= 1) {
-				// >=1，直接扣数值
-				core.addStatus('atk', core.getFlag('weakValue', 0));
-				core.addStatus('def', core.getFlag('weakValue', 0));
-				core.setFlag('weakValue', 0);
-			} else {
-				// <1，扣比例
-				core.addBuff('atk', core.values.weakValue);
-				core.addBuff('def', core.values.weakValue);
-			}
-		}
-		if (core.inArray(type, "curse") && core.hasFlag("curse")) {
-			// 移除咒效果
-			core.setFlag("curse", false);
-		}
-	}
-	*/
 },
         "updateStatusBar": function () {
 	// 更新状态栏
