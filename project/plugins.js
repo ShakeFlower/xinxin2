@@ -5635,18 +5635,38 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 
-		this.test = function () {
-			const { Animation, hyper } = core.plugin.animate
-			const ani = new Animation();
-			ani.register('x', 0);
-			ani.ticker.add(() => {
-				core.createCanvas('test', 0, 0, 416, 416,200);
-				core.fillText('test', 'test', ani.value.x, 100, 'white', '16px Verdana');
+		this.test = function (x, y) {
+			const { Animation, power, } = core.plugin.animate
+			const ctx = 'test';
+			core.createCanvas(ctx, 0, 0, 416, 416, 200);
+
+			const updateScrollingText = new Animation();
+			updateScrollingText.ticker.add(() => {
+				// 如果还有scrollingText存在
+				core.createCanvas(ctx, 0, 0, 416, 416, 200);
 			})
-			ani.mode(hyper('tan', 'center'))
-			.time(1000)
-			.absolute()
-			.apply('x',400);
+			// 用于每帧更新用于绘制的画布，永不摧毁
+
+			const ani = new Animation();
+			ani.register('alpha', 0.3);
+			ani.register('fontSize', 10);
+			ani.ticker.add(() => {
+				core.setAlpha(ctx, ani.value.alpha);
+				core.fillText(ctx, 'test', ani.x, ani.y, 'white', ani.value.fontSize + 'px Verdana');
+				core.setAlpha(ctx, 1);
+			})
+			ani.mode(power(2, 'center'))
+				.time(1000)
+				.relative()
+				.move(300, 300)
+				.mode(power(2, 'center'))
+				.time(1000)
+				.relative()
+				.apply('alpha',1)
+				.mode(power(2, 'center'))
+				.time(1000)
+				.relative()
+				.apply('fontSize',16);
 		}
 	},
 	"回合制战斗": function () {
