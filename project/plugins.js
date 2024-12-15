@@ -5634,12 +5634,43 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawScrollingText();
 		});
 
+		const { Animation, power, linear} = core.plugin.animate;
+		const ctx = 'test';
+		function showSingleCharacter(char, delayTime, destoryTime, x, y) {
+			const ani = new Animation();
+			ani.register('alpha', 0.3);
+			ani.register('fontSize', 10);
+			ani.register('t', 0);
+			ani.ticker.add(() => {
+				core.setAlpha(ctx, ani.value.alpha);
+				core.fillText(ctx, char, ani.x + x, ani.y + y, 'Red', 'Bold ' + ani.value.fontSize + 'px Verdana');
+				core.setAlpha(ctx, 1);
+				if (ani.value.t >= 100) {
+					ani.ticker.destroy();
+				}
+			})
+			console.log(destoryTime);
+			ani.mode(power(2, 'center'))
+				.time(delayTime)
+				.relative()
+				.move(10, 10)
+				.mode(power(2, 'center'))
+				.time(delayTime)
+				.absolute()
+				.apply('alpha', 1)
+				.mode(power(2, 'center'))
+				.time(delayTime)
+				.absolute()
+				.apply('fontSize', 16)
+				.mode(linear())
+				.time(destoryTime)
+				.relative()
+				.apply('t', 100);
+		}
 
-		this.test = function (x, y) {
-			const { Animation, power, } = core.plugin.animate
-			const ctx = 'test';
+		this.test = function (damage) {
 			core.createCanvas(ctx, 0, 0, 416, 416, 200);
-
+ 
 			const updateScrollingText = new Animation();
 			updateScrollingText.ticker.add(() => {
 				// 如果还有scrollingText存在
@@ -5647,26 +5678,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			})
 			// 用于每帧更新用于绘制的画布，永不摧毁
 
-			const ani = new Animation();
-			ani.register('alpha', 0.3);
-			ani.register('fontSize', 10);
-			ani.ticker.add(() => {
-				core.setAlpha(ctx, ani.value.alpha);
-				core.fillText(ctx, 'test', ani.x, ani.y, 'white', ani.value.fontSize + 'px Verdana');
-				core.setAlpha(ctx, 1);
+			const damageStrArray = damage.toString().split('');
+			let delayInterval = 20,
+				posInterval = 20,
+				totalDelay = 200 + damageStrArray.length * delayInterval;
+			damageStrArray.forEach((char) => {
+				showSingleCharacter(char, totalDelay, 400 - totalDelay,
+					200 + posInterval, 200);
+				totalDelay -= delayInterval;
+				posInterval += 10;
 			})
-			ani.mode(power(2, 'center'))
-				.time(1000)
-				.relative()
-				.move(300, 300)
-				.mode(power(2, 'center'))
-				.time(1000)
-				.relative()
-				.apply('alpha',1)
-				.mode(power(2, 'center'))
-				.time(1000)
-				.relative()
-				.apply('fontSize',16);
 		}
 	},
 	"回合制战斗": function () {
@@ -8081,6 +8102,30 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		/**
+		 * 当前位置是否是楼层传送点
+		 */  
+		function isFlyPoint(x, y, blockId) {
+			if (!['downFloor', 'upFloor'].includes(blockId)) return false;
+			const floorId = core.status.floorId;
+			let upFloorPoint = [-1, -1], downFloorPoint = [-1, -1];
+			// 判断是否存在别的楼传落点
+			if (blockId === 'upFloor') {
+				if (core.floors[floorId].upFloor) {
+					upFloorPoint = core.floors[floorId].upFloor;
+					return (x === upFloorPoint[0] && y === upFloorPoint[1]);
+				}
+				else return true;
+			}
+			else if (blockId === 'downFloor') {
+				if (core.floors[floorId].downFloor) {
+					downFloorPoint = core.floors[floorId].downFloor;
+					return (x === downFloorPoint[0] && y === downFloorPoint[1]);
+				}
+				else return true;
+			}
+		}
+
+		/**
 		 * 快捷商店不用楼传一次的条件：当前直接可达某个楼梯口
 		 */
 		this.canGoQuickShop = function () {
@@ -8088,7 +8133,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.extractBlocks(floorId);
 			const blocks = core.status.maps[floorId].blocks;
 			return blocks.some((block) =>
-				!block.disable && ['downFloor', 'upFloor'].includes(block.event.id)
+				!block.disable && isFlyPoint(block.x, block.y, block.event.id)
 				&& canMove(core.getHeroLoc('x'), core.getHeroLoc('y'),
 					block.x, block.y) !== -1
 			)
