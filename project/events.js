@@ -305,18 +305,6 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 									{
 										"type": "playSound",
 										"name": "shop.mp3"
-									},
-									{
-										"type": "if",
-										"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-										"true": [
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											}
-										]
 									}
 								]
 							},
@@ -345,18 +333,6 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 									{
 										"type": "playSound",
 										"name": "shop.mp3"
-									},
-									{
-										"type": "if",
-										"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-										"true": [
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											}
-										]
 									}
 								]
 							},
@@ -385,18 +361,6 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 									{
 										"type": "playSound",
 										"name": "shop.mp3"
-									},
-									{
-										"type": "if",
-										"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-										"true": [
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											}
-										]
 									}
 								]
 							},
@@ -638,16 +602,6 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				]
 			},
 			{
-				"type": "if",
-				"condition": "flag:bugFix",
-				"true": [
-					{
-						"type": "disableShop",
-						"id": "moneyShop1"
-					}
-				]
-			},
-			{
 				"type": "setValue",
 				"name": "flag:keyDown",
 				"value": "true"
@@ -657,242 +611,99 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"condition": "1",
 				"data": [
 					{
-						"type": "if",
-						"condition": "flag:bugFix",
-						"true": [
+						"type": "choices",
+						"text": "\t[贪婪之神,blueShop]如果你能给我${50+2*flag:shop2}金币，\n我便能满足你一个要求。",
+						"choices": [
 							{
-								"type": "choices",
-								"text": "\t[贪婪之神,blueShop]如果你能给我${20+flag:shop1}金币，\n我便能满足你一个要求。",
-								"choices": [
+								"text": "体力+800",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
 									{
-										"text": "体力+800",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:hp",
-												"operator": "+=",
-												"value": "800"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
 									},
 									{
-										"text": "攻击+5",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:atk",
-												"operator": "+=",
-												"value": "5"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
 									},
 									{
-										"text": "防御+5",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:def",
-												"operator": "+=",
-												"value": "5"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "status:hp",
+										"operator": "+=",
+										"value": "800"
 									},
 									{
-										"text": "离开",
-										"action": [
-											{
-												"type": "break",
-												"n": 1
-											}
-										]
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
-							}
-						],
-						"false": [
+							},
 							{
-								"type": "choices",
-								"text": "\t[贪婪之神,blueShop]如果你能给我${50+2*flag:shop2}金币，\n我便能满足你一个要求。",
-								"choices": [
+								"text": "攻击+6",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
 									{
-										"text": "体力+800",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:hp",
-												"operator": "+=",
-												"value": "800"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
 									},
 									{
-										"text": "攻击+6",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:atk",
-												"operator": "+=",
-												"value": "6"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
 									},
 									{
-										"text": "防御+6",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:def",
-												"operator": "+=",
-												"value": "6"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "status:atk",
+										"operator": "+=",
+										"value": "6"
 									},
 									{
-										"text": "离开",
-										"action": [
-											{
-												"type": "break",
-												"n": 1
-											}
-										]
+										"type": "playSound",
+										"name": "shop.mp3"
+									}
+								]
+							},
+							{
+								"text": "防御+6",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
+									{
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "status:def",
+										"operator": "+=",
+										"value": "6"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
+									}
+								]
+							},
+							{
+								"text": "离开",
+								"action": [
+									{
+										"type": "break",
+										"n": 1
 									}
 								]
 							}
@@ -1366,242 +1177,99 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 				"condition": "1",
 				"data": [
 					{
-						"type": "if",
-						"condition": "flag:bugFix",
-						"true": [
+						"type": "choices",
+						"text": "\t[异国商人,woman]战士你好，这里每件货品\n${50+2*flag:shop2}金币。",
+						"choices": [
 							{
-								"type": "choices",
-								"text": "\t[异国商人,woman]战士你好，这里每件货品\n${20+flag:shop1}金币。",
-								"choices": [
+								"text": "大回复药剂，体力+1200",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
 									{
-										"text": "大回复药剂，体力+1200",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:hp",
-												"operator": "+=",
-												"value": "1200"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
 									},
 									{
-										"text": "红水晶，攻击+6",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:atk",
-												"operator": "+=",
-												"value": "6"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
 									},
 									{
-										"text": "蓝水晶，防御+6",
-										"need": "status:money>=20+flag:shop1",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "20+flag:shop1"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop1",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:def",
-												"operator": "+=",
-												"value": "6"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											},
-											{
-												"type": "if",
-												"condition": "((flag:shop1>flag:shop1Cap)&&flag:bugFix)",
-												"true": [
-													{
-														"type": "setValue",
-														"name": "flag:shop1",
-														"operator": "+=",
-														"value": "1"
-													}
-												]
-											}
-										]
+										"type": "setValue",
+										"name": "status:hp",
+										"operator": "+=",
+										"value": "1200"
 									},
 									{
-										"text": "离开",
-										"action": [
-											{
-												"type": "break",
-												"n": 1
-											}
-										]
+										"type": "playSound",
+										"name": "shop.mp3"
 									}
 								]
-							}
-						],
-						"false": [
+							},
 							{
-								"type": "choices",
-								"text": "\t[异国商人,woman]战士你好，这里每件货品\n${50+2*flag:shop2}金币。",
-								"choices": [
+								"text": "红水晶，攻击+8",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
 									{
-										"text": "大回复药剂，体力+1200",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:hp",
-												"operator": "+=",
-												"value": "1200"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
 									},
 									{
-										"text": "红水晶，攻击+8",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:atk",
-												"operator": "+=",
-												"value": "8"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
 									},
 									{
-										"text": "蓝水晶，防御+8",
-										"need": "status:money>=50+2*flag:shop2",
-										"action": [
-											{
-												"type": "setValue",
-												"name": "status:money",
-												"operator": "-=",
-												"value": "50+2*flag:shop2"
-											},
-											{
-												"type": "setValue",
-												"name": "flag:shop2",
-												"operator": "+=",
-												"value": "1"
-											},
-											{
-												"type": "setValue",
-												"name": "status:def",
-												"operator": "+=",
-												"value": "8"
-											},
-											{
-												"type": "playSound",
-												"name": "shop.mp3"
-											}
-										]
+										"type": "setValue",
+										"name": "status:atk",
+										"operator": "+=",
+										"value": "8"
 									},
 									{
-										"text": "离开",
-										"action": [
-											{
-												"type": "break",
-												"n": 1
-											}
-										]
+										"type": "playSound",
+										"name": "shop.mp3"
+									}
+								]
+							},
+							{
+								"text": "蓝水晶，防御+8",
+								"need": "status:money>=50+2*flag:shop2",
+								"action": [
+									{
+										"type": "setValue",
+										"name": "status:money",
+										"operator": "-=",
+										"value": "50+2*flag:shop2"
+									},
+									{
+										"type": "setValue",
+										"name": "flag:shop2",
+										"operator": "+=",
+										"value": "1"
+									},
+									{
+										"type": "setValue",
+										"name": "status:def",
+										"operator": "+=",
+										"value": "8"
+									},
+									{
+										"type": "playSound",
+										"name": "shop.mp3"
+									}
+								]
+							},
+							{
+								"text": "离开",
+								"action": [
+									{
+										"type": "break",
+										"n": 1
 									}
 								]
 							}

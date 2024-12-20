@@ -38,13 +38,6 @@ main.floors.MT18=
                 "type": "addValue",
                 "name": "flag:atkm",
                 "value": "6"
-            },
-            {
-                "type": "if",
-                "condition": "(!flag:bugFix)",
-                "true": [
-                    "流石效果详解：\n伤害*1.3，吸取怪物的全部气息至自身（转换比例50%，在扣除使用流石所消耗的气息前结算）；\n（被动）装备流石时，对怪物使用会心一击或流石不会给怪物带来气息。"
-                ]
             }
         ]
     },

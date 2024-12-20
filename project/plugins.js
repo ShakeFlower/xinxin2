@@ -6200,7 +6200,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						// 剑大师不会释放必杀
 						return;
 					}
-					if (hero.def - this.atk < hero.defm && !hasSpecial(this.special, [2, 55, 60, 61, 62, 63, 64, 65, 66])) {
+					if (hero.def - this.atk > hero.defm && !hasSpecial(this.special, [2, 55, 60, 61, 62, 63, 64, 65, 66])) {
 						// 不能破防主角则永远不会释放必杀，魔攻和弓手除外
 						return;
 					}
@@ -6796,7 +6796,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					for (let y0 = Math.max(1, y - 1); y0 <= Math.min(11, y + 1); y0++) {
 						if (!core.getBlock(x0, y0) || !core.getBlock(x0, y0).id || core.getBlock(x0, y0).id == 340) {
 							if (id === 'E335') core.setBlock(11, x0, y0);
-							if (id === 'E413' && (hero.loc.x != x0 || hero.loc.y != y0)
+							if (id === 'E413' && (core.getHeroLoc('x') != x0 || core.getHeroLoc('y') != y0)
 								&& (!core.status.hero.followers[0] || core.status.hero.followers[0].x != x0
 									|| core.status.hero.followers[0].y != y0)) core.setBlock(374, x0, y0);
 						}
@@ -6991,7 +6991,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				height = 192,
 				x = 8,
 				y = 96,
-				lineWidth = 4, // 背景框的线宽
 				strokeStyle = "#CC0099"; // 背景框的颜色-紫色
 
 			const ctx = core.createCanvas("battleIcon", x, y, width, height, 68);
@@ -7317,19 +7316,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.fillText(ctx, battle.enemy.data.money.toString(), 150, 26, "gold", "20px Verdana");
 				core.fillText(ctx, battle.enemy.data.exp.toString(), 270, 26, "cyan", "20px Verdana");
 			}
-		}
-
-		function drawBattleHint() {
-			const ctx = "battleHint";
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, 100, 66);
-			let hintList = ['向脸书求援可以回复血量', '设置里可以调整战斗速度', '复刻版中，疲劳值每回合都会增加你的疲劳计数（显示为橙色数字），每达到100就miss一次', '复刻版中，敌人施加的毒衰debuff会根据释放概率增加你的负面计数（显示为浅蓝数字），每达到100就触发一次'],
-				l = hintList.length,
-				k = Math.floor(l * Math.random());
-			core.setAlpha(ctx, 0.7);
-			core.fillRect(ctx, 64, 58, core.__PIXELS__ - 128, 32, 'gray');
-			core.setAlpha(ctx, 1);
-			core.setTextAlign(ctx, 'center');
-			core.fillText(ctx, hintList[k], core.__PIXELS__ / 2, 80, "white", " 14px Arial", core.__PIXELS__ - 160);
 		}
 
 		/** 在勇士图标上播放的动画的偏移量 */
