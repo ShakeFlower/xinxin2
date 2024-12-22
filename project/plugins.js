@@ -5158,7 +5158,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			constructor() {
 				super();
 				/** 画布名称 */
-				this.name = 'achievement'
+				this.name = 'achievement';
 				// 当前选中了第几个徽章，-1表示未选中
 				this.pickedBtn = -1;
 			}
@@ -5237,17 +5237,42 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const achievementList = [];
 
 		/**
-		 * 
-		 * @param {number} index 
+		 * 绘制成就弹窗
+		 * @param {number} index 成就序号
 		 */
-		function drawAchievement(index){
-			//
+		async function drawAchievement(index) {
+			achievementList.push(index);
+			if (achievementList[0] !== index) return;
+			const canvas = "achievementEffect";
+			core.playSound('achievement.mp3');
+			core.createCanvas(canvas, 0, 0, PX, PY, 200);
+			core.setTextAlign(canvas, "center");
+			core.drawWindowSkin("winskin.png", canvas,
+				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
+			core.drawImage(canvas, list[index][2].toString() + '.png', 126, 80); // 换成各自的图标
+			core.fillText(canvas, "获得成就", 230, 120 * 13 / 15,
+				"cyan", "24px " + core.status.globalAttribute.font);
+			core.fillText(canvas, list[index][0], 220, 160 * 13 / 15,
+				"#FFFFFF", "20px " + core.status.globalAttribute.font);
+
+			await new Promise((res) => setTimeout(res, 1000));
+			core.clearMap(canvas);
+			// let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
+			// 	delete core.animateFrame.asyncId[fade];
+			// 	clearInterval(fade);
+			// 	core.deleteCanvas(canvas);
+			// }, 1000);
+			// core.animateFrame.asyncId[fade] = true;
+
 			const pos = achievementList.indexOf(index);
-			if (pos!==-1) achievementList.splice(pos, 1);
+			if (pos !== -1) achievementList.splice(pos, 1);
 			if (achievementList.length > 0) drawAchievement(achievementList[0]);
 		}
 
-		// 获得成就
+		/** 
+		 *  获得成就
+		 *  @param {number} index 成就序号
+		 */
 		this.getAchievement = function (index) {
 			if (core.hasFlag("debug") || core.isReplaying()) return;
 			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
@@ -5268,23 +5293,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			finishTime[index] = currTime;
 			core.setLocalStorage("finishTime", finishTime);
 
-			const canvas = "achievementEffect";
-			core.playSound('achievement.mp3');
-			core.createCanvas(canvas, 0, 0, PX, PY, 200);
-			core.setTextAlign(canvas, "center");
-			core.drawWindowSkin("winskin.png", canvas,
-				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
-			core.drawImage(canvas, list[index][2].toString() + '.png', 126, 80); // 换成各自的图标
-			core.fillText(canvas, "获得成就", 230, 120 * 13 / 15,
-				"cyan", "24px " + core.status.globalAttribute.font);
-			core.fillText(canvas, list[index][0], 220, 160 * 13 / 15,
-				"#FFFFFF", "20px " + core.status.globalAttribute.font);
-			let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
-				delete core.animateFrame.asyncId[fade];
-				clearInterval(fade);
-				core.deleteCanvas(canvas);
-			}, 1000);
-			core.animateFrame.asyncId[fade] = true;
+			drawAchievement(index);
 		};
 	},
 	"引导界面": function () {
@@ -5331,6 +5340,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					res();
 				}
 
+				// todolist
 				const nextButton = new Button('next');
 				nextButton.draw = () => {
 					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
@@ -5436,8 +5446,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					h = 18;
 					break;
 			}
-			const tempName1 = 'temp_' + i,
-				tempName2 = 'temp2_' + i;
+			const tempName1 = 'tempFire_' + i,
+				tempName2 = 'tempFire2_' + i;
 			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
 			const tempCanvas = core.dymCanvas[tempName1];
 			core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
@@ -5637,7 +5647,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.createCanvas(ctx, 0, 0, 416, 416, 200); //每帧重绘该画布
 		});
 
-		// 需要一个每次切换楼层后清空所有动画的函数
+		// todolist 需要一个每次切换楼层后清空所有动画的函数
+		// 待测试：切换楼层时的表现
 		
 		/**
 		 * 绘制弹幕 
