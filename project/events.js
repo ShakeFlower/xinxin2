@@ -2492,6 +2492,64 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 					}
 				]
 			}
+		],
+		"脸书": [
+			{
+				"type": "choices",
+				"text": "\t[脸书,ook]要怎么做",
+				"choices": [
+					{
+						"text": "求援（体力+1000，结算分数变1分）",
+						"action": [
+							{
+								"type": "setValue",
+								"name": "status:hp",
+								"operator": "+=",
+								"value": "1000"
+							},
+							{
+								"type": "setValue",
+								"name": "flag:hasCheated",
+								"value": "true"
+							},
+							{
+								"type": "function",
+								"function": "function(){\ncore.plugin.getAchievement(30);\n}"
+							}
+						]
+					},
+					{
+						"text": "接收在线评论",
+						"action": [
+							{
+								"type": "function",
+								"function": "function(){\nif (!core.isReplaying()) {\n\tcore.plugin.getComment();\n\tsetTimeout(core.plugin.drawCommentSign, 1000);\n}\n}"
+							}
+						]
+					},
+					{
+						"text": "发送在线评论",
+						"action": [
+							{
+								"type": "function",
+								"function": "function(){\ncore.plugin.getAchievement(30);\n}"
+							},
+							{
+								"type": "input2",
+								"text": "请输入要发送的评论，文明友善发言，拒绝放假、剧透。发送后需要再次接收才能看见自己的评论。"
+							},
+							{
+								"type": "function",
+								"function": "function(){\nif (!core.isReplaying()) {\n\tconst input = core.getFlag('input', '');\n\tconst tags = [core.status.floorId,\n\t\tcore.getHeroLoc().x.toString(), core.getHeroLoc().y.toString()\n\t]\n\tcore.plugin.postComment(input, tags);\n}\n}"
+							}
+						]
+					},
+					{
+						"text": "没什么",
+						"action": []
+					}
+				]
+			}
 		]
 	}
 }

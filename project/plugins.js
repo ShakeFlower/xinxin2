@@ -5231,19 +5231,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.drawTip('成就已清空！');
 		}
 
-		// todolist:优化成就
 		/**
 		 * @type {Array<number>}
 		 */
-		const achievementList = [];
+		let achievementList = [];
+		/** 当前是否在播放成就 */
+		let isAchievementPlaying = false;
 
 		/**
 		 * 绘制成就弹窗
 		 * @param {number} index 成就序号
 		 */
 		async function drawAchievement(index) {
-			achievementList.push(index);
-			if (achievementList[0] !== index) return;
+			isAchievementPlaying = true;
 			const canvas = "achievementEffect";
 			core.playSound('achievement.mp3');
 			core.createCanvas(canvas, 0, 0, PX, PY, 200);
@@ -5258,13 +5258,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			await new Promise((res) => setTimeout(res, 1000));
 			core.clearMap(canvas);
-			// let fade = setTimeout(function () { //干什么的？为什么不直接等待1000ms，这个core.animateFrame.asyncId是啥？
-			// 	delete core.animateFrame.asyncId[fade];
-			// 	clearInterval(fade);
-			// 	core.deleteCanvas(canvas);
-			// }, 1000);
-			// core.animateFrame.asyncId[fade] = true;
 
+
+			isAchievementPlaying = false;
 			const pos = achievementList.indexOf(index);
 			if (pos !== -1) achievementList.splice(pos, 1);
 			if (achievementList.length > 0) drawAchievement(achievementList[0]);
@@ -5294,7 +5290,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			finishTime[index] = currTime;
 			core.setLocalStorage("finishTime", finishTime);
 
-			drawAchievement(index);
+			if (!isAchievementPlaying) drawAchievement(index);
+			else achievementList.push(index);
 		};
 	},
 	"引导界面": function () {
@@ -5707,7 +5704,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				.mode(power(2, 'center'))
 				.time(delayTime)
 				.absolute()
-				.apply('fontSize', 18)
+				.apply('fontSize', 16)
 				.mode(linear())
 				.time(destoryTime)
 				.relative()
@@ -5724,9 +5721,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		this.drawDamageStr = async function (damage, x, y, color) {
 			if (core.isReplaying()) return;
 			const damageStrArray = damage.toString().split('');
-			let destoryTime = 1000,
+			let destoryTime = 500,
 				showInterval = 50,
-				lengthIntertval = 10;
+				lengthIntertval = 12;
 			for (let i = 0, l = damageStrArray.length; i < l; i++) {
 				showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
 				x += lengthIntertval;
@@ -7424,12 +7421,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					// });
 					// todolist:测试伤害位置释放 
 					if (atkStatusH.heal > 0) { //治疗效果
-						drawDamage('+' + atkStatusH.heal, hx - 6, hy + 14, 'lime');
+						drawDamage('+' + atkStatusH.heal, hx - 6, hy + 30, 'lime');
 						// to be tested
-						core.plugin.addScrollingText('+' + atkStatusH.heal, {
-							'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
-							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						});
+						// core.plugin.addScrollingText('+' + atkStatusH.heal, {
+						// 	'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
+						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+						// });
 					}
 					break;
 				case 'enemy':
@@ -7460,10 +7457,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					let damageE = atkStatusE.damage.toString(),
 						princessDamageE = atkStatusE.princessDamage.toString();
-					if (atkStatusE.crit) {
-						damageE += 'crit';
-						princessDamageE += 'crit';
-					}
+					// if (atkStatusE.crit) {
+					// 	damageE += 'crit';
+					// 	princessDamageE += 'crit';
+					// }
 					if (atkStatusE.debuff === 'poison') {
 						core.plugin.drawAnimateByPixel('gpoison', hx, hy);
 					}
@@ -7473,11 +7470,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx + osx, hy + osy);
-						drawDamage(damageE, hx - 6, hy + 28);
-						core.plugin.addScrollingText(damageE, {
-							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
-							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						});
+						drawDamage(damageE, hx - 10, hy + 28);
+						// core.plugin.addScrollingText(damageE, {
+						// 	'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
+						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+						// });
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px + opx, py + opy);
@@ -7491,10 +7488,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						if (shieldAnimate) core.plugin.drawAnimateByPixel(shieldAnimate, px, py);
 
 						drawDamage(princessDamageE, px - 15, py + 25);
-						core.plugin.addScrollingText(princessDamageE, {
-							'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
-							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
-						});
+						// core.plugin.addScrollingText(princessDamageE, {
+						// 	'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
+						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
+						// });
 					}
 					if (atkStatusE.aim === 'bounce') { // 古顿的伤害动画单独处理
 						let bounceDamage = atkStatusE.bounceDamage,
@@ -7503,25 +7500,25 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						let bounce = setInterval(function () {
 							currstr = bounceDamage[count].toString();
-							if (atkStatusE.crit) currstr += 'crit';
-							core.plugin.addScrollingText(currstr, {
-								'x': (count % 2 === 0) ? hx - 6 + 20 * Math.random() : px - 15 + 20 * Math.random(),
-								'y': (count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random(),
-								'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
-								'tmax': 100, 'type': 'down'
-							});
-							drawDamage(currstr, (count % 2 === 0) ? hx - 6 + 20 * Math.random() : px - 15 + 20 * Math.random(),
+							// if (atkStatusE.crit) currstr += 'crit';
+							// core.plugin.addScrollingText(currstr, {
+							// 	'x': (count % 2 === 0) ? hx - 6 + 20 * Math.random() : px - 15 + 20 * Math.random(),
+							// 	'y': (count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random(),
+							// 	'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
+							// 	'tmax': 100, 'type': 'down'
+							// });
+							drawDamage(currstr, (count % 2 === 0) ? hx - 10 + 20 * Math.random() : px - 15 + 20 * Math.random(),
 							(count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random());
 							count++;
 							if (count >= 4) clearInterval(bounce);
 						}, 50);
 					}
 					if (atkStatusE.heal > 0) { //治疗效果
-						core.plugin.addScrollingText('+' + atkStatusE.heal, {
-							'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Lime',
-							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						});
-						drawDamage('+' + atkStatusE.heal, ex - 6, ey + 14, 'Lime');
+						// core.plugin.addScrollingText('+' + atkStatusE.heal, {
+						// 	'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Lime',
+						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+						// });
+						drawDamage('+' + atkStatusE.heal, ex - 40, ey + 30, 'Lime');
 					}
 					break;
 			}
@@ -7977,7 +7974,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					let commentCollection = {};
 					const commentList = res?.list;
 					for (let i = 0, l = commentList.length; i <= l - 1; i++) {
-						if (commentList[i]?.comment?.length == 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
+						if (commentList[i]?.comment?.length === 0 || commentList[i]?.comment.match(/^[ ]*$/)) continue;
 						const commentTags = commentList[i].tags;
 						const cFloorId = commentTags.split(',')[0],
 							cX = parseInt(commentTags.split(',')[1]),
@@ -8059,9 +8056,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.deleteCanvas('sign');
 		}
 
+		const showNum = 5;
+
 		function pickComment(commentArr, showNum = 5) {
 			let showList = [];
-			if (commentArr.length <= showNum) { showList = commentArr; } else {
+			if (commentArr.length <= showNum) { showList = commentArr; } 
+			else {
 				for (let i = 0; i <= showNum - 1; i++) {
 					const l = commentArr.length,
 						n = core.plugin.dice(l - 1);
@@ -8072,18 +8072,35 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return showList;
 		}
 
+		function generateCommentYList(min, max, count) {
+			let yList = Array(count).fill(0);
+			const distance = (max - min) / (count + 1);
+			for (let i = 0; i < count; i++) {
+				yList[i] = min + distance * (i + 1) + (Math.random() - 0.5) * (distance / 2);
+			}
+			return yList;
+		}
+
+		function getRandomElements(arr, count) {
+			let result = [...arr];
+			let len = result.length;
+			count = Math.min(len, count);
+
+			for (let i = len - 1; i > len - 1 - count; i--) {
+				let j = Math.floor(Math.random() * (i + 1));
+				[result[i], result[j]] = [result[j], result[i]];
+			}
+
+			return result.slice(len - count);
+		}
+
 		function drawComment(commentArr) {
-			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
-				// todolist 测试效果
-				core.plugin.drawCommentStr(commentArr[i], WIDTH + 20 * Math.random(), 
-				core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(), Math.random() * 0.1 + 0.1);
-				// core.plugin.addScrollingText(commentArr[i], {
-				// 	'x': WIDTH + 20 * Math.random(),
-				// 	'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
-				// 	'vx': -2 + Math.random(),
-				// 	'style': 'white',
-				// 	'font': '18px Verdana'
-				// });
+			const l = commentArr.length;
+			let yList = generateCommentYList(20, HEIGHT - 20, showNum);
+			if (l < showNum) yList = getRandomElements(yList, l);
+			for (let i = 0; i <= l - 1; i++) {
+				core.plugin.drawCommentStr(commentArr[i], WIDTH + 20 * Math.random(),
+					yList[i], Math.random() * 0.1 + 0.1);
 			}
 		}
 
@@ -8095,7 +8112,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (commentCollection.hasOwnProperty(floorId) &&
 				commentCollection[floorId].hasOwnProperty(str)) {
 				let commentArr = commentCollection[floorId][str].concat();
-				const showNum = 5;
 				const commentArrPicked = pickComment(commentArr, showNum);
 				drawComment(commentArrPicked);
 			}
