@@ -4752,7 +4752,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
 		 * preSetIndex 当前切换到了哪个预设方案 每次战斗前 将会读取该信息
 		 * hotkeyData {'2':'敌人名字' '3':'敌人名字'} 快捷键信息 每次按键时，将查找该信息
-		 * @example 
+		 * todolist 测试对连击怪该功能是否正确
+		 * todolist(Maybe) 去白边
 				let myData = {
 				'greenSlime':'bs:0s:1h:2M:3b:4F:5k:6R:10F',
 				'redSlime': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
@@ -5312,7 +5313,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			drawContent() {
-				// 绘制一张图片 
+				// 绘制一张图片 todolist
 				// 绘制一个按钮
 				if (this.page >= 0 && this.page < this.pageList.length) {
 					core.ui.drawBackground(100, 100, 100, 100);
@@ -5721,6 +5722,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {string} color 颜色
 		 */
 		this.drawDamageStr = async function (damage, x, y, color) {
+			if (core.isReplaying()) return;
 			const damageStrArray = damage.toString().split('');
 			let destoryTime = 1000,
 				showInterval = 50,
