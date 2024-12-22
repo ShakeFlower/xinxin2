@@ -2578,9 +2578,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			remove(s) {
 				const t = this.funcs.findIndex((e) => e === s);
 				if (t === -1)
-					throw new ReferenceError(
-						"You are going to remove nonexistent ticker function."
-					);
+					// todolist
+					// throw new ReferenceError(
+					// 	"You are going to remove nonexistent ticker function."
+					// );
 				return this.funcs.splice(t, 1), this;
 			}
 			clear() {
@@ -5259,7 +5260,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			await new Promise((res) => setTimeout(res, 1000));
 			core.clearMap(canvas);
 
-
 			isAchievementPlaying = false;
 			const pos = achievementList.indexOf(index);
 			if (pos !== -1) achievementList.splice(pos, 1);
@@ -6627,10 +6627,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							currTurn = 2 * currTurn / (combo + 1);
 							break;
 						case 1:
-							currTurn = (currTurn - 1) / (2 * (combo + 1)) + 1;
+							currTurn = 2 * (currTurn - 1) / (combo + 1) + 1;
 							break;
 						default:
-							break;
+							return;
 					}
 				}
 				if (this.preSetSkillObj.hasOwnProperty(currTurn)) {
@@ -7140,7 +7140,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				new StatusButton('breathe', 308, 320, 32, 32, () => battle.execUserAction('v')),
 				new StatusButton('quick', 0, 0, 32, 32, () => {
 					battle.speed = 'quick'
-					console.log(battle.speed)
 				}),
 				new StatusButton('normal', 32, 0, 32, 32, () => battle.speed = 'normal'),
 				new StatusButton('slow', 64, 0, 32, 32, () => battle.speed = 'slow'),
@@ -7413,7 +7412,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
-					drawDamage(damageH, ex - 6, ey + 14);
+					drawDamage(damageH, ex - 16, ey + 14);
 					// if (atkStatusH.crit) damageH += 'crit';
 					// core.plugin.addScrollingText(damageH, {
 					// 	'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
@@ -7421,7 +7420,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					// });
 					// todolist:测试伤害位置释放 
 					if (atkStatusH.heal > 0) { //治疗效果
-						drawDamage('+' + atkStatusH.heal, hx - 6, hy + 30, 'lime');
+						drawDamage('+' + atkStatusH.heal, hx - 16, hy + 30, 'lime');
 						// to be tested
 						// core.plugin.addScrollingText('+' + atkStatusH.heal, {
 						// 	'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
@@ -7708,8 +7707,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		function getPresetSkill(id) {
 			let currPreset = {};
 			if (core.isReplaying()) return currPreset;
-			const presetSkill = core.getFlag('presetSkill', {}); // {'redSlime':'xxx','bat':'xxx'}
-			const hotkeyData = core.getFlag('hotkeyData', 0); //{'2':'redSlime'}
+			const presetSkill = core.getFlag('presetSkill', {}); 
+			const hotkeyData = core.getFlag('hotkeyData', 0); 
 			const preSetIndex = core.getFlag('preSetIndex', 0);
 			if ([2, 3, 4, 5, 6, 7].includes(preSetIndex) && hotkeyData.hasOwnProperty(preSetIndex)) {
 				currPreset = core.plugin.getActionObj(presetSkill[hotkeyData[preSetIndex]])
@@ -7729,7 +7728,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const enemy = battle.enemy;
 			const [id, combo, maxTurn] = [enemy.id, enemy.combo, battle.turn];
 
-			let currPreset = '';
+			let currPreset = 'bs';
 			if (combo > 1) {
 				let enemyActionObj = core.plugin.getActionObj(battle.route);
 				let currTurn = 0;
@@ -7737,21 +7736,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (i % 2 === 0) { // 勇士出手回合的操作
 						currTurn = (combo + 1) * (i / 2);
 						if (currTurn > maxTurn) break;
-						let action = enemyActionObj[currTurn.toString()];
-						action = action.filter(ele => ['b', 's', 'd', 'h', 'k', 'c'].includes(ele));
-						if (action.length > 0) {
-							currPreset += i.toString() + ':' + action[0];
+						if (enemyActionObj.hasOwnProperty(currTurn)) {
+							const action = enemyActionObj[currTurn.toString()][0];
+							if (['b', 's', 'd', 'h', 'k', 'c'].includes(action)) {
+								currPreset += ':' + i.toString() + action;
+							}
 						}
 					}
 					else {
 						for (j = 1; j <= combo; j++) {
 							currTurn = (combo + 1) * (i - 1) / 2 + j; // 连击怪的当前回合
 							if (currTurn > maxTurn) break;
-							let action = enemyActionObj[currTurn.toString()];
-							action = action.filter(ele => ['M', 'C', 'R', 'F', 'E'].includes(ele));
-							if (action.length > 0) {
-								currPreset += i.toString() + ':' + action[0];
-								break;
+
+							if (enemyActionObj.hasOwnProperty(currTurn)) {
+								const action = enemyActionObj[currTurn.toString()][0];
+								if (['M', 'C', 'R', 'F', 'E'].includes(action)) {
+									currPreset += ':' + i.toString() + action;
+								}
 							}
 						}
 						if (currTurn > maxTurn) break;
