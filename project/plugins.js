@@ -5187,7 +5187,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						});
 					core.setTextAlign(ctx, 'start');
 				}
-				this.btnList.forEach((button) => { button.draw(); });
+				this.btnList.forEach(button => { button.draw(); });
 			}
 		}
 
@@ -5546,27 +5546,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			)
 		}
 
-		function getFontSize(fontString) {
-			let parts = fontString.split(' ');
-			for (let i = 0; i < parts.length; i++) {
-				if (parts[i].includes('px')) {
-					return Number(parts[i].replace('px', ''));
-				}
-			}
-			return NaN;
-		}
-
-		function setFontSize(fontString, newSize) {
-			let parts = fontString.split(' ');
-
-			for (let i = 0; i < parts.length; i++) {
-				if (parts[i].includes('px')) {
-					parts[i] = newSize + 'px';
-				}
-			}
-			return parts.join(' ');
-		}
-
 		class ScrollingText {
 			constructor(text, args) {
 				this.text = text;
@@ -5635,21 +5614,59 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 		const { Animation, power, linear} = core.plugin.animate;
-		const ctx = 'test';
-		function showSingleCharacter(char, delayTime, destoryTime, x, y) {
+		const ctx = 'scrollingText';
+
+		new Animation().ticker.add(() => {
+			core.createCanvas(ctx, 0, 0, 416, 416, 200); //每帧重绘该画布
+		});
+
+		// 需要一个每次切换楼层后清空所有动画的函数
+		
+		/**
+		 * 绘制弹幕 
+		 * @example  
+		 * core.plugin.drawCommentStr('OK', 450, 200, 0.1);
+		 * @param {string} content 弹幕的内容
+		 * @param {number} x 弹幕的初始x坐标
+		 * @param {number} y 弹幕的初始y坐标
+		 * @param {number} vx 弹幕的横向滚动速度
+		 */
+		this.drawCommentStr = async function (content, x, y, vx) {
+			const ani = new Animation();
+			ani.ticker.add(() => {
+				core.fillText(ctx, content, x + ani.x, y , 'white', '16px Verdana');
+			})
+			ani.mode(linear())
+				.time(600 / vx)
+				.absolute()
+				.move(-600, 0)
+			await ani.all();
+			ani.ticker.remove();
+		}
+
+		/**
+		 * 绘制单个字符
+		 * @param {string} char 要绘制的字符
+		 * @param {number} delayTime 该字符动画的持续时间
+		 * @param {number} destoryTime 该字符的存在时间，到时间后摧毁
+		 * @param {number} x x坐标
+		 * @param {number} y y坐标
+		 * @param {string} color 字体颜色
+		 */
+		function showSingleCharacter(char, delayTime, destoryTime, x, y, color = 'Red') {
+			if (delayTime <= 0 || destoryTime <= 0) return;
 			const ani = new Animation();
 			ani.register('alpha', 0.3);
 			ani.register('fontSize', 10);
 			ani.register('t', 0);
 			ani.ticker.add(() => {
 				core.setAlpha(ctx, ani.value.alpha);
-				core.fillText(ctx, char, ani.x + x, ani.y + y, 'Red', 'Bold ' + ani.value.fontSize + 'px Verdana');
+				core.fillText(ctx, char, ani.x + x, ani.y + y, color, 'Bold ' + ani.value.fontSize + 'px Verdana');
 				core.setAlpha(ctx, 1);
-				if (ani.value.t >= 100) {
-					ani.ticker.destroy();
+				if (ani.value.t >= 10000) {
+					ani.ticker.remove();
 				}
 			})
-			console.log(destoryTime);
 			ani.mode(power(2, 'center'))
 				.time(delayTime)
 				.relative()
@@ -5661,33 +5678,30 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				.mode(power(2, 'center'))
 				.time(delayTime)
 				.absolute()
-				.apply('fontSize', 16)
+				.apply('fontSize', 18)
 				.mode(linear())
 				.time(destoryTime)
 				.relative()
-				.apply('t', 100);
+				.apply('t', 10000);
 		}
 
-		this.test = function (damage) {
-			core.createCanvas(ctx, 0, 0, 416, 416, 200);
- 
-			const updateScrollingText = new Animation();
-			updateScrollingText.ticker.add(() => {
-				// 如果还有scrollingText存在
-				core.createCanvas(ctx, 0, 0, 416, 416, 200);
-			})
-			// 用于每帧更新用于绘制的画布，永不摧毁
-
+		/**
+		 * 绘制伤害字符串
+		 * @param {string|number} damage 伤害
+		 * @param {string} color 颜色
+		 */
+		this.drawDamageStr = async function (damage, color) {
 			const damageStrArray = damage.toString().split('');
-			let delayInterval = 20,
-				posInterval = 20,
-				totalDelay = 200 + damageStrArray.length * delayInterval;
-			damageStrArray.forEach((char) => {
-				showSingleCharacter(char, totalDelay, 400 - totalDelay,
-					200 + posInterval, 200);
-				totalDelay -= delayInterval;
-				posInterval += 10;
-			})
+			let destoryTime = 1000,
+				showInterval = 50,
+				lengthIntertval = 10;
+			let x = 100, y = 100;
+			for (let i = 0, l = damageStrArray.length; i < l; i++) {
+				showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
+				x += lengthIntertval;
+				destoryTime -= showInterval;
+				await new Promise((res) => setTimeout(res, showInterval));
+			}
 		}
 	},
 	"回合制战斗": function () {
@@ -7355,6 +7369,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				atkStatusE = battle.enemy.atkStatus;
 			const [hx, hy, ex, ey, px, py] = [355, 152, 60, 166, 245, 225];
 			let currOffset = 0;
+			const drawDamage = core.plugin.drawDamageStr;
 			switch (battle.actor) {
 				case 'hero':
 					if (atkStatusH.frozen) break;
@@ -8019,13 +8034,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		function drawComment(commentArr) {
 			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
-				core.plugin.addScrollingText(commentArr[i], {
-					'x': WIDTH + 20 * Math.random(),
-					'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
-					'vx': -2 + Math.random(),
-					'style': 'white',
-					'font': '18px Verdana'
-				});
+				core.plugin.drawCommentStr(commentArr[i], WIDTH + 20 * Math.random(), 
+				core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(), Math.random() * 0.1 + 0.1);
+				// core.plugin.addScrollingText(commentArr[i], {
+				// 	'x': WIDTH + 20 * Math.random(),
+				// 	'y': core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(),
+				// 	'vx': -2 + Math.random(),
+				// 	'style': 'white',
+				// 	'font': '18px Verdana'
+				// });
 			}
 		}
 
