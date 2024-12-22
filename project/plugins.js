@@ -5230,11 +5230,28 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.drawTip('成就已清空！');
 		}
 
+		// todolist:优化成就
+		/**
+		 * @type {Array<number>}
+		 */
+		const achievementList = [];
+
+		/**
+		 * 
+		 * @param {number} index 
+		 */
+		function drawAchievement(index){
+			//
+			const pos = achievementList.indexOf(index);
+			if (pos!==-1) achievementList.splice(pos, 1);
+			if (achievementList.length > 0) drawAchievement(achievementList[0]);
+		}
+
 		// 获得成就
-		this.getAchievement = function (index, test) {
+		this.getAchievement = function (index) {
 			if (core.hasFlag("debug") || core.isReplaying()) return;
 			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
-			if (finish[index] > 0 && !test) return; // 成就已完成
+			if (finish[index] > 0) return; // 成就已完成
 			finish[index] = 1;
 			core.setLocalStorage("finish", finish);
 
@@ -5631,7 +5648,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} y 弹幕的初始y坐标
 		 * @param {number} vx 弹幕的横向滚动速度
 		 */
-		this.drawCommentStr = async function (content, x, y, vx) {
+		this.drawCommentStr = function (content, x, y, vx) {
+			if (core.isReplaying()) return;
 			const ani = new Animation();
 			ani.ticker.add(() => {
 				core.fillText(ctx, content, x + ani.x, y , 'white', '16px Verdana');
@@ -5640,8 +5658,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				.time(600 / vx)
 				.absolute()
 				.move(-600, 0)
-			await ani.all();
-			ani.ticker.remove();
+			ani.all().then(() => { ani.ticker.remove(); });
 		}
 
 		/**
@@ -5688,14 +5705,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * 绘制伤害字符串
 		 * @param {string|number} damage 伤害
+		 * @param {number} x
+		 * @param {number} y
 		 * @param {string} color 颜色
 		 */
-		this.drawDamageStr = async function (damage, color) {
+		this.drawDamageStr = async function (damage, x, y, color) {
 			const damageStrArray = damage.toString().split('');
 			let destoryTime = 1000,
 				showInterval = 50,
 				lengthIntertval = 10;
-			let x = 100, y = 100;
 			for (let i = 0, l = damageStrArray.length; i < l; i++) {
 				showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
 				x += lengthIntertval;
@@ -7062,10 +7080,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		class StatusButton extends this.Button {
 			constructor(name, x, y, w, h, event) {
 				super(name, x, y, w, h);
+				this.event = event;
 				/** 按钮状态,分为'unavailable','available','pending' 
 				 * @type {('unavailable'|'available'|'pending')}
-				*/
-				this.event = event;
+				 */
 				this.skillStatus = 'available';
 			}
 		}
@@ -7385,12 +7403,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
-					if (atkStatusH.crit) damageH += 'crit';
-					core.plugin.addScrollingText(damageH, {
-						'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
-						'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-					});
+					drawDamage(damageH, ex - 6, ey + 14);
+					// if (atkStatusH.crit) damageH += 'crit';
+					// core.plugin.addScrollingText(damageH, {
+					// 	'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
+					// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
+					// });
+					// todolist:测试伤害位置释放 
 					if (atkStatusH.heal > 0) { //治疗效果
+						drawDamage('+' + atkStatusH.heal, hx - 6, hy + 14, 'lime');
+						// to be tested
 						core.plugin.addScrollingText('+' + atkStatusH.heal, {
 							'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
@@ -7438,6 +7460,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusE.aim === 'hero' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx + osx, hy + osy);
+						drawDamage(damageE, hx - 6, hy + 28);
 						core.plugin.addScrollingText(damageE, {
 							'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
@@ -7454,6 +7477,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 						if (shieldAnimate) core.plugin.drawAnimateByPixel(shieldAnimate, px, py);
 
+						drawDamage(princessDamageE, px - 15, py + 25);
 						core.plugin.addScrollingText(princessDamageE, {
 							'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
@@ -7473,6 +7497,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
 								'tmax': 100, 'type': 'down'
 							});
+							drawDamage(currstr, (count % 2 === 0) ? hx - 6 + 20 * Math.random() : px - 15 + 20 * Math.random(),
+							(count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random());
 							count++;
 							if (count >= 4) clearInterval(bounce);
 						}, 50);
@@ -7482,6 +7508,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Lime',
 							'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
 						});
+						drawDamage('+' + atkStatusE.heal, ex - 6, ey + 14, 'Lime');
 					}
 					break;
 			}
@@ -8034,6 +8061,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		function drawComment(commentArr) {
 			for (let i = 0, l = commentArr.length; i <= l - 1; i++) {
+				// todolist 测试效果
 				core.plugin.drawCommentStr(commentArr[i], WIDTH + 20 * Math.random(), 
 				core.plugin.dice(i + 1) * HEIGHT / (l + 1) + 40 * Math.random(), Math.random() * 0.1 + 0.1);
 				// core.plugin.addScrollingText(commentArr[i], {
