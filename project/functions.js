@@ -1286,10 +1286,10 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	}
 
 	var hotkeyHint1 = "新新快捷键：\n";
-	if (!flags.xinHotkey) hotkeyHint1 += "(你选择H5快捷键优先，使用新新快捷键时，若与H5快捷键冲突，则需要按住Alt键；按U进入高级设置修改优先的快捷键)\n";
+	if (!flags.xinHotkey) hotkeyHint1 += "(你选择H5快捷键优先，使用新新快捷键时，若与H5快捷键冲突，则需要按住Alt键。)\n";
 	hotkeyHint1 += "S=音乐开关\nR=重新开始\n[=保存进度\n]=载入进度\nA=查看成就\nD=查看怪物能力\nF=飞行\nW=剑技装备\nH=防御术装备\nG=启动体力转换器\nB=查看道具袋\n\n随意门直接撞紫门即可"
 	var hotkeyHint2 = "H5重要快捷键：\n";
-	if (flags.xinHotkey) hotkeyHint2 += "(你选择新新快捷键优先，使用H5快捷键时，若与新新快捷键冲突，则需要按住Alt键；按U进入高级设置修改优先的快捷键)\n";
+	if (flags.xinHotkey) hotkeyHint2 += "(你选择新新快捷键优先，使用H5快捷键时，若与新新快捷键冲突，则需要按住Alt键。)\n";
 	hotkeyHint2 += "A=单步回退\nW=取消单步回退\nS=存档\nD=读档\nG=楼层传送\nX=怪物手册\nV=快捷商店\n\nZ=转身\n空格=取面前物品\nH=查看所有H5快捷键";
 	var hotkeyHint = [hotkeyHint1, hotkeyHint2];
 
@@ -1304,8 +1304,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.insertCommonEvent('高级设置');
 		break;
 	case 57: // 9：打开技能输入
-		core.status.route.push("key:57");
-		core.insertCommonEvent('设置技能');
+		// 已经失效
 		break;
 	case 27: // ESC：打开菜单栏
 		core.openSettings(true);

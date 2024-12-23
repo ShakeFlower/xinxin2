@@ -2260,12 +2260,12 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 												"choices": [
 													{
 														"text": "关闭自动拾取功能",
-														"condition": "flags.autoGetItem",
+														"condition": "flags.autoGet",
 														"action": [
 															{
 																"type": "setValue",
-																"name": "flag:autoGetItem",
-																"value": "(!flag:autoGetItem)"
+																"name": "flag:autoGet",
+																"value": "(!flag:autoGet)"
 															},
 															{
 																"type": "setValue",
@@ -2281,12 +2281,12 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 													},
 													{
 														"text": "打开自动拾取功能",
-														"condition": "!flags.autoGetItem",
+														"condition": "!flags.autoGet",
 														"action": [
 															{
 																"type": "setValue",
-																"name": "flag:autoGetItem",
-																"value": "(!flag:autoGetItem)"
+																"name": "flag:autoGet",
+																"value": "(!flag:autoGet)"
 															}
 														]
 													},
@@ -2338,27 +2338,6 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 									{
 										"type": "function",
 										"function": "function(){\ncore.drawFg(core.status.floorId);\n}"
-									}
-								]
-							},
-							{
-								"text": "自动推荐技能战斗：${flags.autoRecomBattle?'ON':'OFF'}",
-								"action": [
-									{
-										"type": "if",
-										"condition": "(!flag:autoRecomBattle)",
-										"true": [
-											"此功能有较大局限性，对气息利用效果不佳。\n仅推荐对新新2战斗系统不了解的玩家使用。"
-										]
-									},
-									{
-										"type": "setValue",
-										"name": "flag:autoRecomBattle",
-										"value": "(!flag:autoRecomBattle)"
-									},
-									{
-										"type": "function",
-										"function": "function(){\ncore.clearMyCache('all')\n}"
 									}
 								]
 							},
@@ -2450,7 +2429,7 @@ var events_c12a15a8_c380_4b28_8144_256cba95f760 =
 										"true": [
 											{
 												"type": "input2",
-												"text": "输入计算表达式，当前为：${flags.hpManaRatio}\n(hero:勇者, lv:等级, atk:攻击, def:防御, mana:气息, manamax:气息条上限*6)"
+												"text": "输入计算表达式，当前为：${flags.hpManaRatio}(hero:勇者, lv:等级, atk:攻击, def:防御, mana:气息, manamax:气息条上限*6)"
 											},
 											"输入计算表达式，当前为：${flags.hpManaRatio}\n(hero:勇者, lv:等级, atk:攻击, def:防御, mana:气息, manamax:气息条上限*6)",
 											{

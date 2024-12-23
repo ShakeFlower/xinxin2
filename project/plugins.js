@@ -4481,7 +4481,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const ctx = 'setting';
 
 		function drawSetting(ctx) {
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 136);
 			core.clearMap(ctx);
 			core.setAlpha(ctx, 0.85);
 			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
@@ -4562,7 +4562,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			"y": 280,
 			"status": function () { return core.getFlag('xinHotkey') ? '新新' : 'h5' },
 			"func": function () { core.setFlag('xinHotkey', !core.getFlag('xinHotkey')); },
-			"text": "是否使用新新2原版的快捷键（具体可按L查看）。"
+			"text": "是否优先使用新新2原版的快捷键（具体可按L查看）。"
 		},
 		{
 			"name": "在线留言",
@@ -4571,6 +4571,25 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			"status": function () { return core.getFlag('comment') ? '开' : '关' },
 			"func": function () { core.setFlag('comment', !core.getFlag('comment')); },
 			"text": "是否接收并显示在线留言。"
+		},
+		{
+			"name": "推荐技能",
+			"x": 40,
+			"y": 330,
+			"status": function () { return core.getFlag('noRecomSkill') ? '开' : '关' },
+			"func": function () { 
+				core.setFlag('noRecomSkill', !core.getFlag('noRecomSkill')); 
+			    core.updateStatusBar();
+			},
+			"text": "是否在敌人左上角显示当前推荐释放的技能。"
+		},
+		{
+			"name": "新手教程",
+			"x": 40,
+			"y": 355,
+			"status": function () { return core.getFlag('tutorial') ? '开' : '关' },
+			"func": function () { core.setFlag('tutorial', !core.getFlag('tutorial')); },
+			"text": "是否显示新手教程。"
 		},
 		]
 
@@ -4721,6 +4740,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					settingMenu.clear();
 					achieveMenu.init();
 				}
+				const preSetbackBtn = preSetMenu.btnList.get('back');
+				preSetbackBtn.event = function(){
+					preSetMenu.clear();
+					settingMenu.init();
+				}
+				const achievebackBtn = achieveMenu.btnList.get('back');
+				achievebackBtn.event = function(){
+					achieveMenu.clear();
+					settingMenu.init();
+				}
 				settingMenu.init();
 			});
 		}
@@ -4773,11 +4802,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const Button = this.Button;
 
 		/**
-			 * 绘制选框背景
+		 * 绘制选框背景
 		 * @param {string} ctx 画布名称
-			 */
+		 */
 		function drawSetting(ctx) {
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 136);
 			core.clearMap(ctx);
 			core.setAlpha(ctx, 0.85);
 			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
@@ -4785,8 +4814,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.fillRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "#555555");
 			core.strokeRoundRect(ctx, 35.5, 125, core.__PIXELS__ - 71, 170, 3, "white");
 			core.setAlpha(ctx, 1);
-			core.fillText(ctx, '设定快捷键后，按下Alt2~7切换到对应方案。', 40, 60, '#00DDFF', '14px Verdana');
-			core.fillText(ctx, '手机段点击画面底部工具栏的空白处即可。', 40, 80, '#00DDFF', '14px Verdana');
+			core.fillText(ctx, '设定快捷键后，按下Alt2~7切换到对应方案。', 40, 60, '#00DDFF', '12px Verdana');
+			core.fillText(ctx, '手机点击屏幕右下角空白处即可。', 40, 80, '#00DDFF', '12px Verdana');
 			core.fillText(ctx, '1', 108, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '2', 140, 110, 'white', '18px Verdana');
 			core.fillText(ctx, '3', 172, 110, 'white', '18px Verdana');
@@ -4966,9 +4995,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			const recordBtn = new Button('record', 64, 308, 145, 24),
 				deleteBtn = new Button('delete', 240, 308, 46, 24),
-				pageDownBtn = new Button('pageDown', 300, 310, 15, 15), // to be tested
+				pageDownBtn = new Button('pageDown', 300, 310, 15, 15), 
 				pageUpBtn = new Button('pageUp', 340, 310, 15, 15),
 				selectBtn = new Button('select', 54, 128, 315, 160),
+				backButton = new Button('back', 285, 40, 40, 16),
 				quitButton = new Button('quit', 335, 40, 40, 16),
 				hotkey2Btn = new IconButton('btn2', 170, 345, 32, 32),
 				hotkey3Btn = new IconButton('btn3', 200, 345, 32, 32),
@@ -5001,6 +5031,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const [x, y, w, h] = [this.x, this.y, this.w, this.h];
 				core.drawUIEventSelector(0, "winskin.png", x, y + 32 * presetMenu.row, w, 32, 181);
 			}
+			backButton._draw = function () {
+				core.ui.fillText(ctx, '[返回]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
+			}
 			quitButton._draw = function () {
 				core.ui.fillText(ctx, '[退出]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
 			}
@@ -5027,9 +5060,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			presetMenu.btnList = new Map([['record', recordBtn], ['delete', deleteBtn],
 			['pageDown', pageDownBtn], ['pageUp', pageUpBtn], ['select', selectBtn],
-			['quit', quitButton], ['hotkey2', hotkey2Btn], ['hotkey2', hotkey2Btn],
-			['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn], ['hotkey5', hotkey5Btn],
-			['hotkey6', hotkey6Btn], ['hotkey7', hotkey7Btn]]);
+			['back', backButton], ['quit', quitButton], ['hotkey2', hotkey2Btn],
+			['hotkey2', hotkey2Btn], ['hotkey3', hotkey3Btn], ['hotkey4', hotkey4Btn],
+			['hotkey5', hotkey5Btn], ['hotkey6', hotkey6Btn], ['hotkey7', hotkey7Btn]]);
 
 			presetMenu.keyEvent = function (keyCode) {
 				switch (keyCode) {
@@ -5133,7 +5166,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		function drawSetting(ctx) {
 			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 180);
+			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 136);
 			core.clearMap(ctx);
 			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
 			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
@@ -5196,8 +5229,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		this.initAchieveMenu = function () {
 			const achieveMenu = new AchieveMenu();
 			const chooseBtn = new Button('choose', 50, 70, 320, 240),
-				quitButton = new Button('quit', 335, 40, 40, 16);
-
+				quitButton = new Button('quit', 335, 40, 40, 16),
+				backButton = new Button('back', 285, 40, 40, 16);
+			backButton._draw = function () {
+				core.ui.fillText(ctx, '[返回]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
+			}
 			quitButton._draw = function () {
 				core.ui.fillText(ctx, '[退出]', this.x, this.y + 15, '#FFE4B5', '14px Verdana');
 			}
@@ -5215,7 +5251,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			quitButton.event = function () { achieveMenu.end(); }
 
-			achieveMenu.btnList = new Map([['choose', chooseBtn], ['quit', quitButton]]);
+			achieveMenu.btnList = new Map([['choose', chooseBtn], ['quit', quitButton], ['back', backButton]]);
 			achieveMenu.keyEvent = function (keyCode) {
 				// 处理按键事件
 				if (keyCode === 27) this.end();
@@ -5232,7 +5268,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.drawTip('成就已清空！');
 		}
 
-		/**
+		/** 当前准备播放的成就的列表
 		 * @type {Array<number>}
 		 */
 		let achievementList = [];
@@ -5391,8 +5427,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	},
 	"动态火焰": function () {
 
-		////// canvas创建 //////
-		this.createCanvasWithWidth = function (name, x, y, width, height, z) {
+		/** 绘制火焰需要控制canvas的width */
+		function createCanvasWithWidth(name, x, y, width, height, z) {
 			// 如果画布已存在则直接调用
 			if (core.dymCanvas[name]) {
 				core.ui.relocateCanvas(name, x, y);
@@ -5446,13 +5482,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 			const tempName1 = 'tempFire_' + i,
 				tempName2 = 'tempFire2_' + i;
-			core.plugin.createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
+			createCanvasWithWidth(tempName1, 0, 0, w, h, 0);
 			const tempCanvas = core.dymCanvas[tempName1];
 			core.drawImage(tempName1, 'tinyFire' + (i + 1).toString() + '.png', 0, 0);
 			const fire = tempCanvas.getImageData(0, 0, w, h);
 			core.deleteCanvas(tempName1);
 			const darkFire = darkFireFilter(fire);
-			core.plugin.createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
+			createCanvasWithWidth(tempName2, 0, 0, w, h, 0);
 			const tempCanvas2 = core.dymCanvas[tempName2];
 			tempCanvas2.putImageData(darkFire, 0, 0);
 			darkFireCanvasList[i] = tempCanvas2;
@@ -5551,92 +5587,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 	},
 	"跳字插件": function () {
-		// 在此增加新插件
-
-		/**
-		 * @type {Set<ScrollingText>}
-		 */
-		let sTextList = new Set([]);
-		const canvas = 'scroll';
-		const gravity = 0.2;
-
-		function drawScrollingText() {
-			core.ui.clearMap(canvas);
-			sTextList.forEach(
-				function (currText) {
-					core.setAlpha(canvas, currText.alpha);
-					core.fillText(canvas, currText.text, currText.x, currText.y,
-						currText.style, currText.font, currText.maxWidth)
-				}
-			)
-		}
-
-		class ScrollingText {
-			constructor(text, args) {
-				this.text = text;
-				this.x = args.x || 0;
-				this.y = args.y || 0;
-				this.x0 = args.x || 0;
-				this.y0 = args.y || 0;
-				this.style = args.style;
-				this.font = args.font;
-
-				this.maxWidth = args.maxWidth;
-				this.type = args.type || 'line';
-				this.vx = args.vx || 0;
-				this.vy = args.vy || 0;
-				this.t = 0;
-				this.tmax = args.tmax || 1000;
-				this.alpha = args.alpha || 1;
-			}
-		}
-
-		this.addScrollingText = function (text, args) {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			let sText = new ScrollingText(text, args);
-			sTextList.add(sText);
-		}
-
-		function updateScrollingText() {
-			sTextList.forEach(function (currText) {
-				switch (currText.type) {
-					case 'line':
-						break;
-					case 'projectile':
-						currText.vy += gravity;
-						break;
-					case 'down':
-						if (currText.t >= currText.tmax / 2) {
-							[currText.vx, currText.vy] = [0, 0];
-							if (currText.alpha > 0.05) currText.alpha -= 0.05;
-						}
-				}
-				currText.x += currText.vx;
-				currText.y += currText.vy;
-				currText.t++;
-				if (currText.x < -100 || currText.x > core.__PIXELS__ + 100 ||
-					currText.y < -100 || currText.y > core.__PIXELS__ + 100 ||
-					currText.t > currText.tmax) {
-					sTextList.delete(currText);
-				}
-			})
-		}
-
-		// 每次切换楼层后执行
-		this.clearScrollingText = function () {
-			sTextList.clear();
-		}
-
-		core.plugin.registerAnimationInterval('scrollText', 10, () => {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('popDamage')) return;
-			if (!core.dymCanvas[canvas]) {
-				core.ui.createCanvas(canvas, 0, 0, core.__PIXELS__, core.__PIXELS__, 150);
-			}
-			updateScrollingText();
-			drawScrollingText();
-		});
 
 		const { Animation, power, linear} = core.plugin.animate;
 		const ctx = 'scrollingText';
@@ -5723,7 +5673,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const damageStrArray = damage.toString().split('');
 			let destoryTime = 500,
 				showInterval = 50,
-				lengthIntertval = 12;
+				lengthIntertval = 10;
 			for (let i = 0, l = damageStrArray.length; i < l; i++) {
 				showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
 				x += lengthIntertval;
