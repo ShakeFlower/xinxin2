@@ -95,7 +95,7 @@ loader.prototype._load_async = function (callback) {
 // ----- 加载资源文件 ------ //
 
 // 加载字体文件
-loader.prototype._loadFonts = async function () {
+loader.prototype._loadFonts = function () {
     try {
         const fontFileList = [new FontFace(
             "hkbdt",
@@ -104,11 +104,11 @@ loader.prototype._loadFonts = async function () {
             "qzzy",
             "url(project/fonts/qzzy.ttf)"
         )];
-        for (let i = 0, l = fontFileList.length; i < l; i++) {
-            const fontFile = fontFileList[i];
-            await fontFile.load();
-            document.fonts.add(fontFile);
-        }
+        Promise.all(fontFileList.map((font)=>{
+            document.fonts.add(font);
+        })).then(()=>{
+            console.log("load fonts success.")
+        })
     }
     catch (error) {
         console.log(error + ",load fonts failed!")
