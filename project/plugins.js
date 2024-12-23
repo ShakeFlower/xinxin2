@@ -5147,8 +5147,21 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	},
     "成就": function () {
 
-		const PX = core.__PIXELS__,
-			PY = core.__PIXELS__;
+		let /** 画面长度 
+			 * @type {number}
+			 */
+			WIDTH,
+			/** 画面宽度
+			 * @type {number}
+			 */
+			HEIGHT;
+		if (core._PX_ && core._PY_) {
+			[WIDTH, HEIGHT] = [core._PX_, core._PY_];
+		} else if (core.__SIZE__) {
+			[WIDTH, HEIGHT] = [core.__PIXELS__, core.__PIXELS__];
+		} else {
+			[WIDTH, HEIGHT] = [416, 416];
+		}
 
 		// 定义成就
 		const list = [
@@ -5204,10 +5217,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		function drawSetting(ctx) {
 			let finish = core.getLocalStorage("finish", getdefaultList()); // 完成情况
-			core.createCanvas(ctx, 0, 0, core.__PIXELS__, core.__PIXELS__, 136);
+			core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
 			core.clearMap(ctx);
-			core.strokeRoundRect(ctx, 32, 32, core.__PIXELS__ - 64, core.__PIXELS__ - 64, 5, "#fff", 2);
-			core.fillRoundRect(ctx, 32, 32, core.__PIXELS__ - 61.5, core.__PIXELS__ - 61.5, 5, "gray");
+			core.strokeRoundRect(ctx, 32, 32, WIDTH - 64, HEIGHT - 64, 5, "#fff", 2);
+			core.fillRoundRect(ctx, 32, 32, WIDTH - 61.5, HEIGHT - 61.5, 5, "gray");
 			core.ui.fillText(ctx, "成就", 185, 55, 'white', '20px Verdana');
 
 			let row = 0, column = 0;
@@ -5241,8 +5254,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const finish = core.getLocalStorage("finish", getdefaultList());
 				if (this.pickedBtn >= 0 && this.pickedBtn < list.length) {
 					core.setTextAlign(ctx, 'center');
-					core.strokeRoundRect(ctx, 35, 335, core.__PIXELS__ - 70, 45, 3, "white");
-					core.fillRoundRect(ctx, 35.5, 336, core.__PIXELS__ - 71, 43, 3, "#555555");
+					core.strokeRoundRect(ctx, 35, 335, WIDTH - 70, 45, 3, "white");
+					core.fillRoundRect(ctx, 35.5, 336, WIDTH - 71, 43, 3, "#555555");
 					core.ui.fillText(ctx, list[this.pickedBtn][0], 208, 324, 'white', '20px Verdana');
 					const finishTime = core.getLocalStorage("finishTime", getdefaultList());
 					let finishInfo = '已完成';
@@ -5321,7 +5334,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			isAchievementPlaying = true;
 			const canvas = "achievementEffect";
 			core.playSound('achievement.mp3');
-			core.createCanvas(canvas, 0, 0, PX, PY, 200);
+			core.createCanvas(canvas, 0, 0, WIDTH, HEIGHT, 200);
 			core.setTextAlign(canvas, "center");
 			core.drawWindowSkin("winskin.png", canvas,
 				140 * 13 / 15, 80 * 13 / 15, 200 * 13 / 15, 100 * 13 / 15);
@@ -5369,8 +5382,34 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		};
 	},
     "引导界面": function () {
+		let /** 画面长度 
+		* @type {number}
+		*/
+		WIDTH,
+		/** 画面宽度
+		* @type {number}
+		*/
+		HEIGHT;
+		if (core._PX_ && core._PY_) {
+			[WIDTH, HEIGHT] = [core._PX_, core._PY_];
+		} else if (core.__SIZE__) {
+			[WIDTH, HEIGHT] = [core.__PIXELS__, core.__PIXELS__];
+		} else {
+			[WIDTH, HEIGHT] = [416, 416];
+		}
 		const ctx = 'tutorial';
 		const Button = this.Button;
+
+		const tutorialObj = {
+			'MT3':function(){
+				core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
+				core.clearMap(ctx);
+				core.strokeRoundRect(ctx, 32, 32, WIDTH - 64, HEIGHT - 64, 5, "#fff", 2);
+				core.fillRoundRect(ctx, 32, 32, WIDTH - 61.5, HEIGHT - 61.5, 5, "gray");
+				core.ui.fillText(ctx, "成就", 185, 55, 'white', '20px Verdana');
+			}
+		}
+
 		/**
 		 * @extends MenuBase
 		 */
@@ -5386,9 +5425,33 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawContent() {
 				// 绘制一张图片 todolist
 				// 绘制一个按钮
-				if (this.page >= 0 && this.page < this.pageList.length) {
-					core.ui.drawBackground(100, 100, 100, 100);
-					core.drawImage(ctx, this.pageList[this.page], 10, 10, 100, 100);
+		// 		core.drawTextContent(this.name,`每回合您攻击敌人和被攻击时都会回复气息。（展示： 角色挨打的动画 气息条，圈起来火焰）
+		//  * 气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2`)
+				// if (this.page >= 0 && this.page < this.pageList.length) {
+				// 	core.ui.drawBackground(100, 100, 100, 100);
+				// 	core.drawImage(this.name, this.pageList[this.page], 10, 10, 100, 100);
+				// }
+				// 要选个漂亮一点的背景！
+				core.createCanvas(ctx, 64, 64, WIDTH - 128, HEIGHT - 128, 136);
+				core.clearMap(ctx);
+				core.strokeRect(ctx, 0, 0, WIDTH - 128, HEIGHT - 128, 5, "white");
+				// core.fillRect(ctx, 0, 0, WIDTH - 125.5, HEIGHT - 125.5, 5, "gray");
+				core.dymCanvas[ctx].canvas.style.backgroundColor = "gray";
+				core.dymCanvas[ctx].canvas.style.backgroundImage = "url(project/images/ground.png)";
+				switch(core.status.floorId){
+					case 'MT3':
+					default:// to be deleted 
+						core.ui.fillText(ctx, "气息", 125, 23, 'white', '20px Verdana');
+						core.drawTextContent(this.name, "每回合您攻击敌人和被攻击时都会回复\r[lime]气息\r。", {
+							left: 40, top: 75, bold: false, color: "white",
+							align: "left", fontSize: 16, maxWidth: 340
+						});
+						core.drawTextContent(this.name, "您的气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2。", {
+							left: 40, top: 125, bold: false, color: "white",
+							align: "left", fontSize: 16, maxWidth: 340
+						});
+						// 可发动技能 //技能已发动，等待释放 //不满足发动技能的条件
+						break;
 				}
 				this.btnList.forEach((btn) => { btn.draw(); })
 			}
@@ -5413,23 +5476,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 
 				// todolist
-				const nextButton = new Button('next');
-				nextButton.draw = () => {
-					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
-					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
-					core.strokeRect(ctx, x, y, w, h, '#888888');;
-					core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
-				};
-				nextButton.event = tutorialMenu.nextPage.bind(tutorialMenu);
 				const quitButton = new Button('quit');
 				quitButton.draw = () => {
 					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
 					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
 					core.strokeRect(ctx, x, y, w, h, '#888888');;
-					core.fillText(ctx, '记录下场战斗操作', x + 6, y + 16, 'Tomato', '16px Verdana');
+					core.fillText(ctx, 'OK', x + 6, y + 16, 'White', '16px Verdana');
 				};
 				quitButton.event = quit;
-				tutorialMenu.btnList = new Map([['next', nextButton], ['quit', quitButton]]);
+				tutorialMenu.btnList = new Map([['quit', quitButton]]);
 				tutorialMenu.keyEvent = function (keyCode) {
 					switch (keyCode) {
 						case 13:
@@ -5448,8 +5503,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 					}
 				};
+				tutorialMenu.init();
 			});
 		}
+
+		this.t = initTutorialMenu;
 
 		this.drawTutorialMenu = async function () {
 			if (core.isReplaying()) return;
@@ -6973,11 +7031,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, ':体力', width - tx - 50, ty, "white", textFont);
-			core.fillText(ctx, ':攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
-			core.fillText(ctx, ':防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
-			core.fillText(ctx, ':疲劳', width - tx - 50, ty + 3 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '气息:', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '体力', width - tx - 50, ty, "white", textFont);
+			core.fillText(ctx, '攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
+			core.fillText(ctx, '防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
+			core.fillText(ctx, '疲劳', width - tx - 50, ty + 3 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '气息', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
 			if (atkBuff > 0) core.fillText(ctx, '+' + atkBuff.toString(), 260, 78, "cyan", '8px Verdana');
 			if (defBuff > 0) core.fillText(ctx, '+' + defBuff.toString(), 260, 100, "red", '8px Verdana');
 			else if (defBuff < 0) core.fillText(ctx, '-' + (-defBuff).toString(), 260, 100, "red", '8px Verdana');
