@@ -4820,19 +4820,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
 		 * preSetIndex 当前切换到了哪个预设方案 每次战斗前 将会读取该信息
 		 * hotkeyData {'2':'敌人名字' '3':'敌人名字'} 快捷键信息 每次按键时，将查找该信息
-		 * todolist 测试对连击怪该功能是否正确
-		 * todolist(Maybe) 去白边
-				let myData = {
-				'greenSlime':'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'redSlime': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'bat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'vampire': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'redBat': 'bs:0s:1h:2M:3b:4F:5k:6R:10F',
-				'zombie':'bs:0s:1h:2M:3b:4F:5k:6R:10F', 
-			};
-			let hotkeyData = {'2':'greenSlime','4':'bat'}
-			core.setFlag('presetSkill', myData);
-			core.setFlag('hotkeyData', hotkeyData);
 		 */
 
 		const ctx = 'skillPreset';
@@ -5432,24 +5419,25 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 	core.drawImage(this.name, this.pageList[this.page], 10, 10, 100, 100);
 				// }
 				// 要选个漂亮一点的背景！
-				core.createCanvas(ctx, 64, 64, WIDTH - 128, HEIGHT - 128, 136);
+				core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
 				core.clearMap(ctx);
-				core.strokeRect(ctx, 0, 0, WIDTH - 128, HEIGHT - 128, 5, "white");
-				// core.fillRect(ctx, 0, 0, WIDTH - 125.5, HEIGHT - 125.5, 5, "gray");
-				core.dymCanvas[ctx].canvas.style.backgroundColor = "gray";
-				core.dymCanvas[ctx].canvas.style.backgroundImage = "url(project/images/ground.png)";
+				core.setOpacity(ctx, 0.9);
+				core.strokeRect(ctx, 0, 0, WIDTH - 128, HEIGHT - 128, "white");
+				core.fillRect(ctx, 16, 64, WIDTH - 32, HEIGHT - 128, " #F5F5DC");
 				switch(core.status.floorId){
 					case 'MT3':
 					default:// to be deleted 
-						core.ui.fillText(ctx, "气息", 125, 23, 'white', '20px Verdana');
+						core.ui.fillText(ctx, "气息", 188, 90, ' #555555', '20px Verdana');
 						core.drawTextContent(this.name, "每回合您攻击敌人和被攻击时都会回复\r[lime]气息\r。", {
-							left: 40, top: 75, bold: false, color: "white",
+							left: 40, top: 105, bold: false, color: " #8B4513",
 							align: "left", fontSize: 16, maxWidth: 340
 						});
-						core.drawTextContent(this.name, "您的气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2。", {
-							left: 40, top: 125, bold: false, color: "white",
+						core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
+						core.drawTextContent(this.name, "气息可以用来发动技能。开局时您已习得暴击C，您可以消耗1格气息发动之，下次攻击造成双倍伤害。", {
+							left: 40, top: 185, bold: false, color: " #8B4513",
 							align: "left", fontSize: 16, maxWidth: 340
 						});
+						core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
 						// 可发动技能 //技能已发动，等待释放 //不满足发动技能的条件
 						break;
 					case 'MT6':
@@ -5710,9 +5698,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		new Animation().ticker.add(() => {
 			core.createCanvas(ctx, 0, 0, 416, 416, 200); //每帧重绘该画布
 		});
-
-		// todolist 需要一个每次切换楼层后清空所有动画的函数
-		// 待测试：切换楼层时的表现
 		
 		/**
 		 * 绘制弹幕 
@@ -6279,7 +6264,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const especial = this.special;
 				if (hasSpecial(especial, [61, 62, 63, 64, 65])) {
 					atkStatus.aim = 'all';
-					atkStatus.princessDamage = Math.max(this.atk - hero.mdef, 0);
+					atkStatus.princessDamage = Math.max(this.atk - hero.mdef, 1);
 				} else if (hasSpecial(especial, 55)) {
 					atkStatus.aim = 'princess';
 					atkStatus.princessDamage = this.atk;
@@ -7479,19 +7464,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.plugin.drawAnimateByPixel(atkStatusH.animate, ex + oex, ey + oey);
 					let damageH = atkStatusH.damage;
 					drawDamage(damageH, ex - 16, ey + 14);
-					// if (atkStatusH.crit) damageH += 'crit';
-					// core.plugin.addScrollingText(damageH, {
-					// 	'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Tomato',
-					// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-					// });
-					// todolist:测试伤害位置释放 
 					if (atkStatusH.heal > 0) { //治疗效果
 						drawDamage('+' + atkStatusH.heal, hx - 16, hy + 30, 'lime');
-						// to be tested
-						// core.plugin.addScrollingText('+' + atkStatusH.heal, {
-						// 	'x': hx - 6, 'y': hy + 14, 'vy': 1, 'style': 'Lime',
-						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						// });
 					}
 					break;
 				case 'enemy':
@@ -7522,10 +7496,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					let damageE = atkStatusE.damage.toString(),
 						princessDamageE = atkStatusE.princessDamage.toString();
-					// if (atkStatusE.crit) {
-					// 	damageE += 'crit';
-					// 	princessDamageE += 'crit';
-					// }
 					if (atkStatusE.debuff === 'poison') {
 						core.plugin.drawAnimateByPixel('gpoison', hx, hy);
 					}
@@ -7536,10 +7506,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						core.plugin.drawAnimateByPixel(atkStatusE.heroAnimate, hx + osx, hy + osy);
 						drawDamage(damageE, hx - 10, hy + 28);
-						// core.plugin.addScrollingText(damageE, {
-						// 	'x': hx - 6, 'y': hy + 28, 'vy': 1, 'style': 'Tomato ',
-						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						// });
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px + opx, py + opy);
@@ -7553,10 +7519,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						if (shieldAnimate) core.plugin.drawAnimateByPixel(shieldAnimate, px, py);
 
 						drawDamage(princessDamageE, px - 15, py + 25);
-						// core.plugin.addScrollingText(princessDamageE, {
-						// 	'x': px - 15, 'y': py + 25, 'vy': 1, 'style': 'Tomato ',
-						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down'
-						// });
 					}
 					if (atkStatusE.aim === 'bounce') { // 古顿的伤害动画单独处理
 						let bounceDamage = atkStatusE.bounceDamage,
@@ -7565,13 +7527,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, hx + ohx, hy + ohy);
 						let bounce = setInterval(function () {
 							currstr = bounceDamage[count].toString();
-							// if (atkStatusE.crit) currstr += 'crit';
-							// core.plugin.addScrollingText(currstr, {
-							// 	'x': (count % 2 === 0) ? hx - 6 + 20 * Math.random() : px - 15 + 20 * Math.random(),
-							// 	'y': (count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random(),
-							// 	'vy': 1, 'style': 'Tomato ', 'font': 'Bold 18px Arial',
-							// 	'tmax': 100, 'type': 'down'
-							// });
 							drawDamage(currstr, (count % 2 === 0) ? hx - 10 + 20 * Math.random() : px - 15 + 20 * Math.random(),
 							(count % 2 === 0) ? hy + 28 + 20 * Math.random() : py + 25 + 20 * Math.random());
 							count++;
@@ -7579,10 +7534,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						}, 50);
 					}
 					if (atkStatusE.heal > 0) { //治疗效果
-						// core.plugin.addScrollingText('+' + atkStatusE.heal, {
-						// 	'x': ex - 6, 'y': ey + 14, 'vy': 1, 'style': 'Lime',
-						// 	'font': 'Bold 18px Arial', 'tmax': 50, 'type': 'down',
-						// });
 						drawDamage('+' + atkStatusE.heal, ex - 40, ey + 30, 'Lime');
 					}
 					break;
@@ -7729,34 +7680,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * todolist:
-		 * 实现多重楼传，杀掉已有的回城楼传 ?
-		 * 实现tips界面
-		 * 重要的是文案
-		 * 3F 警告标志
-		 * 标题：气息
-		 * 每回合您攻击敌人和被攻击时都会回复气息。（展示： 角色挨打的动画 气息条，圈起来火焰）
-		 * 气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2
-		 * 下一页 跳过 -> 明白了 退出
-		 * 您可以在背包图标里的设置\i[xxx]中调整是否显示此提示信息。（）
-		 * 如果您是这个游戏的老手，您可以选择“跳过提示”
-		 * 
-		 * 技能与疲劳
-		 * 剑技 装备某个剑技后，条件满足时Z会亮起，此时可以发动对应技能
-		 * 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
-		 * 左上角可以调整战斗速度
-		 * 
-		 * 岩浆
-		 * 走到岩浆上时，你会受到伤害
-		 * 当前无法直接到达楼传落点（地图上存在墙，敌人，岩浆等阻碍）时，使用快捷商店会触发一次楼传。
-		 * 
-		 * 异常状态
-		 * 一些特殊敌人会对你释放异常状态，根据该敌人触发异常状态的概率，相应地增加你的异常计数
-		 * 每当异常计数达到100时，异常状态将被真正触发
-		 * 
-		 * 实现新的伤害跳出
-		 * too hard 尝试一下高级动画插件 好的话弹幕绘制和成就界面跳出也可以改成这个 
-		 * 要自己实现故事板那也太恶心，太恶劣了？
-		 * 还原失败动画，开局的动画
 		 * 待确认：疲劳和毒衰计数要不要叠
 		 * 待确认：淡薄的绘制优化
 		 * 待确认：老复刻版的bug

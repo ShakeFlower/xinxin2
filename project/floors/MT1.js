@@ -37,10 +37,6 @@ main.floors.MT1=
             "value": "true"
         },
         {
-            "type": "function",
-            "function": "function(){\ncore.removeMaps(\"TU1\", \"TU5b\")\n}"
-        },
-        {
             "type": "setBlock",
             "number": "ground2",
             "loc": [

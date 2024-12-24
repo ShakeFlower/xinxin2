@@ -172,6 +172,8 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"tinyFire1.png",
 			"tinyFire2.png",
 			"tinyFire3.png",
+			"tutorial1_1.png",
+			"tutorial1_2.png",
 			"win.jpg",
 			"winskin.png",
 			"yellowBall.png"
