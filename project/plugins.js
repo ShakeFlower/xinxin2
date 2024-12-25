@@ -5424,8 +5424,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 									align: "left", fontSize: 16, maxWidth: 340
 								});
 								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
-								core.drawTextContent(this.name, `气息可以用来发动技能。开局时您已习得暴击C，
-								您可以消耗1格气息发动之，下次攻击造成双倍伤害。`, {
+								core.drawTextContent(this.name, "气息可以用来发动技能。开局时您已习得暴击C，您可以消耗1格气息发动之，下次攻击造成双倍伤害。", {
 									left: 40, top: 185, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
@@ -5433,19 +5432,41 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								break;
 							case 1:
 								core.ui.fillText(ctx, "设置", 188, 90, ' #555555', '20px Verdana');
-								core.drawTextContent(this.name, `您可以调节背包\\i[toolbox]中的设置\\i[I490]，
-									来开启或关闭此教程。`, {
+								core.drawTextContent(this.name, "您可以调节背包\\i[toolbox]中的设置\\i[I490]，来开关此教程。", {
 									left: 40, top: 105, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
+								core.drawImage(ctx, 'tutorial1_3.png', 50, 130);
 								break;
 						}
 						break;
-					case 'MT6':
-						core.drawTextContent(this.name, "您可以在背包里的设置\i中调整是否跳过本教程。", {
-							left: 40, top: 75, bold: false, color: "white",
-							align: "left", fontSize: 16, maxWidth: 340
-						});
+					case 'MT8':
+						this.pageCount = 2;
+						switch (this.page) {
+							case 0:
+								core.ui.fillText(ctx, "技能", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, "使用技能和暴击都会增长一定的\r[yellow]疲劳\r，对于敌人也是如此。", {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
+								core.drawTextContent(this.name, `橙色数字为\r[orange]疲劳计数\r，每回合该计数将增加等于\r[yellow]疲劳值\r的值。
+									\r[orange]疲劳计数\r超过100时，下次攻击将会MISS`, {
+									left: 40, top: 185, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
+								break;
+							case 1:
+								core.ui.fillText(ctx, "设置", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, "您可以发动深呼吸，减少一定的\r[yellow]疲劳值\r。", {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial1_3.png', 50, 130);
+								break;
+						}
+						break;
 						/* 技能与疲劳
 						* 剑技 盾击 暴击
 						* 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
@@ -5509,7 +5530,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						case 13:
 						case 32:
 						case 67: //回车，空格，C键
-						case 39: // 右
 							if (this.page === this.pageList.length - 1) {
 								this.clear();
 								res();
