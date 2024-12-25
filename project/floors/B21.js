@@ -13,7 +13,12 @@ main.floors.B21=
     "item_ratio": 1,
     "defaultGround": "ground",
     "bgm": "bgm2.mp3",
-    "firstArrive": [],
+    "firstArrive": [
+        {
+            "type": "function",
+            "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+        }
+    ],
     "eachArrive": [],
     "parallelDo": "",
     "events": {
@@ -131,5 +136,6 @@ main.floors.B21=
         2
     ],
     "underGround": true,
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }

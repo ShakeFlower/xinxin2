@@ -52,6 +52,7 @@ main.floors.MT5=
                         "remove": true
                     },
                     "系统提示：\n复刻版开局送楼传，但上11楼前仍未与此老人对话会将其移除。",
+                    "勇士当前位置\r[yellow]无法\r直接到达楼传落点（地图上存在墙，敌人，岩浆等阻碍）时，使用快捷商店会\r[yellow]强制触发\r一次楼传。",
                     {
                         "type": "function",
                         "function": "function(){\ncore.plugin.getAchievement(24);\ncore.addFlag('talkedCount', 1);\nif (core.getFlag('talkedCount', 0) >= 17) core.plugin.getAchievement(17);\n}"

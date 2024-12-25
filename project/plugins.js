@@ -137,24 +137,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			ctx.textAlign = t;
 		}
 
-		this.triggerAchieve = function (id) {
-			if (!flags.bugFix) return;
-			var a = flags.achieves;
-			if (typeof a != 'object') return;
-			id--;
-			a = a[id];
-			if (typeof a != 'object') return;
-			if (a[4]) {
-				return;
-			} else {
-				a[4] = 1;
-				core.addFlag('achieveScore', a[3]);
-				core.playSound('achievement.mp3');
-				core.insertAction("\t[恭喜获得「" + a[0] + "」,N" + (454 + id) + "]" + a[2] + "\n\n\r[yellow]成就点数+" + a[3]);
-				return;
-			}
-		}
-
 		// 开启技能
 		this.useSkill = function (skillid) {
 			var preskill = core.getFlag('skill', 0);
@@ -5400,8 +5382,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			drawContent() {
-				// 绘制一张图片 todolist
-				// 要选个漂亮一点的背景！
 				core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
 				core.clearMap(ctx);
 				core.setOpacity(ctx, 0.9);
@@ -5409,7 +5389,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				core.fillRect(ctx, 16, 64, WIDTH - 32, HEIGHT - 128, " #F5F5DC");
 				switch (core.status.floorId) {
 					case 'MT3':
-					default:// to be deleted 
 						this.pageCount = 2;
 						switch (this.page) {
 							case 0:
@@ -5418,9 +5397,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 									left: 40, top: 105, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
-								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
-								core.drawTextContent(this.name, "气息可以用来发动技能。开局时您已习得暴击C，您可以消耗1格气息发动之，下次攻击造成双倍伤害。", {
-									left: 40, top: 185, bold: false, color: " #8B4513",
+								core.drawImage(ctx, 'tutorial1_1.png', 50, 140);
+								core.drawTextContent(this.name, "气息可用来发动技能。开局时您已习得暴击(C)，可消耗1格气息发动之，下次攻击造成双倍伤害。", {
+									left: 40, top: 200, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
 								core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
@@ -5439,38 +5418,48 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.pageCount = 2;
 						switch (this.page) {
 							case 0:
-								core.ui.fillText(ctx, "技能", 188, 90, ' #555555', '20px Verdana');
-								core.drawTextContent(this.name, "使用技能和暴击都会增长一定的\r[yellow]疲劳\r，对于敌人也是如此。", {
+								core.ui.fillText(ctx, "疲劳", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, 
+									"使用技能（含暴击）会增加\r[gray]疲劳\r，对于敌人也是如此。\n橙色数字为\r[orange]疲劳计数\r，每回合该计数将增加等于\r[gray]疲劳值\r的值。\n\r[orange]疲劳计数\r达到100时，下次攻击将会MISS。", {
 									left: 40, top: 105, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
-								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
-								core.drawTextContent(this.name, `橙色数字为\r[orange]疲劳计数\r，每回合该计数将增加等于\r[yellow]疲劳值\r的值。
-									\r[orange]疲劳计数\r达到100时，下次攻击将会MISS`, {
-									left: 40, top: 185, bold: false, color: " #8B4513",
-									align: "left", fontSize: 16, maxWidth: 340
-								});
-								core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
+								core.drawImage(ctx, 'tutorial2_1.png', 50, 210);
 								break;
 							case 1:
-								core.ui.fillText(ctx, "设置", 188, 90, ' #555555', '20px Verdana');
-								core.drawTextContent(this.name, "您可以发动深呼吸，减少一定的\r[yellow]疲劳值\r。", {
+								core.ui.fillText(ctx, "疲劳", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, "战斗中您可以发动深呼吸(V)，减少一定的\r[gray]疲劳值\r。", {
 									left: 40, top: 105, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
-								core.drawImage(ctx, 'tutorial1_3.png', 50, 130);
+								core.drawImage(ctx, 'tutorial2_2.png', 50, 150);
 								break;
 						}
 						break;
-						/* 商店
-						* 当前无法位置直接到达楼传落点（地图上存在墙，敌人，岩浆等阻碍）时，使用快捷商店会触发一次楼传。
-						* 
-						* 异常状态
-						* 一些敌人有概率对你附加异常状态（详情见手册）
-						* 这种敌人每次攻击，会根据概率值增加你的异常计数
-						* 每当异常计数达到100时，异常状态将被真正触发
-						*/
-						break; 
+					case 'B21':
+						this.pageCount = 2;
+						switch (this.page) {
+							case 0:
+								core.ui.fillText(ctx, "异常", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, 
+									"一些敌人有概率对你附加\r[purple]异常状态\r（详情见手册）\n这类敌人每次攻击，会根据其概率值增加你的\r[darkBlue]异常计数\r。", {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial3_1.png', 50, 180);
+								break;
+							case 1:
+								core.ui.fillText(ctx, "异常", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, "每当\r[darkBlue]异常计数\r达到100时，\r[purple]异常状态\r将被真正触发。\n"
+									+"例如，毒蝙蝠\\i[poisonBat]有\r[darkBlue]5%\r的几率令你\r[lime]中毒\r，则它每攻击一次，你的\r[darkBlue]异常计数\r增加5点。\n"+
+									"当你在与它的战斗中\r[darkBlue]异常计数\r达到100，你将会\r[lime]中毒\r。", {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial3_1.png', 50, 230);
+								break;
+						}
+						break;
 				}
 				this.btnList.forEach((btn) => { btn.draw(); })
 			}
@@ -5535,11 +5524,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 
-		this.t = initTutorialMenu;
-
 		this.drawTutorialMenu = async function () {
 			if (core.isReplaying()) return;
-			// if (!core.getFlag('tutorial',false)) return;
+			if (!core.getFlag('tutorial',false)) return;
 			//禁止Esc打开菜单栏
 			core.setFlag('noOpenMenu', true);
 			core.lockControl();
@@ -7059,27 +7046,27 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 
 			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, '体力', width - tx - 50, ty, "white", textFont);
-			core.fillText(ctx, '攻击力', width - tx - 50, ty + textFontSize + lineHeight, atkColor, textFont);
-			core.fillText(ctx, '防御力', width - tx - 50, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
-			core.fillText(ctx, '疲劳', width - tx - 50, ty + 3 * (textFontSize + lineHeight), "white", textFont);
-			core.fillText(ctx, '气息', width - tx - 40, ty + 4 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '体力', width - tx - 52, ty, "white", textFont);
+			core.fillText(ctx, '攻击力', width - tx - 52, ty + textFontSize + lineHeight, atkColor, textFont);
+			core.fillText(ctx, '防御力', width - tx - 52, ty + 2 * (textFontSize + lineHeight), defColor, textFont);
+			core.fillText(ctx, '疲劳', width - tx - 52, ty + 3 * (textFontSize + lineHeight), "white", textFont);
+			core.fillText(ctx, '气息', width - tx - 42, ty + 4 * (textFontSize + lineHeight), "white", textFont);
 			if (atkBuff > 0) core.fillText(ctx, '+' + atkBuff.toString(), 260, 78, "cyan", '8px Verdana');
 			if (defBuff > 0) core.fillText(ctx, '+' + defBuff.toString(), 260, 100, "red", '8px Verdana');
 			else if (defBuff < 0) core.fillText(ctx, '-' + (-defBuff).toString(), 260, 100, "red", '8px Verdana');
 
 			core.setTextAlign(ctx, "left");
-			core.fillText(ctx, enemy.hp, tx + 50, ty + 2, "white", numFont);
-			core.fillText(ctx, enemy.atk, tx + 50, ty + textFontSize + lineHeight + 2, "white", numFont);
-			core.fillText(ctx, enemy.def, tx + 50, ty + 2 * (textFontSize + lineHeight) + 2, "white", numFont);
-			core.fillText(ctx, enemy.fatigue, tx + 50, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
+			core.fillText(ctx, enemy.hp, tx + 50, ty, "white", numFont);
+			core.fillText(ctx, enemy.atk, tx + 50, ty + textFontSize + lineHeight, "white", numFont);
+			core.fillText(ctx, enemy.def, tx + 50, ty + 2 * (textFontSize + lineHeight), "white", numFont);
+			core.fillText(ctx, enemy.fatigue, tx + 50, ty + 3 * (textFontSize + lineHeight), "white", numFont);
 
 			core.setTextAlign(ctx, "right");
-			core.fillText(ctx, hero.hp, width - tx - 54, ty + 2,
+			core.fillText(ctx, hero.hp, width - tx - 56, ty,
 				hero.hp <= 600 ? hero.hp <= 200 ? "OrangeRed" : "Yellow " : "white", numFont);
-			core.fillText(ctx, hero.atk, width - tx - 54, ty + textFontSize + lineHeight + 2, atkColor, numFont);
-			core.fillText(ctx, hero.def, width - tx - 54, ty + 2 * (textFontSize + lineHeight) + 2, defColor, numFont);
-			core.fillText(ctx, hero.fatigue, width - tx - 54, ty + 3 * (textFontSize + lineHeight) + 2, "white", numFont);
+			core.fillText(ctx, hero.atk, width - tx - 56, ty + textFontSize + lineHeight, atkColor, numFont);
+			core.fillText(ctx, hero.def, width - tx - 56, ty + 2 * (textFontSize + lineHeight), defColor, numFont);
+			core.fillText(ctx, hero.fatigue, width - tx - 56, ty + 3 * (textFontSize + lineHeight), "white", numFont);
 
 			core.fillText(ctx, '-撤退(Q)-', 100, 180, "yellow", '16px hkbdt');
 
@@ -7700,14 +7687,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 			return actionObj;
 		}
-
-		/**
-		 * todolist:
-		 * 待确认：疲劳和毒衰计数要不要叠
-		 * 待确认：淡薄的绘制优化
-		 * 待确认：老复刻版的bug
-		 * 待确认：毒衰的UI
-		 */
 
 		/**
 		 * 返回一个Obj，格式如下 {'1':['c','B'],'3':['c','n']}

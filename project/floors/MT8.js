@@ -12,7 +12,12 @@ main.floors.MT8=
     "images": [],
     "item_ratio": 1,
     "defaultGround": "ground",
-    "firstArrive": [],
+    "firstArrive": [
+        {
+            "type": "function",
+            "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+        }
+    ],
     "eachArrive": [],
     "parallelDo": "",
     "events": {
