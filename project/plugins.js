@@ -5387,15 +5387,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const ctx = 'tutorial';
 		const Button = this.Button;
 
-		const tutorialObj = {
-			'MT3':function(){
-				core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
-				core.clearMap(ctx);
-				core.strokeRoundRect(ctx, 32, 32, WIDTH - 64, HEIGHT - 64, 5, "#fff", 2);
-				core.fillRoundRect(ctx, 32, 32, WIDTH - 61.5, HEIGHT - 61.5, 5, "gray");
-				core.ui.fillText(ctx, "成就", 185, 55, 'white', '20px Verdana');
-			}
+		function drawFloorTutorial(floorId = core.status.floorId, page){
+
 		}
+
 
 		/**
 		 * @extends MenuBase
@@ -5403,42 +5398,48 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		class TutorialMenu extends this.Menu {
 			constructor() {
 				super(ctx);
-				/** 当前绘制的图片列表 */
-				this.pageList = [];
+				/** 当前要绘制的页面数量 */
+				this.pageCount = 1;
 				/** 当前绘制的是第几页 */
 				this.page = 0;
 			}
 
 			drawContent() {
 				// 绘制一张图片 todolist
-				// 绘制一个按钮
-		// 		core.drawTextContent(this.name,`每回合您攻击敌人和被攻击时都会回复气息。（展示： 角色挨打的动画 气息条，圈起来火焰）
-		//  * 气息满一格时，暴击按钮C会亮起，此时可以发动一次暴击，伤害×2`)
-				// if (this.page >= 0 && this.page < this.pageList.length) {
-				// 	core.ui.drawBackground(100, 100, 100, 100);
-				// 	core.drawImage(this.name, this.pageList[this.page], 10, 10, 100, 100);
-				// }
 				// 要选个漂亮一点的背景！
 				core.createCanvas(ctx, 0, 0, WIDTH, HEIGHT, 136);
 				core.clearMap(ctx);
 				core.setOpacity(ctx, 0.9);
 				core.strokeRect(ctx, 0, 0, WIDTH - 128, HEIGHT - 128, "white");
 				core.fillRect(ctx, 16, 64, WIDTH - 32, HEIGHT - 128, " #F5F5DC");
-				switch(core.status.floorId){
+				switch (core.status.floorId) {
 					case 'MT3':
 					default:// to be deleted 
-						core.ui.fillText(ctx, "气息", 188, 90, ' #555555', '20px Verdana');
-						core.drawTextContent(this.name, "每回合您攻击敌人和被攻击时都会回复\r[lime]气息\r。", {
-							left: 40, top: 105, bold: false, color: " #8B4513",
-							align: "left", fontSize: 16, maxWidth: 340
-						});
-						core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
-						core.drawTextContent(this.name, "气息可以用来发动技能。开局时您已习得暴击C，您可以消耗1格气息发动之，下次攻击造成双倍伤害。", {
-							left: 40, top: 185, bold: false, color: " #8B4513",
-							align: "left", fontSize: 16, maxWidth: 340
-						});
-						core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
-						// 可发动技能 //技能已发动，等待释放 //不满足发动技能的条件
+						this.pageCount = 2;
+						switch (this.page) {
+							case 0:
+								core.ui.fillText(ctx, "气息", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, "每回合您攻击敌人和被攻击时都会回复\r[lime]气息\r。", {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
+								core.drawTextContent(this.name, `气息可以用来发动技能。开局时您已习得暴击C，
+								您可以消耗1格气息发动之，下次攻击造成双倍伤害。`, {
+									left: 40, top: 185, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								core.drawImage(ctx, 'tutorial1_2.png', 50, 250);
+								break;
+							case 1:
+								core.ui.fillText(ctx, "设置", 188, 90, ' #555555', '20px Verdana');
+								core.drawTextContent(this.name, `您可以调节背包\\i[toolbox]中的设置\\i[I490]，
+									来开启或关闭此教程。`, {
+									left: 40, top: 105, bold: false, color: " #8B4513",
+									align: "left", fontSize: 16, maxWidth: 340
+								});
+								break;
+						}
 						break;
 					case 'MT6':
 						core.drawTextContent(this.name, "您可以在背包里的设置\i中调整是否跳过本教程。", {
@@ -5459,16 +5460,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						* 一些特殊敌人会对你释放异常状态，根据该敌人触发异常状态的概率，相应地增加你的异常计数
 						* 每当异常计数达到100时，异常状态将被真正触发
 						*/
-						break;
+						break; 
 				}
 				this.btnList.forEach((btn) => { btn.draw(); })
 			}
 
 			nextPage() {
-				if (this.page < this.pageList.length - 1) {
+				if (this.page < this.pageCount - 1) {
 					this.page++;
 				}
-				if (this.page === this.pageList.length - 1) {
+				if (this.page === this.pageCount - 1) {
 					this.btnList.get('next').disable = true;
 				}
 				this.drawContent();
@@ -5483,16 +5484,26 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					res();
 				}
 
-				// todolist
-				const quitButton = new Button('quit');
-				quitButton.draw = () => {
+				const nextButton = new Button('next', 250, 330, 60, 20);
+				nextButton._draw = function(){
 					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
 					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
 					core.strokeRect(ctx, x, y, w, h, '#888888');;
-					core.fillText(ctx, 'OK', x + 6, y + 16, 'White', '16px Verdana');
+					core.fillText(ctx, '下一页', x + 6, y + 16, '#555555', '16px Verdana');
+				}
+				nextButton.event = tutorialMenu.nextPage.bind(tutorialMenu);
+
+				const quitButton = new Button('quit', 330, 330, 45, 20);
+				quitButton._draw = function () {
+					const [x, y, w, h] = [this.x, this.y, this.w, this.h];
+					core.fillRect(ctx, x, y, w, h, '#D3D3D3');
+					core.strokeRect(ctx, x, y, w, h, '#888888');;
+					core.fillText(ctx, tutorialMenu.page === tutorialMenu.pageCount - 1 ? '退出' : '跳过', 
+						x + 6, y + 16, '#555555', '16px Verdana');
 				};
 				quitButton.event = quit;
-				tutorialMenu.btnList = new Map([['quit', quitButton]]);
+
+				tutorialMenu.btnList = new Map([['quit', quitButton], ['next', nextButton]]);
 				tutorialMenu.keyEvent = function (keyCode) {
 					switch (keyCode) {
 						case 13:
