@@ -5387,11 +5387,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		const ctx = 'tutorial';
 		const Button = this.Button;
 
-		function drawFloorTutorial(floorId = core.status.floorId, page){
-
-		}
-
-
 		/**
 		 * @extends MenuBase
 		 */
@@ -5451,7 +5446,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								});
 								core.drawImage(ctx, 'tutorial1_1.png', 50, 130);
 								core.drawTextContent(this.name, `橙色数字为\r[orange]疲劳计数\r，每回合该计数将增加等于\r[yellow]疲劳值\r的值。
-									\r[orange]疲劳计数\r超过100时，下次攻击将会MISS`, {
+									\r[orange]疲劳计数\r达到100时，下次攻击将会MISS`, {
 									left: 40, top: 185, bold: false, color: " #8B4513",
 									align: "left", fontSize: 16, maxWidth: 340
 								});
@@ -5467,18 +5462,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 								break;
 						}
 						break;
-						/* 技能与疲劳
-						* 剑技 盾击 暴击
-						* 使用技能和暴击都会增长疲劳，橙色数字显示了疲劳的累计值，达到100时将会MISS一次
-						* 按V发动一次深呼吸，降低疲劳
-						* 左上角可以调整战斗速度
-						* 
-						* 岩浆
-						* 走到岩浆上时，你会受到伤害
-						* 当前无法直接到达楼传落点（地图上存在墙，敌人，岩浆等阻碍）时，使用快捷商店会触发一次楼传。
+						/* 商店
+						* 当前无法位置直接到达楼传落点（地图上存在墙，敌人，岩浆等阻碍）时，使用快捷商店会触发一次楼传。
 						* 
 						* 异常状态
-						* 一些特殊敌人会对你释放异常状态，根据该敌人触发异常状态的概率，相应地增加你的异常计数
+						* 一些敌人有概率对你附加异常状态（详情见手册）
+						* 这种敌人每次攻击，会根据概率值增加你的异常计数
 						* 每当异常计数达到100时，异常状态将被真正触发
 						*/
 						break; 
@@ -5952,7 +5941,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			shieldEquiped = core.items.getEquip(1);
 
 			/** 负面事件计数 */
-			misfortune = 0;
+			misfortune = core.status.hero.misfortune || 0;
 
 			/** 本次战斗凡骨剑转化的攻防计数 */
 			bone = 0;
@@ -5975,6 +5964,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				 * @type {HeroAtkStatus}
 				 */
 				this.atkStatus;
+				this.totalFatigue = core.status.hero.fatigue || 0;
 				if (core.hasFlag('poison')) this.status = 'poison';
 				if (core.hasFlag('weak')) this.status = 'weak';
 			}
@@ -6867,6 +6857,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					core.status.hero.exp += exp;
 					core.status.hero.statistics.exp += exp;
 					core.status.hero.statistics.battle++;
+					core.status.hero.fatigue = hero.totalFatigue;
+					core.status.hero.misfortune = hero.misfortune;
 					if (!core.isReplaying() && core.getFlag('recordAction', false)) {
 						setPresetSkill(battle);
 						core.setFlag('recordAction', false);

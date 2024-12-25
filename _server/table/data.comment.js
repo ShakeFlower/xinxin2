@@ -367,6 +367,11 @@ var data_comment_c456ea59_6018_45ef_8bcc_211a24c627dc = {
 							"_type": "textarea",
 							"_data": "衰弱"
 						},
+						"misfortune": {
+							"_leaf": true,
+							"_type": "textarea",
+							"_data": "负面计数"
+						},
 						"followers": {
 							"_leaf": true,
 							"_type": "disable",

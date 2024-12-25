@@ -111,186 +111,205 @@ main.floors.HG18=
             },
             {
                 "type": "if",
-                "condition": "(core.status.hard==='Standard')",
+                "condition": "flag:hasCheated",
                 "true": [
                     {
-                        "type": "choices",
-                        "text": "选择计分方式",
-                        "choices": [
-                            {
-                                "text": "攻防和（极限能力玩法）",
-                                "action": [
-                                    {
-                                        "type": "setValue",
-                                        "name": "status:hp",
-                                        "value": "(status:atk+status:def)",
-                                        "norefresh": true
-                                    },
-                                    {
-                                        "type": "win",
-                                        "reason": "能力计分(勇士的攻防和)"
-                                    }
-                                ]
-                            },
-                            {
-                                "text": "杀敌数（速通玩法）",
-                                "action": [
-                                    {
-                                        "type": "setValue",
-                                        "name": "status:hp",
-                                        "value": "(5000-core.status.hero.statistics.battle)",
-                                        "norefresh": true
-                                    },
-                                    {
-                                        "type": "win",
-                                        "reason": "速攻计分(5000-杀敌数)"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "false": [
-                    {
                         "type": "setValue",
                         "name": "status:hp",
-                        "value": "Math.round((Math.sqrt(((status:hp/2)+status:hpmax))))",
+                        "value": "1",
                         "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "status:lv",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "status:atk",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "status:def",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "status:mdef",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(flag:atkm-10)/0.6",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(40-flag:defm)/0.6",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(240-status:manamax)/3",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "flag:deepBreath-5",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "flag:tiredMax-20",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "flag:red_herb",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(flag:blue_herb*3)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(item:redKey*4)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(item:I398*5)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(item:I400*10)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(item:I403*20)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "(item:I407*30)",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "setValue",
-                        "name": "status:hp",
-                        "operator": "+=",
-                        "value": "flag:achieveScore",
-                        "norefresh": true
-                    },
-                    {
-                        "type": "if",
-                        "condition": "flag:hasCheated",
-                        "true": [
-                            {
-                                "type": "setValue",
-                                "name": "status:hp",
-                                "value": "1",
-                                "norefresh": true
-                            }
-                        ]
                     },
                     {
                         "type": "win",
-                        "reason": "综合能力计分"
+                        "reason": "援护通关",
+                        "norank": 1
+                    }
+                ]
+            },
+            {
+                "type": "choices",
+                "text": "选择计分方式",
+                "choices": [
+                    {
+                        "text": "攻防和",
+                        "action": [
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "value": "(status:atk+status:def)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "win",
+                                "reason": "highAD"
+                            }
+                        ]
+                    },
+                    {
+                        "text": "最低攻防和",
+                        "action": [
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "value": "10000-(status:atk+status:def)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "win",
+                                "reason": "lowAD"
+                            }
+                        ]
+                    },
+                    {
+                        "text": "生命值",
+                        "action": [
+                            {
+                                "type": "win",
+                                "reason": "HP"
+                            }
+                        ]
+                    },
+                    {
+                        "text": "综合计分",
+                        "action": [
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "value": "Math.round((Math.sqrt(((status:hp/2)+status:hpmax))))",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "status:lv",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "status:atk",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "status:def",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "status:mdef",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(flag:atkm-10)/0.6",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(40-flag:defm)/0.6",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(240-status:manamax)/3",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "flag:deepBreath-5",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "flag:tiredMax-20",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "flag:red_herb",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(flag:blue_herb*3)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(item:redKey*4)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(item:I398*5)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(item:I400*10)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(item:I403*20)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "operator": "+=",
+                                "value": "(item:I407*30)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "win",
+                                "reason": "综合"
+                            }
+                        ]
+                    },
+                    {
+                        "text": "杀敌数",
+                        "action": [
+                            {
+                                "type": "setValue",
+                                "name": "status:hp",
+                                "value": "(5000-core.status.hero.statistics.battle)",
+                                "norefresh": true
+                            },
+                            {
+                                "type": "win",
+                                "reason": "killCount"
+                            }
+                        ]
                     }
                 ]
             }
