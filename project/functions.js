@@ -88,11 +88,12 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	var replaying = core.isReplaying();
 	core.stopReplay();
 	core.waitHeroToStop(function () {
-		core.drawText([
-			"\t[" + (reason || "结局1") + "]你死了。\n如题。"
-		], function () {
-			core.events.gameOver(null, replaying);
-		});
+		if (!replaying) {
+			core.stopSound();
+			core.pauseBgm();
+			core.playSound('fail.mp3');
+			core.plugin.drawFailStr(() => { core.events.gameOver(null, replaying) });
+		} else core.events.gameOver(null, replaying);
 	})
 },
         "changingFloor": function (floorId, heroLoc) {

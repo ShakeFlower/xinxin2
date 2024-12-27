@@ -15,8 +15,15 @@ main.floors.B21=
     "bgm": "bgm2.mp3",
     "firstArrive": [
         {
-            "type": "function",
-            "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+            "type": "if",
+            "condition": "(!core.isReplaying())",
+            "true": [
+                {
+                    "type": "function",
+                    "async": true,
+                    "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+                }
+            ]
         }
     ],
     "eachArrive": [],

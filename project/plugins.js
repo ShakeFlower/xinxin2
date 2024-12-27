@@ -4596,7 +4596,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			"name": "推荐技能",
 			"x": 40,
 			"y": 330,
-			"status": function () { return core.getFlag('noRecomSkill') ? '开' : '关' },
+			"status": function () { return core.getFlag('noRecomSkill') ? '关' : '开' },
 			"func": function () { 
 				core.setFlag('noRecomSkill', !core.getFlag('noRecomSkill')); 
 			    core.updateStatusBar();
@@ -5525,14 +5525,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 		this.drawTutorialMenu = async function () {
-			if (core.isReplaying()) return;
-			if (!core.getFlag('tutorial',false)) return;
+			if (core.isReplaying()) return core.doAction();
+			if (!core.getFlag('tutorial',false)) return core.doAction();
 			//禁止Esc打开菜单栏
 			core.setFlag('noOpenMenu', true);
 			core.lockControl();
 
 			await initTutorialMenu();
 			core.unlockControl();
+			core.doAction();
 			core.setFlag('noOpenMenu', false);
 		}
 	},
@@ -5699,7 +5700,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 	},
     "跳字插件": function () {
 
-		const { Animation, power, linear} = core.plugin.animate;
+		const { Animation, power, linear, sleep} = core.plugin.animate;
 		const ctx = 'scrollingText';
 
 		new Animation().ticker.add(() => {
@@ -5789,6 +5790,33 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				await new Promise((res) => setTimeout(res, showInterval));
 			}
 		}
+
+		this.drawFailStr = async function(callback){
+			const ctx = 'fail';
+			await new Promise((res) => {
+				core.setCurtain([50, 50, 50, 0.8], 100, null, res());
+			});
+			const ani = new Animation();
+			ani.ticker.add(() => {
+				core.createCanvas(ctx, 0, 0, 416, 416, 200);
+				core.setTextAlign(ctx, 'center')
+				core.setOpacity(ctx, 0.3 + ani.x);
+				core.fillText(ctx, 'Game Over', 200, 300 + ani.y, 'red', 'Bold 40px Verdana');
+			})
+			ani.mode(linear())
+				.time(800)
+				.relative()
+				.move(0.7, -100)
+			await ani.all();
+			await sleep(1000);
+			ani.mode(linear())
+			.time(800)
+			.relative()
+			.move(-0.5, -100)
+			await ani.all();
+			callback();
+		}
+
 	},
     "回合制战斗": function () {
 
@@ -5951,7 +5979,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				 * @type {HeroAtkStatus}
 				 */
 				this.atkStatus;
-				this.totalFatigue = core.status.hero.fatigue || 0;
 				if (core.hasFlag('poison')) this.status = 'poison';
 				if (core.hasFlag('weak')) this.status = 'weak';
 			}

@@ -14,8 +14,15 @@ main.floors.MT3=
     "defaultGround": "ground",
     "firstArrive": [
         {
-            "type": "function",
-            "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+            "type": "if",
+            "condition": "(!core.isReplaying())",
+            "true": [
+                {
+                    "type": "function",
+                    "async": true,
+                    "function": "function(){\ncore.plugin.drawTutorialMenu();\n}"
+                }
+            ]
         }
     ],
     "events": {

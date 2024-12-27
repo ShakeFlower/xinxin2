@@ -330,6 +330,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 			"drop.mp3",
 			"equip.mp3",
 			"error.mp3",
+			"fail.mp3",
 			"fightC.mp3",
 			"fightN.mp3",
 			"floor.mp3",
@@ -569,7 +570,7 @@ var data_a1e2fb4a_e986_4524_b0da_9b7ba7c0874d =
 				],
 				"hpManaRatio": "(2*hero.lv/Math.sqrt(hero.def)+0.5*hero.atk/hero.def)*(1-hero.mana/hero.manamax*0.3)",
 				"tutorial": true,
-				"shop1Cap": 130,
+				"shop1Cap": 130
 			},
 			"followers": [],
 			"steps": 0,
