@@ -7219,7 +7219,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				super(name);
 			}
 
-
+			drawContent(){
+				
+			}
 		}
 
 		/**
@@ -7257,13 +7259,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'unavailable':
 					backGround = 'grayBall.png';
 					core.setAlpha(ctx, 0.4);
-					
+					break;
 				case 'pending':
 					backGround = 'redBall.png';
+					break;
 			}
 			core.drawImage(ctx, backGround, x, y);
 			if (core.hasItem('I325')) core.drawImage(ctx, orbBtnInfo[name].icon1, x + 5, y, 20, 20);
 			else if (core.hasItem('I327')) core.drawImage(ctx, orbBtnInfo[name].icon2, x + 5, y, 20, 20);
+			core.setAlpha(ctx, 1);
 		}
 
 		/**
@@ -7281,6 +7285,70 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const [skill1, skill2] = [orbBtnInfo[name].skill1, orbBtnInfo[name].skill2];
 			if (core.hasItem('I325')) battle.execUserAction(skill1);
 			else if (core.hasItem('I327')) battle.execUserAction(skill2);
+		}
+
+		/**
+		 * @param {string} ctx 
+		 * @param {'btn1'|'btn2'|'btn3'|'btn4'|'btn5'} name
+		 * @param {number} x 
+		 * @param {number} y 
+		 * @param {Battle} battle
+		 */
+		function drawSkillButton(ctx, name, x, y, battle) {
+			const hero = battle.hero,
+			[swordSkill, shieldSkill] = [hero.swordSkill, hero.shieldSkill];
+			let skillStatus = '';
+			switch (name) {
+				case 'sword':
+					if (swordSkill !== '' && swordSkill !== 'c') skillStatus = 'pending';
+					else if (battle.canExecAction(equipList[hero.swordEquiped]).success)
+						skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'shield':
+					if (shieldSkill !== '') skillStatus = 'pending';
+					else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
+						skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'crit':
+					if (swordSkill === 'c') skillStatus = 'pending';
+					else if (battle.canExecAction('c').success) skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'breathe':
+					if (battle.canExecAction('v').success) skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+			}
+			let backGround = 'yellowBall.png';
+			if (btn.skillStatus === 'unavailable') {
+				backGround = 'grayBall.png';
+				core.setAlpha(ctx, 0.4);
+			}
+			else if (btn.skillStatus === 'pending') backGround = 'redBall.png';
+			core.drawImage(ctx, backGround, x, y);
+			switch (name) {
+				case 'sword':
+					core.drawImage(ctx, 'iconSword.png', x + 6, y, 20, 20);
+					core.fillText(ctx, 'Z', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'shield':
+					core.drawImage(ctx, 'iconShield.png', x + 6, y, 20, 20);
+					core.fillText(ctx, 'X', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'crit':
+					core.drawImage(ctx, 'pong.png', x + 3, y + 2, 28, 28);
+					core.fillText(ctx, 'C', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'breathe':
+					core.drawImage(ctx, 'iconBreathe.png', x + 4, y + 4, 24, 24);
+					core.fillText(ctx, hero.deepBreath.toString(),
+						x + 13, y + 19, 'red', 'Bold 10px Arial');
+					core.fillText(ctx, 'V', x + 20, y + 28, 'red', 'Bold 12px Arial');
+					break;
+			}
+			core.setAlpha(ctx, 1);
 		}
 
 		/**
@@ -7303,6 +7371,36 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					execOrbBtn(this.name, battle);
 				}.bind(btn);
 			});
+			const sword = new StatusButton('sword', 212, 320, 32, 32);	
+			const shield = new StatusButton('shield', 244, 320, 32, 32);	
+			const crit = new StatusButton('crit', 276, 320, 32, 32);	
+			const breathe = new StatusButton('breathe', 308, 320, 32, 32);	
+			[sword, shield, crit, breathe].forEach((btn) => {
+				btn._draw = function () {
+					drawSkillButton(skillMenu.name, this.name, this.x, this.y, battle);
+				}.bind(btn);
+			});
+			sword.event = function(){
+				if (!battle.hero.swordEquiped) {
+					core.playSound('error.mp3');
+					core.drawTip('当前未装备剑技');
+				} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
+			}
+			shield.event = function(){
+				if (!battle.hero.shieldEquiped) {
+					core.playSound('error.mp3');
+					core.drawTip('当前未装备盾技');
+				} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
+			}
+			crit.event = function(){
+				battle.execUserAction('c');
+			}
+			breathe.event = function(){
+				battle.execUserAction('v');
+			}
+			skillMenu.btnList = new Map([['btn1',btn1],['btn2',btn2],['btn3',btn3],['btn4',btn4],['btn5',btn5],
+			['sword',sword],['shield',shield],['crit',crit],['breathe',breathe]]);
+			skillMenu.init();
 		}
 
 
