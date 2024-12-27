@@ -6525,6 +6525,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			 */
 			route = 'bs';
 
+			menu;
+
 			/** 按钮列表 
 			 * @type {Array<ButtonBase>}
 			 */
@@ -7185,6 +7187,249 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.skillStatus = 'available';
 			}
 		}
+
+		/**
+		 * 
+		 * @param {Battle} battle 
+		 * @param {string} skill1 
+		 * @param {string} skill2 
+		 */
+		function getOrbBtnStatus(battle, skill1, skill2){
+			const hero = battle.hero,
+			swordSkill = hero.swordSkill,
+			shieldSkill = hero.shieldSkill;
+			if (core.hasItem('I325')) {
+				if (swordSkill === skill1) return 'pending';
+				else if (battle.canExecAction(skill1).success) return 'available';
+				else return 'unavailable';
+			}
+			else if (core.hasItem('I327')) {
+				if (shieldSkill === skill2) return 'pending';
+				else if (battle.canExecAction(skill2).success) return 'available';
+				else return 'unavailable';
+			}
+		}
+
+		/**
+		 * 
+		 * @param {Battle} battle 
+		 */
+		function generatebtnMap(battle){
+			const btn1 = new StatusButton('btn1', 52, 320, 32, 32);	
+			const btn2 = new StatusButton('btn2', 84, 320, 32, 32);	
+			const btn3 = new StatusButton('btn3', 116, 320, 32, 32);	
+			const btn4 = new StatusButton('btn4', 148, 320, 32, 32);	
+			const btn5 = new StatusButton('btn5', 180, 320, 32, 32);	
+
+
+			btn1._draw = function(){
+				this.skillStatus = getOrbBtnStatus(battle, orbBtnInfo, skill2);
+				let backGround = 'yellowBall.png';
+				if (btn.skillStatus === 'unavailable') {
+					backGround = 'grayBall.png';
+					core.setAlpha(ctx, 0.4);
+				}
+				else if (btn.skillStatus === 'pending') backGround = 'redBall.png';
+			}
+			
+			const btnMap = new Map([['btn1', new StatusButton('btn1', 52, 320, 32, 32)], 
+			['btn2',new StatusButton('btn2', 52, 320, 32, 32)], [new StatusButton('btn3', 116, 320, 32, 32)], 
+			[new StatusButton('btn4', 148, 320, 32, 32)], [new StatusButton('btn5', 180, 320, 32, 32)],
+		[],[]])
+		}
+
+		/**
+		 * @extends {MenuBase}
+		 */
+		class SkillMenu extends this.Menu{
+			constructor(name){
+				super(name);
+			}
+
+			drawContent(){
+				
+			}
+		}
+
+		/**
+		 * @param {string} ctx 
+		 * @param {'btn1'|'btn2'|'btn3'|'btn4'|'btn5'} name
+		 * @param {number} x 
+		 * @param {number} y 
+		 * @param {Battle} battle
+		 */
+		function drawOrbBtn(ctx, name, x, y, battle) {
+			const orbBtnInfo = {
+				'btn1': { skill1: 'b', skill2: 'M', icon1: 'I315.png', icon2: 'I339.png' },
+				'btn2': { skill1: 's', skill2: 'C', icon1: 'I319.png', icon2: 'I321.png' },
+				'btn3': { skill1: 'd', skill2: 'R', icon1: 'I318.png', icon2: 'I375.png' },
+				'btn4': { skill1: 'h', skill2: 'F', icon1: 'I317.png', icon2: 'I322.png' },
+				'btn5': { skill1: 'k', skill2: 'E', icon1: 'I316.png', icon2: 'I320.png' },
+			}
+
+			let skillStatus = '';
+			const hero = battle.hero,
+				[swordSkill, shieldSkill] = [hero.swordSkill, hero.shieldSkill],
+				[skill1, skill2] = [orbBtnInfo[name].skill1, orbBtnInfo[name].skill2];
+			if (core.hasItem('I325')) {
+				if (swordSkill === skill1) skillStatus = 'pending';
+				else if (battle.canExecAction(skill1).success) skillStatus = 'available';
+				else skillStatus = 'unavailable';
+			}
+			else if (core.hasItem('I327')) {
+				if (shieldSkill === skill2) skillStatus = 'pending';
+				else if (battle.canExecAction(skill2).success) skillStatus = 'available';
+				else skillStatus = 'unavailable';
+			}
+			let backGround = 'yellowBall.png';
+			switch (skillStatus) {
+				case 'unavailable':
+					backGround = 'grayBall.png';
+					core.setAlpha(ctx, 0.4);
+					break;
+				case 'pending':
+					backGround = 'redBall.png';
+					break;
+			}
+			core.drawImage(ctx, backGround, x, y);
+			if (core.hasItem('I325')) core.drawImage(ctx, orbBtnInfo[name].icon1, x + 5, y, 20, 20);
+			else if (core.hasItem('I327')) core.drawImage(ctx, orbBtnInfo[name].icon2, x + 5, y, 20, 20);
+			core.setAlpha(ctx, 1);
+		}
+
+		/**
+		 * @param {'btn1'|'btn2'|'btn3'|'btn4'|'btn5'} name
+		 * @param {Battle} battle
+		 */
+		function execOrbBtn(name, battle){
+			const orbBtnInfo = {
+				'btn1': { skill1: 'b', skill2: 'M', icon1: 'I315.png', icon2: 'I339.png' },
+				'btn2': { skill1: 's', skill2: 'C', icon1: 'I319.png', icon2: 'I321.png' },
+				'btn3': { skill1: 'd', skill2: 'R', icon1: 'I318.png', icon2: 'I375.png' },
+				'btn4': { skill1: 'h', skill2: 'F', icon1: 'I317.png', icon2: 'I322.png' },
+				'btn5': { skill1: 'k', skill2: 'E', icon1: 'I316.png', icon2: 'I320.png' },
+			}
+			const [skill1, skill2] = [orbBtnInfo[name].skill1, orbBtnInfo[name].skill2];
+			if (core.hasItem('I325')) battle.execUserAction(skill1);
+			else if (core.hasItem('I327')) battle.execUserAction(skill2);
+		}
+
+		/**
+		 * @param {string} ctx 
+		 * @param {'btn1'|'btn2'|'btn3'|'btn4'|'btn5'} name
+		 * @param {number} x 
+		 * @param {number} y 
+		 * @param {Battle} battle
+		 */
+		function drawSkillButton(ctx, name, x, y, battle) {
+			const hero = battle.hero,
+			[swordSkill, shieldSkill] = [hero.swordSkill, hero.shieldSkill];
+			let skillStatus = '';
+			switch (name) {
+				case 'sword':
+					if (swordSkill !== '' && swordSkill !== 'c') skillStatus = 'pending';
+					else if (battle.canExecAction(equipList[hero.swordEquiped]).success)
+						skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'shield':
+					if (shieldSkill !== '') skillStatus = 'pending';
+					else if (battle.canExecAction(equipList[hero.shieldEquiped]).success)
+						skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'crit':
+					if (swordSkill === 'c') skillStatus = 'pending';
+					else if (battle.canExecAction('c').success) skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+				case 'breathe':
+					if (battle.canExecAction('v').success) skillStatus = 'available';
+					else skillStatus = 'unavailable';
+					break;
+			}
+			let backGround = 'yellowBall.png';
+			if (btn.skillStatus === 'unavailable') {
+				backGround = 'grayBall.png';
+				core.setAlpha(ctx, 0.4);
+			}
+			else if (btn.skillStatus === 'pending') backGround = 'redBall.png';
+			core.drawImage(ctx, backGround, x, y);
+			switch (name) {
+				case 'sword':
+					core.drawImage(ctx, 'iconSword.png', x + 6, y, 20, 20);
+					core.fillText(ctx, 'Z', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'shield':
+					core.drawImage(ctx, 'iconShield.png', x + 6, y, 20, 20);
+					core.fillText(ctx, 'X', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'crit':
+					core.drawImage(ctx, 'pong.png', x + 3, y + 2, 28, 28);
+					core.fillText(ctx, 'C', x + 20, 28, 'red', 'Bold 12px Arial');
+					break;
+				case 'breathe':
+					core.drawImage(ctx, 'iconBreathe.png', x + 4, y + 4, 24, 24);
+					core.fillText(ctx, hero.deepBreath.toString(),
+						x + 13, y + 19, 'red', 'Bold 10px Arial');
+					core.fillText(ctx, 'V', x + 20, y + 28, 'red', 'Bold 12px Arial');
+					break;
+			}
+			core.setAlpha(ctx, 1);
+		}
+
+		/**
+		 * 
+		 * @param {Battle} battle 
+		 */
+		function generateSkillMenu(battle){
+			const skillMenu = new SkillMenu('skillButton');
+			const btn1 = new StatusButton('btn1', 52, 320, 32, 32);	
+			const btn2 = new StatusButton('btn2', 84, 320, 32, 32);	
+			const btn3 = new StatusButton('btn3', 116, 320, 32, 32);	
+			const btn4 = new StatusButton('btn4', 148, 320, 32, 32);	
+			const btn5 = new StatusButton('btn5', 180, 320, 32, 32);	
+
+			[btn1, btn2, btn3, btn4, btn5].forEach((btn) => {
+				btn._draw = function () {
+					drawOrbBtn(skillMenu.name, this.name, this.x, this.y, battle);
+				}.bind(btn);
+				btn.event = function () {
+					execOrbBtn(this.name, battle);
+				}.bind(btn);
+			});
+			const sword = new StatusButton('sword', 212, 320, 32, 32);	
+			const shield = new StatusButton('shield', 244, 320, 32, 32);	
+			const crit = new StatusButton('crit', 276, 320, 32, 32);	
+			const breathe = new StatusButton('breathe', 308, 320, 32, 32);	
+			[sword, shield, crit, breathe].forEach((btn) => {
+				btn._draw = function () {
+					drawSkillButton(skillMenu.name, this.name, this.x, this.y, battle);
+				}.bind(btn);
+			});
+			sword.event = function(){
+				if (!battle.hero.swordEquiped) {
+					core.playSound('error.mp3');
+					core.drawTip('当前未装备剑技');
+				} else { battle.execUserAction(equipList[battle.hero.swordEquiped]); }
+			}
+			shield.event = function(){
+				if (!battle.hero.shieldEquiped) {
+					core.playSound('error.mp3');
+					core.drawTip('当前未装备盾技');
+				} else { battle.execUserAction(equipList[battle.hero.shieldEquiped]); }
+			}
+			crit.event = function(){
+				battle.execUserAction('c');
+			}
+			breathe.event = function(){
+				battle.execUserAction('v');
+			}
+			skillMenu.btnList = new Map([['btn1',btn1],['btn2',btn2],['btn3',btn3],['btn4',btn4],['btn5',btn5],
+			['sword',sword],['shield',shield],['crit',crit],['breathe',breathe]]);
+			skillMenu.init();
+		}
+
 
 		/** 生成按钮对象 
 		 * @param {Battle} battle
