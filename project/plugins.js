@@ -7246,9 +7246,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				super(name);
 			}
 
-			drawContent(){
-				
-			}
 		}
 
 		/**
@@ -7321,7 +7318,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @param {number} y 
 		 * @param {Battle} battle
 		 */
-		function drawSkillButton(ctx, name, x, y, battle) {
+		function drawSkillButton2(ctx, name, x, y, battle) {
 			const hero = battle.hero,
 			[swordSkill, shieldSkill] = [hero.swordSkill, hero.shieldSkill];
 			let skillStatus = '';
@@ -7404,7 +7401,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			const breathe = new StatusButton('breathe', 308, 320, 32, 32);	
 			[sword, shield, crit, breathe].forEach((btn) => {
 				btn._draw = function () {
-					drawSkillButton(skillMenu.name, this.name, this.x, this.y, battle);
+					drawSkillButton2(skillMenu.name, this.name, this.x, this.y, battle);
 				}.bind(btn);
 			});
 			sword.event = function(){
@@ -7428,8 +7425,13 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			skillMenu.btnList = new Map([['btn1',btn1],['btn2',btn2],['btn3',btn3],['btn4',btn4],['btn5',btn5],
 			['sword',sword],['shield',shield],['crit',crit],['breathe',breathe]]);
 			skillMenu.init();
+			return skillMenu;
 		}
 
+		this.t = function(){
+			let myBattle = new Battle('poisonSkeleton',4,2);
+			return generateSkillMenu(myBattle);
+		}
 
 		/** 生成按钮对象 
 		 * @param {Battle} battle
