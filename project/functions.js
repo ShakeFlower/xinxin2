@@ -52,6 +52,7 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	core.dom.musicBtn.style.display = 'none';
 	core.dom.enlargeBtn.style.display = 'none';
 	core.fillText('ui', '', 0, 0, "white", '10px hkbdt');
+	core.plugin.clearFailAnimation(); // 清除高级动画绘制的GameOver字样
 },
         "win": function (reason, norank, noexit) {
 	// 游戏获胜事件

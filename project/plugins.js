@@ -5791,12 +5791,14 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		this.failAnimation;
 		this.drawFailStr = async function(callback){
 			const ctx = 'fail';
 			await new Promise((res) => {
 				core.setCurtain([50, 50, 50, 0.8], 100, null, res());
 			});
-			const ani = new Animation();
+			core.plugin.failAnimation = new Animation();
+			const ani = core.plugin.failAnimation;
 			ani.ticker.add(() => {
 				core.createCanvas(ctx, 0, 0, 416, 416, 200);
 				core.setTextAlign(ctx, 'center')
@@ -5815,6 +5817,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			.move(-0.5, -100)
 			await ani.all();
 			callback();
+		}
+
+		this.clearFailAnimation = function(){
+			if (core.plugin.failAnimation instanceof Animation){
+				core.plugin.failAnimation.ticker.destroy();
+			}
 		}
 
 	},
@@ -7241,11 +7249,18 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		/**
 		 * @extends {MenuBase}
 		 */
-		class SkillMenu extends this.Menu{
-			constructor(name){
+		class SkillMenu extends this.Menu {
+			constructor(name) {
 				super(name);
 			}
 
+			drawContent() {
+				const ctx = this.name;
+				core.createCanvas(ctx, 0, 0, 416, 416, 152);
+				core.fillRect(ctx, 164, 300, 200, 48, 'lightGray');
+				core.strokeRect(ctx, 164, 300, 200, 48, strokeStyle, 2);
+				this.btnList.forEach((btn) => btn.draw())
+			}
 		}
 
 		/**
@@ -7313,7 +7328,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/**
 		 * @param {string} ctx 
-		 * @param {'btn1'|'btn2'|'btn3'|'btn4'|'btn5'} name
+		 * @param {'sword'|'shield'|'crit'|'breathe'} name
 		 * @param {number} x 
 		 * @param {number} y 
 		 * @param {Battle} battle
@@ -7346,30 +7361,30 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					break;
 			}
 			let backGround = 'yellowBall.png';
-			if (btn.skillStatus === 'unavailable') {
+			if (skillStatus === 'unavailable') {
 				backGround = 'grayBall.png';
 				core.setAlpha(ctx, 0.4);
 			}
-			else if (btn.skillStatus === 'pending') backGround = 'redBall.png';
-			core.drawImage(ctx, backGround, x, y);
+			else if (skillStatus === 'pending') backGround = 'redBall.png';
+			core.drawImage(ctx, backGround, x, y, 40, 40);
 			switch (name) {
 				case 'sword':
-					core.drawImage(ctx, 'iconSword.png', x + 6, y, 20, 20);
-					core.fillText(ctx, 'Z', x + 20, 28, 'red', 'Bold 12px Arial');
+					core.drawImage(ctx, 'iconSword.png', x + 8, y + 6, 24, 24);
+					core.fillText(ctx, 'Z', x + 24, y + 32, 'red', 'Bold 14px Arial');
 					break;
 				case 'shield':
-					core.drawImage(ctx, 'iconShield.png', x + 6, y, 20, 20);
-					core.fillText(ctx, 'X', x + 20, 28, 'red', 'Bold 12px Arial');
+					core.drawImage(ctx, 'iconShield.png', x + 8, y + 6, 24, 24);
+					core.fillText(ctx, 'X', x + 24, y + 32, 'red', 'Bold 14px Arial');
 					break;
 				case 'crit':
-					core.drawImage(ctx, 'pong.png', x + 3, y + 2, 28, 28);
-					core.fillText(ctx, 'C', x + 20, 28, 'red', 'Bold 12px Arial');
+					core.drawImage(ctx, 'pong.png', x + 6, y + 6, 28, 28);
+					core.fillText(ctx, 'C', x + 24, y + 32, 'red', 'Bold 14px Arial');
 					break;
 				case 'breathe':
-					core.drawImage(ctx, 'iconBreathe.png', x + 4, y + 4, 24, 24);
+					core.drawImage(ctx, 'iconBreathe.png', x + 6, y + 6, 28, 28);
 					core.fillText(ctx, hero.deepBreath.toString(),
-						x + 13, y + 19, 'red', 'Bold 10px Arial');
-					core.fillText(ctx, 'V', x + 20, y + 28, 'red', 'Bold 12px Arial');
+						x + 17, y + 23, 'red', 'Bold 10px Arial');
+					core.fillText(ctx, 'V', x + 24, y + 32, 'red', 'Bold 14px Arial');
 					break;
 			}
 			core.setAlpha(ctx, 1);
@@ -7395,10 +7410,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					execOrbBtn(this.name, battle);
 				}.bind(btn);
 			});
-			const sword = new StatusButton('sword', 212, 320, 32, 32);	
-			const shield = new StatusButton('shield', 244, 320, 32, 32);	
-			const crit = new StatusButton('crit', 276, 320, 32, 32);	
-			const breathe = new StatusButton('breathe', 308, 320, 32, 32);	
+			const sword = new StatusButton('sword', 172, 304, 40, 40);	
+			const shield = new StatusButton('shield', 220, 304, 40, 40);	
+			const crit = new StatusButton('crit', 268, 304, 40, 40);	
+			const breathe = new StatusButton('breathe', 316, 304, 40, 40);	
 			[sword, shield, crit, breathe].forEach((btn) => {
 				btn._draw = function () {
 					drawSkillButton2(skillMenu.name, this.name, this.x, this.y, battle);
