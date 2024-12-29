@@ -6787,6 +6787,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				battle.updateActor();
 				if (battle.status === 'quit') break;
 			}
+			battle.menu.clear();
 			if (battle.speed !== 'quick') {
 				// 获胜时，绘制底边栏
 				let h = 0;
@@ -6797,8 +6798,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				//等待500ms后擦除画布
 				await new Promise((res) => { setTimeout(res, 500) });
 			}
-
-			battle.menu.clear();
 			clearCanvasAndEvent();
 			updateHeroStatus(battle);
 			afterBattleEvent(battle, x, y);
