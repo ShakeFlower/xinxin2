@@ -6030,6 +6030,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
 					this.hp += atkStatus.heal; //深红
 					this.addMana(enemy);
+					if (this.swordSkill.length > 0) { // 流石剑先计算「偷取」的气息，再消耗掉一格气息
+						atkStatus.skill = this.swordSkill;
+						this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
+						this.fatigue += getSkill(this.swordSkill, 'fatigue');
+					}
 					enemy.hp -= atkStatus.damage;
 				}
 
@@ -6046,11 +6051,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			checkSword(enemy) {
 				let hdamage = 0;
 				const atkStatus = this.atkStatus;
-				if (this.swordSkill.length > 0) {
-					atkStatus.skill = this.swordSkill;
-					this.mana -= getSkill(this.swordSkill, 'cost') * this.permana;
-					this.fatigue += getSkill(this.swordSkill, 'fatigue');
-				}
 				switch (this.swordSkill) {
 					case 'c':
 						hdamage = 2 * Math.max(this.atk - enemy.def, 1);
