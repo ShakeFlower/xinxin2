@@ -7814,18 +7814,23 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'swordsman':
 					return critical ? 'g5-cri' : 'g5'; //骷髅兵，骑士，双手剑士攻击
 				case 'zombie':
-					return critical ? 'g6-cri' : 'g6'; //兽人攻击
+				case 'poisonZombie':
+					return critical ? 'g6-cri' : 'g6'; //兽人，毒丧尸攻击
 				case 'grayPriest':
 					return critical ? 'g7-cri' : 'g7'; //中级法师攻击
 				case 'E330':
 				case 'E334':
-					return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人攻击
+				case 'E381':
+				case 'E438':
+				case 'octopus':
+					return critical ? 'g8-cri' : 'g8'; //八爪鱼，四手史莱姆人，触手植物，巨大（魔界）八爪鱼，触手魔物攻击
 				case 'skeletonCaptain':
 				case 'blueKnight':
 				case 'zombieKnight': //骷髅队长，高级骑士（蓝色），兽人武士攻击
 					return critical ? 'g9-cri' : 'g9';
 				case 'redKnight':
-				case 'poisonSkeleton': //近卫骑士（红色），骷髅兵（紫色）
+				case 'poisonSkeleton':
+				case 'E433': //近卫骑士（红色），骷髅兵（紫色），皇室枪兵
 					return critical ? 'g10-cri' : 'g10';
 				case 'redWizard':
 					return critical ? 'g11-cri' : 'g11'; //红衣巫师攻击
@@ -7845,8 +7850,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'brownWizard':
 				case 'greenKing':
 					return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
+				case 'redPriest':
 				case 'redWizard':
-					return critical ? 'g23-cri' : 'g23'; //高级法师攻击
+				case 'E335':
+					return critical ? 'g23-cri' : 'g23'; //炎术师，高级法师攻击
 				case 'redSwordsman':
 					return critical ? 'g24-cri' : 'g24'; //剑王攻击
 				case 'whiteGhost':
@@ -7865,7 +7872,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'redKing':
 					return critical ? 'g31-cri' : 'g31'; //红衣魔王攻击
 				case 'E337':
-					return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆攻击
+				case 'E414':
+					return critical ? 'g33-cri' : 'g33'; //邪眼史莱姆，鬼邪石攻击
 				case 'skeletonKing':
 					return critical ? 'g34-cri' : 'g34'; //魔神·些多攻击
 				case 'goldSlime':
@@ -7879,9 +7887,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'redGuard':
 				case 'ghostSkeleton':
 				case 'E329':
-					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅攻击
+				case 'E385':
+					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅、重生骷髅兵攻击
+				case 'skeletonSoilder':
+				case 'darkKnight':
+				case 'soldier':
+				case 'E443':
+					return critical ? 'g39-cri' : 'g39'; //骷髅战士，死灵战士，不死战士，地狱马攻击
 				case 'redPriest':
-					return critical ? 'g40-cri' : 'g40'; //卫兵、冥骷髅攻击
+					return critical ? 'g40-cri' : 'g40'; //卫兵，冥骷髅攻击
 				case 'E382':
 					return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
 				case 'E436':

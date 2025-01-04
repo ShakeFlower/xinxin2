@@ -73,5 +73,6 @@ main.floors.B24=
     ],
     "upFloor": null,
     "underGround": true,
-    "beforeBattle": {}
+    "beforeBattle": {},
+    "cannotMoveIn": {}
 }
