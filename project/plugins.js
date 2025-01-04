@@ -6426,7 +6426,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if (hasSpecial(especial, [52, 53])) hero.fatigue++;
 				if (hasSpecial(especial, 54)) hero.fatigue += 3;
-				if (hasSpecial(especial, 56)) hero.fatigue += 4;
+				if (hasSpecial(especial, [56, 83])) hero.fatigue += 4;
 				if (hasSpecial(especial, 62)) {
 					this.fatigue -= 1;
 					if (this.fatigue < 0) this.fatigue = 0;
