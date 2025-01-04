@@ -4390,6 +4390,15 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				return -1;
 			}
 
+			/** 绘制动画动画gsh1的黄底 */
+			if (name === 'gsh1') {
+				const name = 'gsh1_' + core.plugin.dice(10000);
+				core.createCanvas(name, x - 54, y - 27, 110, 110, 200);
+				core.setOpacity(name, 0.3);
+				core.fillRect(name, 0, 0, 110, 110, 'yellow');
+				callback = () => core.deleteCanvas(name);
+			}
+
 			// 开始绘制
 			let animate = core.material.animates[name];
 			if (alignWindow) {
@@ -7492,6 +7501,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			'skeletonPriest': { 'x': 10 },
 			'E436': { 'x': -40 },
 			'E447': { 'x': -50, 'y': -50 },
+			'gsh1': { 'x': -2, 'y': -30 },
 			'gsh3': { 'x': -30 },
 		},
 			/** 在公主图标上播放的动画的偏移量 */
@@ -7581,7 +7591,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					}
 					if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
 						core.plugin.drawAnimateByPixel(atkStatusE.animate, px + opx, py + opy);
-						let shieldAnimate = (() => {
+						let shieldAnimate = (() => { // 公主水晶球的效果
 							if (core.hasItem('I325')) return 'gprin1';
 							else if (core.hasItem('I326')) return 'gprin2';
 							else if (core.hasItem('I327')) return 'gprin3';
