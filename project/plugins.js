@@ -5908,10 +5908,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.def -= 5;
 						break;
 					case 'poison':
-						this.status = 'poison';
+						if (this.status !== 'weak') this.status = 'poison';
 						break;
 					case 'weak':
-						this.status = 'weak';
+						if (this.status !== 'poison') this.status = 'weak';
 						break;
 				}
 			}
@@ -6454,6 +6454,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					this.mana += 40;
 				}
 				if (hasSpecial(especial, 84)) atkStatus.damage += 100;
+
+				if (hasSpecial(especial, 82) && hero.status === 'poison') { // 龙蝠增加自身属性
+					this.atk += 6;
+					this.def += 6;
+				}
 
 				if (hasSpecial(especial, 81)) { // 81-破甲刃:攻击会减低主角防御力，40%几率降低12点
 					this.checkDebuff(hero, 'destroyArmor', reflect, 40);
