@@ -6147,7 +6147,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				this.bounceDamage = [0, 0, 0];
 				/** 勇士反射盾反弹的伤害*/
 				this.reflectDamage = 0;
-				/** 敌人本次攻击的范围，有'hero''princess''all''bounce'四种 */
+				/** 敌人本次攻击的范围，有'hero''princess''all''bounce'四种 
+				 * @type {'hero'|'princess'|'all'|'bounce'}
+				 */
 				this.aim = 'hero';
 				/** 敌人生命回复 */
 				this.heal = 0;
@@ -6272,7 +6274,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 					let princessReflectDamage = 0;
 
-					if (atkStatus.aim !== 'hero') {
+					if (atkStatus.aim === 'princess' || atkStatus.aim === 'all') {
 						if (core.hasItem('I325')) { //火神之水晶球，当公主被攻击时会将少量伤害反射到怪物身上，反射伤害=公主所受伤害/2。
 							princessReflectDamage = Math.round(atkStatus.princessDamage / 2);
 							this.hp -= princessReflectDamage;
