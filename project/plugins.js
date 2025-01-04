@@ -5931,6 +5931,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			skill = '';
 			/** 本次生命回复 */
 			heal = 0;
+			/** 盾大师的盾反动画 */
+			enemyShieldAnimate = undefined;
 		}
 
 		/**
@@ -6003,9 +6005,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				// 检查勇士是否被冰冻
 				if (this.checkFrozen()) {
 					atkStatus.frozen = true;
-					if (hasSpecial(enemy.special, 92)) { //盾大师
-						if (enemy.phase++ > 2) enemy.phase = 0;
-					}
 					return;
 				}
 
@@ -6016,16 +6015,19 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (hasSpecial(enemy.special, 92)) { // 盾大师
 						switch (enemy.phase) {
 							case 0:
-								atkStatus.damage = Math.round(atkStatus.damage / 2);
+								atkStatus.damage = Math.round(atkStatus.damage / 2); // 镜膜盾
+								atkStatus.enemyShieldAnimate = 'gsh1';
 								break;
 							case 1:
-								this.freeze++;
+								this.freeze++; // 结晶盾
+								atkStatus.enemyShieldAnimate = 'gsh2';
 								break;
 							case 2:
-								this.hp -= Math.round(atkStatus.damage / 4);
+								this.hp -= Math.round(atkStatus.damage / 4); // 反射盾
+								atkStatus.enemyShieldAnimate = 'gsh3';
 								break;
 						}
-						if (enemy.phase++ > 2) enemy.phase = 0;
+						if (++enemy.phase > 2) enemy.phase = 0;
 					}
 					if (hasSpecial(enemy.special, 86)) this.fatigue += 10; // 死气
 					this.hp += atkStatus.heal; //深红
@@ -6385,7 +6387,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						this.freeze += 2 * this.combo - this.actIndex; // 敌人被跳过的回合数
 						atkStatus.heroAnimate = "gsh2";
 						break;
-					case 'R': //反射
+					case 'R': //反射盾
 						reflectInfo.oriDamage = damage;
 						damage = Math.ceil(damage / 1.3);
 						reflectInfo.reflect = true;
@@ -7495,6 +7497,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusH.miss) {
 						core.plugin.drawAnimateByPixel('miss', ex, ey); // 这里播放miss的动画
 						break;
+					}
+					if (atkStatusH.enemyShieldAnimate) {
+						core.plugin.drawAnimateByPixel(atkStatusH.enemyShieldAnimate, ex, ey); // 这里播放盾大师盾反的动画
 					}
 					let [oex, oey] = [0, 0, 0];
 					const hAnimate = atkStatusH.animate;
