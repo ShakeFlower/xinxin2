@@ -6269,6 +6269,22 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					hero.hp -= atkStatus.damage;
 					hero.hpmax -= atkStatus.princessDamage;
 					this.totalDamage += atkStatus.damage;
+
+					let princessReflectDamage = 0;
+
+					if (atkStatus.aim !== 'hero') {
+						if (core.hasItem('I325')) { //火神之水晶球，当公主被攻击时会将少量伤害反射到怪物身上，反射伤害=公主所受伤害/2。
+							princessReflectDamage = Math.round(atkStatus.princessDamage / 2);
+							this.hp -= princessReflectDamage;
+						}
+						if (core.hasItem('I326')) { //树精之水晶球，当公主被攻击时会增加主角的气息，勇者增加气息=公主所受伤害/3。
+							hero.mana += Math.round(atkStatus.princessDamage / 3);
+						}
+						if (core.hasItem('I327')) { //海王之水晶球，当公主被攻击时怪物会增加疲劳，每次疲劳+5
+							this.fatigue += 5;
+						}
+					}
+
 					if (hasSpecial(especial, 93)) { // 古顿的弹跳攻击效果
 						hero.hp -= atkStatus.bounceDamage[2];
 						hero.hpmax -= atkStatus.bounceDamage[1] + atkStatus.bounceDamage[3];
@@ -6278,10 +6294,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (reflect) { //反射盾
 						let reflectDamage = Math.round(oriDamage / 2.6 + hero.atk / 10);
 						if (this.status === 'poison') reflectDamage += 25; // 反弹中毒会多弹25血
-						atkStatus.reflectDamage = reflectDamage;
+						atkStatus.reflectDamage += reflectDamage;
 						this.hp -= reflectDamage;
 						if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
 					}
+					atkStatus.reflectDamage += princessReflectDamage;
 				}
 
 				if (this.hp <= 0) this.hp = 0;
