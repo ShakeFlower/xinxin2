@@ -6296,7 +6296,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						if (this.status === 'poison') reflectDamage += 25; // 反弹中毒会多弹25血
 						atkStatus.reflectDamage += reflectDamage;
 						this.hp -= reflectDamage;
-						if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true;
+						if (hasSpecial(especial, 3) && reflectDamage > 0) hero.smartCast = true; // 智能施法成就：对坚固敌人使用反射盾造成伤害
 					}
 					atkStatus.reflectDamage += princessReflectDamage;
 				}
@@ -7560,7 +7560,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 							core.plugin.drawAnimateByPixel('miss', hx + ohx, hy + ohy);
 						}
 						if (atkStatusE.aim === 'princess' || atkStatusE.aim === 'all') {
-							core.plugin.drawAnimateByPixel('miss', px + opx, py + opy);
+							core.plugin.drawAnimateByPixel('miss', px, py + opy);
 						}
 						break;
 					}
