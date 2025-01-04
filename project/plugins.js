@@ -6203,7 +6203,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				})(info.special);
 				/** 敌人的连击数 */
 				this.combo = ((special) => {
-					if (hasSpecial(special, [4, 53])) return 2;
+					if (hasSpecial(special, [4, 53, 82])) return 2; // 龙蝠也是2连击
 					else if (hasSpecial(special, [5, 83])) return 3;
 					else if (hasSpecial(special, 6)) return data.n || 1;
 					else if (hasSpecial(special, 87)) return 6;
@@ -7820,6 +7820,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'bigBat':
 				case 'redBat':
 				case 'poisonBat':
+				case 'E439':
 					return critical ? 'g1-cri' : 'g1';
 				case 'bluePriest':
 					return critical ? 'g4-cri' : 'g4'; //初级法师攻击
