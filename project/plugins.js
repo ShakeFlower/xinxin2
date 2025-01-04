@@ -6137,6 +6137,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			constructor() {
 				/** 敌人本次攻击对勇士造成的伤害 */
 				this.damage = 0;
+				/** 敌人本次攻击能否破防勇士 */
+				this.canCauseDamage = true;
 				/** 敌人本次攻击对公主造成的伤害 */
 				this.princessDamage = 0;
 				/** 最终BOSS造成的弹跳伤害 */
@@ -6240,7 +6242,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				}
 				if (hasSpecial(especial, 80)) { // 魔眼
 					atkStatus.evilEye = true;
-					if (hero.def - hero.atk > hero.atkm) atkStatus.damage = 0;
+					if (hero.def - hero.atk > hero.atkm) {
+						atkStatus.damage = 0;
+						atkStatus.canCauseDamage = false;
+					}
 					else atkStatus.damage = Math.max(hero.atk - hero.def, 1);
 					if (hero.checkMiss()) { // 魔眼miss取决于勇士的疲劳
 						atkStatus.miss = true;
@@ -6292,6 +6297,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				else {
 					if (hero.def - this.atk >= hero.defm) {
 						atkStatus.damage = 0; // 防临界
+						atkStatus.canCauseDamage = false;
 						atkStatus.animate = 'gcanthit';
 					}
 					else atkStatus.damage = Math.max(this.atk - hero.def, 1);
@@ -6336,8 +6342,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						// 剑大师不会释放必杀
 						return;
 					}
-					if (hero.def - this.atk > hero.defm && !hasSpecial(this.special, [2, 55, 60, 61, 62, 63, 64, 65, 66])) {
-						// 不能破防主角则永远不会释放必杀，魔攻和弓手除外
+					if (!atkStatus.canCauseDamage && !hasSpecial(this.special, [2, 55, 60, 61, 62, 63, 64, 65, 66, 84])) {
+						// 不能破防主角则永远不会释放必杀，魔攻，弓手，冥界矮人战士除外
 						return;
 					}
 					let critRatio = 2;
@@ -6426,7 +6432,8 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if (hasSpecial(especial, [52, 53])) hero.fatigue++;
 				if (hasSpecial(especial, 54)) hero.fatigue += 3;
-				if (hasSpecial(especial, [56, 83])) hero.fatigue += 4;
+				if (hasSpecial(especial, 56) && atkStatus.canCauseDamage) hero.fatigue += 4;
+				if (hasSpecial(especial, 83)) hero.fatigue += 4;
 				if (hasSpecial(especial, 62)) {
 					this.fatigue -= 1;
 					if (this.fatigue < 0) this.fatigue = 0;
