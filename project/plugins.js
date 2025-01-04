@@ -6235,8 +6235,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (this.actIndex++ > this.combo) this.actIndex = 1;
 
 				if (hasSpecial(especial, 91)) { //剑大师切换行动列表
-					this.phase++;
-					if (this.phase > 2) this.phase = 0;
+					if (++this.phase > 2) this.phase = 0;
 				}
 				if (this.checkFrozen()) { //敌人是否被冰冻
 					atkStatus.frozen = true;
@@ -6287,7 +6286,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 				if (this.hp <= 0) this.hp = 0;
 				this.hp += atkStatus.heal; //吸血效果
-				atkStatus.animate = enemyAni(this.id, atkStatus.crit);
+				if (!atkStatus.animate) atkStatus.animate = enemyAni(this.id, atkStatus.crit);
 			}
 
 			/** 判断敌人的基础伤害atkStatus.damage 
@@ -6421,13 +6420,16 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				if (hasSpecial(especial, 91)) { // 剑大师
 					switch (this.phase) {
 						case 1:
-							hero.fatigue += 8;
+							hero.fatigue += 8; // 天灵
+							atkStatus.animate = 'gsw4';
 							break;
 						case 2:
-							hero.mana -= hero.permana;
+							hero.mana -= hero.permana; // 流石
+							atkStatus.animate = 'gsw2';
 							break;
 						case 0:
-							atkStatus.heal = Math.round(atkStatus.damage / 5);
+							atkStatus.heal = Math.round(atkStatus.damage / 5); // 深红
+							atkStatus.animate = 'gsw3';
 							break;
 					}
 				}
