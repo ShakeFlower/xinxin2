@@ -7871,8 +7871,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'greenKing':
 					return critical ? 'g22-cri' : 'g22'; //初级巫师，绿衣魔王攻击
 				case 'redPriest':
-				case 'redWizard':
-				case 'E335':
 					return critical ? 'g23-cri' : 'g23'; //炎术师，高级法师攻击
 				case 'redSwordsman':
 					return critical ? 'g24-cri' : 'g24'; //剑王攻击
@@ -7909,12 +7907,11 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				case 'E329':
 				case 'E385':
 					return critical ? 'g38-cri' : 'g38'; //卫兵、冥骷髅、重生骷髅兵攻击
-				case 'skeletonSoilder':
 				case 'darkKnight':
 				case 'soldier':
 				case 'E443':
 					return critical ? 'g39-cri' : 'g39'; //骷髅战士，死灵战士，不死战士，地狱马攻击
-				case 'redPriest':
+				case 'E335':
 					return critical ? 'g40-cri' : 'g40'; //卫兵，冥骷髅攻击
 				case 'E382':
 					return critical ? 'g41-cri' : 'g41'; //冻死骨攻击
