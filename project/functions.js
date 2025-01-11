@@ -1394,14 +1394,14 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 	case 80: // P：游戏主页
 		core.actions._clickGameInfo_openComments();
 		break;
-	case 49: // 快捷键1: 破
-		core.setFlag('battleSpeed', 0);
+	case 49: // 快捷键1: 
+		if (!core.status.lockControl) core.setFlag('battleSpeed', 0);
 		break;
-	case 50: // 快捷键2: 炸
-		core.setFlag('battleSpeed', 1);
+	case 50: // 快捷键2: 
+		if (!core.status.lockControl) core.setFlag('battleSpeed', 1);
 		break;
-	case 51: // 快捷键3: 飞
-		core.setFlag('battleSpeed', 2);
+	case 51: // 快捷键3: 
+		if (!core.status.lockControl) core.setFlag('battleSpeed', 2);
 		break;
 	case 52: // 快捷键4：破冰/冰冻/地震/上下楼器/... 其他道具依次判断
 	{
