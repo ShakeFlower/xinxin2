@@ -1,7 +1,7 @@
 /// <reference path = "../runtime.d.ts" />
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
 {
-	"init": function () {
+    "init": function () {
 
 		console.log("插件编写测试");
 
@@ -1282,7 +1282,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"shop": function () {
+    "shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1467,7 +1467,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-	"removeMap": function () {
+    "removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1554,7 +1554,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-	"fiveLayers": function () {
+    "fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1709,7 +1709,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-	"itemShop": function () {
+    "itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2015,7 +2015,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"heroFourFrames": function () {
+    "heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2070,7 +2070,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-	"startCanvas": function () {
+    "startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2156,7 +2156,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-	"自动拾取": function () {
+    "自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2289,7 +2289,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-	"高级动画": function () {
+    "高级动画": function () {
 		// -------------------- 插件说明 -------------------- //
 
 		// github仓库：https://github.com/unanmed/animate
@@ -3058,7 +3058,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"新版道具栏": function () {
+    "新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -4048,174 +4048,173 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-	"血瓶宝石显示数据": function () {
-		// 在此增加新插件
-		/* 宝石血瓶左下角显示数值
-		 * 需要将 变量：itemDetail改为true才可正常运行
-		 * 请尽量减少勇士的属性数量，否则可能会出现严重卡顿（划掉，现在你放一万个属性也不会卡）
-		 * 注意：这里的属性必须是core.status.hero里面的，flag无法显示
-		 * 如果不想显示，可以core.setFlag("itemDetail", false);
-		 * 然后再core.getItemDetail();
-		 * 如有bug在大群或造塔群@古祠
-		 */
+    "血瓶宝石显示数据": function () {
+	// 在此增加新插件
+	/* 宝石血瓶左下角显示数值
+	 * 需要将 变量：itemDetail改为true才可正常运行
+	 * 请尽量减少勇士的属性数量，否则可能会出现严重卡顿（划掉，现在你放一万个属性也不会卡）
+	 * 注意：这里的属性必须是core.status.hero里面的，flag无法显示
+	 * 如果不想显示，可以core.setFlag("itemDetail", false);
+	 * 然后再core.getItemDetail();
+	 * 如有bug在大群或造塔群@古祠
+	 */
 
-		// 忽略的道具
-		const ignore = ['superPotion'];
+	// 忽略的道具
+	const ignore = ['superPotion'];
 
-		// 取消注释下面这句可以减少超大地图的判定。
-		// 如果地图宝石过多，可能会略有卡顿，可以尝试取消注释下面这句话来解决。
-		// core.bigmap.threshold = 256;
-		const origin = core.control.updateStatusBar;
-		core.updateStatusBar = core.control.updateStatusBar = function () {
-			if (core.getFlag('__statistics__')) return;
-			else return origin.apply(core.control, arguments);
+	// 取消注释下面这句可以减少超大地图的判定。
+	// 如果地图宝石过多，可能会略有卡顿，可以尝试取消注释下面这句话来解决。
+	// core.bigmap.threshold = 256;
+	const origin = core.control.updateStatusBar;
+	core.updateStatusBar = core.control.updateStatusBar = function () {
+		if (core.getFlag('__statistics__')) return;
+		else return origin.apply(core.control, arguments);
+	}
+
+	core.control.updateDamage = function (floorId, ctx) {
+		floorId = floorId || core.status.floorId;
+		if (!floorId || core.status.gameOver || main.mode != 'play') return;
+		const onMap = ctx == null;
+
+		// 没有怪物手册
+		if (!core.hasItem('book')) return;
+		core.status.damage.posX = core.bigmap.posX;
+		core.status.damage.posY = core.bigmap.posY;
+		if (!onMap) {
+			const width = core.floors[floorId].width,
+				height = core.floors[floorId].height;
+			// 地图过大的缩略图不绘制显伤
+			if (width * height > core.bigmap.threshold) return;
 		}
-
-		core.control.updateDamage = function (floorId, ctx) {
-			floorId = floorId || core.status.floorId;
-			if (!floorId || core.status.gameOver || main.mode != 'play') return;
-			const onMap = ctx == null;
-
-			// 没有怪物手册
-			if (!core.hasItem('book')) return;
-			core.status.damage.posX = core.bigmap.posX;
-			core.status.damage.posY = core.bigmap.posY;
-			if (!onMap) {
-				const width = core.floors[floorId].width,
-					height = core.floors[floorId].height;
-				// 地图过大的缩略图不绘制显伤
-				if (width * height > core.bigmap.threshold) return;
+		this._updateDamage_damage(floorId, onMap);
+		this._updateDamage_extraDamage(floorId, onMap);
+		if (core.status.thisMap) core.getItemDetail(floorId); // 宝石血瓶详细信息
+		this.drawDamage(ctx);
+	};
+	// 获取宝石信息 并绘制
+	this.getItemDetail = function (floorId) {
+		if (!core.getFlag('itemDetail')) return;
+		floorId = floorId ?? core.status.thisMap.floorId;
+		let diff = {};
+		const before = core.status.hero;
+		const hero = core.clone(core.status.hero);
+		const handler = {
+			set(target, key, v) {
+				diff[key] = v - (target[key] || 0);
+				if (!diff[key]) diff[key] = void 0;
+				return true;
 			}
-			this._updateDamage_damage(floorId, onMap);
-			this._updateDamage_extraDamage(floorId, onMap);
-			if (core.status.thisMap) core.getItemDetail(floorId); // 宝石血瓶详细信息
-			this.drawDamage(ctx);
 		};
-		// 获取宝石信息 并绘制
-		this.getItemDetail = function (floorId) {
-			if (!core.getFlag('itemDetail')) return;
-			floorId = floorId ?? core.status.thisMap.floorId;
-			let diff = {};
-			const before = core.status.hero;
-			const hero = core.clone(core.status.hero);
-			const handler = {
-				set(target, key, v) {
-					diff[key] = v - (target[key] || 0);
-					if (!diff[key]) diff[key] = void 0;
-					return true;
-				}
-			};
-			core.status.hero = new Proxy(hero, handler);
-			core.status.maps[floorId].blocks.forEach(function (block) {
+		core.status.hero = new Proxy(hero, handler);
+		core.status.maps[floorId].blocks.forEach(function (block) {
+			if (
+				block.event.cls !== 'items' ||
+				ignore.includes(block.event.id) ||
+				block.disable
+			)
+				return;
+			const x = block.x,
+				y = block.y;
+			// v2优化，只绘制范围内的部分
+			if (core.bigmap.v2) {
 				if (
-					block.event.cls !== 'items' ||
-					ignore.includes(block.event.id) ||
-					block.disable
-				)
-					return;
-				const x = block.x,
-					y = block.y;
-				// v2优化，只绘制范围内的部分
-				if (core.bigmap.v2) {
-					if (
-						x < core.bigmap.posX - core.bigmap.extend ||
-						x > core.bigmap.posX + core._SIZE_ + core.bigmap.extend ||
-						y < core.bigmap.posY - core.bigmap.extend ||
-						y > core.bigmap.posY + core._SIZE_ + core.bigmap.extend
-					) {
-						return;
-					}
-				}
-				diff = {};
-				const id = block.event.id;
-				const item = core.material.items[id];
-				if (item.cls === 'equips') {
-					// 装备也显示
-					const diff = item.equip.value ?? {};
-					const per = item.equip.percentage ?? {};
-					for (const name in per) {
-						diff[name + 'per'] = per[name].toString() + '%';
-					}
-					drawItemDetail(diff, x, y);
+					x < core.bigmap.posX - core.bigmap.extend ||
+					x > core.bigmap.posX + core._SIZE_ + core.bigmap.extend ||
+					y < core.bigmap.posY - core.bigmap.extend ||
+					y > core.bigmap.posY + core._SIZE_ + core.bigmap.extend
+				) {
 					return;
 				}
-				// 跟数据统计原理一样 执行效果 前后比较
-				core.setFlag('__statistics__', true);
-				const list = {
-					'yellowPotion': { 'fatigue': 2 },
-					'yellowGem': { 'fatigue': 2 },
-					'coin': { "money": 200 },
-				}
-				if (list.hasOwnProperty(id)) {
-					diff = { 'fatigue': 2 };
-				} else {
-					try {
-						eval(item.itemEffect);
-					} catch (error) { }
+			}
+			diff = {};
+			const id = block.event.id;
+			const item = core.material.items[id];
+			if (item.cls === 'equips') {
+				// 装备也显示
+				const diff = item.equip.value ?? {};
+				const per = item.equip.percentage ?? {};
+				for (const name in per) {
+					diff[name + 'per'] = per[name].toString() + '%';
 				}
 				drawItemDetail(diff, x, y);
-			});
-			core.status.hero = before;
-			window.hero = before;
-			window.flags = before.flags;
-		};
-
-		// 绘制
-		function drawItemDetail(diff, x, y) {
-			const px = 32 * x + 2,
-				py = 32 * y + 30;
-			let content = '';
-			// 获得数据和颜色
-			let i = 0;
-			for (const name in diff) {
-				if (!diff[name]) continue;
-				let color = '#fff';
-
-				if (typeof diff[name] === 'number')
-					content = core.formatBigNumber(diff[name], true);
-				else content = diff[name];
-				switch (name) {
-					case 'atk':
-					case 'atkper':
-						color = '#FF7A7A';
-						break;
-					case 'def':
-					case 'defper':
-						color = '#00E6F1';
-						break;
-					case 'mdef':
-					case 'mdefper':
-						color = '#6EFF83';
-						break;
-					case 'hp':
-						color = '#A4FF00';
-						break;
-					case 'hpmax':
-					case 'hpmaxper':
-						color = '#F9FF00';
-						break;
-					case 'mana':
-						color = '#c66';
-						break;
-					case 'fatigue':
-						color = 'gray';
-						break;
-					case 'money':
-						color = 'gold';
-						break;
-				}
-				// 绘制
-				core.status.damage.data.push({
-					text: content,
-					px: px,
-					py: py - 10 * i,
-					color: color
-				});
-				i++;
+				return;
 			}
+			// 跟数据统计原理一样 执行效果 前后比较
+			core.setFlag('__statistics__', true);
+			const list = {
+				'yellowPotion': { 'fatigue': 2 },
+				'yellowGem': { 'fatigue': 2 },
+			}
+			if (list.hasOwnProperty(id)) {
+				diff = { 'fatigue': 2 };
+			} else {
+				try {
+					eval(item.itemEffect);
+				} catch (error) {}
+			}
+			drawItemDetail(diff, x, y);
+		});
+		core.status.hero = before;
+		window.hero = before;
+		window.flags = before.flags;
+	};
+
+	// 绘制
+	function drawItemDetail(diff, x, y) {
+		const px = 32 * x + 2,
+			py = 32 * y + 30;
+		let content = '';
+		// 获得数据和颜色
+		let i = 0;
+		for (const name in diff) {
+			if (!diff[name]) continue;
+			let color = '#fff';
+
+			if (typeof diff[name] === 'number')
+				content = core.formatBigNumber(diff[name], true);
+			else content = diff[name];
+			switch (name) {
+			case 'atk':
+			case 'atkper':
+				color = '#FF7A7A';
+				break;
+			case 'def':
+			case 'defper':
+				color = '#00E6F1';
+				break;
+			case 'mdef':
+			case 'mdefper':
+				color = '#6EFF83';
+				break;
+			case 'hp':
+				color = '#A4FF00';
+				break;
+			case 'hpmax':
+			case 'hpmaxper':
+				color = '#F9FF00';
+				break;
+			case 'mana':
+				color = '#c66';
+				break;
+			case 'fatigue':
+				color = 'gray';
+				break;
+			case 'money':
+				color = 'gold';
+				break;
+			}
+			// 绘制
+			core.status.damage.data.push({
+				text: content,
+				px: px,
+				py: py - 10 * i,
+				color: color
+			});
+			i++;
 		}
-	},
-	"切装事件": function () {
+	}
+},
+    "切装事件": function () {
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
 			if (!this.canEquip(equipId, true)) {
@@ -4282,7 +4281,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		items.prototype.quickSaveEquip = items.prototype.quickLoadEquip;
 	},
-	"工具": function () {
+    "工具": function () {
 		// 工具函数和类
 		/**
 		 * @type {ButtonBase}
@@ -4503,7 +4502,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-	"自定义设置": function () {
+    "自定义设置": function () {
 
 		const Button = this.Button;
 
@@ -4805,7 +4804,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-	"预设技能": function () {
+    "预设技能": function () {
 		/**
 		 * 变量解释： recordAction 下场战斗是否录制信息
 		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
@@ -5123,7 +5122,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return presetMenu;
 		}
 	},
-	"成就": function () {
+    "成就": function () {
 
 		let /** 画面长度 
 			 * @type {number}
@@ -5359,7 +5358,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			else achievementList.push(index);
 		};
 	},
-	"引导界面": function () {
+    "引导界面": function () {
 		let /** 画面长度 
 		* @type {number}
 		*/
@@ -5546,7 +5545,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag('noOpenMenu', false);
 		}
 	},
-	"动态火焰": function () {
+    "动态火焰": function () {
 
 		/** 绘制火焰需要控制canvas的width */
 		function createCanvasWithWidth(name, x, y, width, height, z) {
@@ -5707,7 +5706,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
 		}
 	},
-	"跳字插件": function () {
+    "跳字插件": function () {
 
 		const { Animation, power, linear, sleep } = core.plugin.animate;
 		const ctx = 'scrollingText';
@@ -5836,7 +5835,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-	"回合制战斗": function () {
+    "回合制战斗": function () {
 
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
@@ -7962,7 +7961,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 		// #endregion
 	},
-	"弹幕插件": function () {
+    "弹幕插件": function () {
 
 		/** 塔的英文名 */
 		const towerName = "xinxin2";
@@ -8175,7 +8174,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-	"楼传判定": function () {
+    "楼传判定": function () {
 
 		function canMove(sx, sy, destX, destY) {
 			let ans = -1;
