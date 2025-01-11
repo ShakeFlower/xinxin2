@@ -1395,21 +1395,13 @@ var functions_d6ad677b_427a_4623_b50f_a445a3b0ef8a =
 		core.actions._clickGameInfo_openComments();
 		break;
 	case 49: // 快捷键1: 破
-		if (core.hasItem('pickaxe')) {
-			core.status.route.push("key:49"); // 将按键记在录像中
-			core.useItem('pickaxe', true); // 第二个参数true代表该次使用道具是被按键触发的，使用过程不计入录像
-		}
+		core.setFlag('battleSpeed', 0);
 		break;
 	case 50: // 快捷键2: 炸
-		if (core.hasItem('bomb')) {
-			core.status.route.push("key:50"); // 将按键记在录像中
-			core.useItem('bomb', true); // 第二个参数true代表该次使用道具是被按键触发的，使用过程不计入录像
-		}
+		core.setFlag('battleSpeed', 1);
 		break;
 	case 51: // 快捷键3: 飞
-		if (core.hasItem('centerFly')) {
-			core.ui._drawCenterFly();
-		}
+		core.setFlag('battleSpeed', 2);
 		break;
 	case 52: // 快捷键4：破冰/冰冻/地震/上下楼器/... 其他道具依次判断
 	{
