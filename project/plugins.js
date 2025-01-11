@@ -1,7 +1,7 @@
 /// <reference path = "../runtime.d.ts" />
-var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 = 
+var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 {
-    "init": function () {
+	"init": function () {
 
 		console.log("插件编写测试");
 
@@ -1282,7 +1282,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "shop": function () {
+	"shop": function () {
 		// 【全局商店】相关的功能
 		// 
 		// 打开一个全局商店
@@ -1467,7 +1467,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}, 60);
 	},
-    "removeMap": function () {
+	"removeMap": function () {
 		// 高层塔砍层插件，删除后不会存入存档，不可浏览地图也不可飞到。
 		// 推荐用法：
 		// 对于超高层或分区域塔，当在1区时将2区以后的地图删除；1区结束时恢复2区，进二区时删除1区地图，以此类推
@@ -1554,7 +1554,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			});
 		}
 	},
-    "fiveLayers": function () {
+	"fiveLayers": function () {
 		// 是否启用五图层（增加背景2层和前景2层） 将__enable置为true即会启用；启用后请保存后刷新编辑器
 		// 背景层2将会覆盖背景层 被事件层覆盖 前景层2将会覆盖前景层
 		// 另外 请注意加入两个新图层 会让大地图的性能降低一些
@@ -1709,7 +1709,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			};
 		}
 	},
-    "itemShop": function () {
+	"itemShop": function () {
 		// 道具商店相关的插件
 		// 可在全塔属性-全局商店中使用「道具商店」事件块进行编辑（如果找不到可以在入口方块中找）
 
@@ -2015,7 +2015,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "heroFourFrames": function () {
+	"heroFourFrames": function () {
 		// 样板的勇士/跟随者移动时只使用2、4两帧，观感较差。本插件可以将四帧全用上。
 
 		// 是否启用本插件
@@ -2070,7 +2070,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return false;
 		}
 	},
-    "startCanvas": function () {
+	"startCanvas": function () {
 		// 使用本插件可以将自绘的标题界面居中。仅在【标题开启事件化】后才有效。
 		// 由于一些技术性的原因，标题界面事件化无法应用到覆盖状态栏的整个界面。
 		// 这是一个较为妥协的插件，会在自绘标题界面时隐藏状态栏、工具栏和边框，并将画布进行居中。
@@ -2156,7 +2156,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			_loadData.call(core.control, data, callback);
 		}
 	},
-    "自动拾取": function () {
+	"自动拾取": function () {
 		// 自動拾取
 		var enable = true;
 		if (!enable) return;
@@ -2289,7 +2289,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			if (!core.isReplaying()) animateHwnd.start();
 		}
 	},
-    "高级动画": function () {
+	"高级动画": function () {
 		// -------------------- 插件说明 -------------------- //
 
 		// github仓库：https://github.com/unanmed/animate
@@ -3058,7 +3058,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 
 	},
-    "新版道具栏": function () {
+	"新版道具栏": function () {
 		// 在此增加新插件
 		// 注：///// *** 裹起来的区域： 该区域内参数可以随意更改调整ui绘制 不会影响总体布局
 		// 请尽量修改该区域而不是其他区域 修改的时候最好可以对照现有ui修改
@@ -4048,7 +4048,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		core.registerReplayAction("equip", core.control._replayAction_equip);
 		core.registerReplayAction("unEquip", core.control._replayAction_unEquip);
 	},
-    "血瓶宝石显示数据": function () {
+	"血瓶宝石显示数据": function () {
 		// 在此增加新插件
 		/* 宝石血瓶左下角显示数值
 		 * 需要将 变量：itemDetail改为true才可正常运行
@@ -4215,7 +4215,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "切装事件": function () {
+	"切装事件": function () {
 		////// 换上 //////
 		items.prototype.loadEquip = function (equipId, callback) {
 			if (!this.canEquip(equipId, true)) {
@@ -4282,7 +4282,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		items.prototype.quickSaveEquip = items.prototype.quickLoadEquip;
 	},
-    "工具": function () {
+	"工具": function () {
 		// 工具函数和类
 		/**
 		 * @type {ButtonBase}
@@ -4503,7 +4503,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			this._checkBlock_repulse(core.status.checkBlock.repulse[loc]);
 		}
 	},
-    "自定义设置": function () {
+	"自定义设置": function () {
 
 		const Button = this.Button;
 
@@ -4805,7 +4805,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		});
 
 	},
-    "预设技能": function () {
+	"预设技能": function () {
 		/**
 		 * 变量解释： recordAction 下场战斗是否录制信息
 		 * presetSkill 当前保存的预设方案信息。每次战斗后 若recordAction为真，将会写入presetSkill
@@ -5123,7 +5123,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			return presetMenu;
 		}
 	},
-    "成就": function () {
+	"成就": function () {
 
 		let /** 画面长度 
 			 * @type {number}
@@ -5359,7 +5359,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			else achievementList.push(index);
 		};
 	},
-    "引导界面": function () {
+	"引导界面": function () {
 		let /** 画面长度 
 		* @type {number}
 		*/
@@ -5546,7 +5546,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			core.setFlag('noOpenMenu', false);
 		}
 	},
-    "动态火焰": function () {
+	"动态火焰": function () {
 
 		/** 绘制火焰需要控制canvas的width */
 		function createCanvasWithWidth(name, x, y, width, height, z) {
@@ -5707,136 +5707,136 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			drawFire(ctx, frame, posList[8], posList[9], fireCount >= 5);
 		}
 	},
-    "跳字插件": function () {
+	"跳字插件": function () {
 
-	const { Animation, power, linear, sleep } = core.plugin.animate;
-	const ctx = 'scrollingText';
+		const { Animation, power, linear, sleep } = core.plugin.animate;
+		const ctx = 'scrollingText';
 
-	if (!main.replayChecking)
-		new Animation().ticker.add(() => {
-			core.createCanvas(ctx, 0, 0, 416, 416, 200); //每帧重绘该画布
-		});
+		if (!main.replayChecking)
+			new Animation().ticker.add(() => {
+				core.createCanvas(ctx, 0, 0, 416, 416, 200); //每帧重绘该画布
+			});
 
-	/**
-	 * 绘制弹幕 
-	 * @example  
-	 * core.plugin.drawCommentStr('OK', 450, 200, 0.1);
-	 * @param {string} content 弹幕的内容
-	 * @param {number} x 弹幕的初始x坐标
-	 * @param {number} y 弹幕的初始y坐标
-	 * @param {number} vx 弹幕的横向滚动速度
-	 */
-	this.drawCommentStr = function (content, x, y, vx) {
-		if (core.isReplaying()) return;
-		const ani = new Animation();
-		ani.ticker.add(() => {
-			core.fillText(ctx, content, x + ani.x, y, 'white', '16px Verdana');
-		})
-		ani.mode(linear())
-			.time(600 / vx)
-			.absolute()
-			.move(-600, 0)
-		ani.all().then(() => { ani.ticker.destroy(); });
-	}
+		/**
+		 * 绘制弹幕 
+		 * @example  
+		 * core.plugin.drawCommentStr('OK', 450, 200, 0.1);
+		 * @param {string} content 弹幕的内容
+		 * @param {number} x 弹幕的初始x坐标
+		 * @param {number} y 弹幕的初始y坐标
+		 * @param {number} vx 弹幕的横向滚动速度
+		 */
+		this.drawCommentStr = function (content, x, y, vx) {
+			if (core.isReplaying()) return;
+			const ani = new Animation();
+			ani.ticker.add(() => {
+				core.fillText(ctx, content, x + ani.x, y, 'white', '16px Verdana');
+			})
+			ani.mode(linear())
+				.time(600 / vx)
+				.absolute()
+				.move(-600, 0)
+			ani.all().then(() => { ani.ticker.destroy(); });
+		}
 
-	/**
-	 * 绘制单个字符
-	 * @param {string} char 要绘制的字符
-	 * @param {number} delayTime 该字符动画的持续时间
-	 * @param {number} destoryTime 该字符的存在时间，到时间后摧毁
-	 * @param {number} x x坐标
-	 * @param {number} y y坐标
-	 * @param {string} color 字体颜色
-	 */
-	function showSingleCharacter(char, delayTime, destoryTime, x, y, color = 'Red') {
-		if (delayTime <= 0 || destoryTime <= 0) return;
-		const ani = new Animation();
-		ani.register('alpha', 0.3);
-		ani.register('fontSize', 10);
-		ani.register('t', 0);
-		ani.ticker.add(() => {
-			core.setAlpha(ctx, ani.value.alpha);
-			core.fillText(ctx, char, ani.x + x, ani.y + y, color, 'Bold ' + ani.value.fontSize + 'px Verdana');
-			core.setAlpha(ctx, 1);
-			if (ani.value.t >= 10000) {
-				ani.ticker.destroy();
+		/**
+		 * 绘制单个字符
+		 * @param {string} char 要绘制的字符
+		 * @param {number} delayTime 该字符动画的持续时间
+		 * @param {number} destoryTime 该字符的存在时间，到时间后摧毁
+		 * @param {number} x x坐标
+		 * @param {number} y y坐标
+		 * @param {string} color 字体颜色
+		 */
+		function showSingleCharacter(char, delayTime, destoryTime, x, y, color = 'Red') {
+			if (delayTime <= 0 || destoryTime <= 0) return;
+			const ani = new Animation();
+			ani.register('alpha', 0.3);
+			ani.register('fontSize', 10);
+			ani.register('t', 0);
+			ani.ticker.add(() => {
+				core.setAlpha(ctx, ani.value.alpha);
+				core.fillText(ctx, char, ani.x + x, ani.y + y, color, 'Bold ' + ani.value.fontSize + 'px Verdana');
+				core.setAlpha(ctx, 1);
+				if (ani.value.t >= 10000) {
+					ani.ticker.destroy();
+				}
+			})
+			ani.mode(power(2, 'center'))
+				.time(delayTime)
+				.relative()
+				.move(10, 10)
+				.mode(power(2, 'center'))
+				.time(delayTime)
+				.absolute()
+				.apply('alpha', 1)
+				.mode(power(2, 'center'))
+				.time(delayTime)
+				.absolute()
+				.apply('fontSize', 16)
+				.mode(linear())
+				.time(destoryTime)
+				.relative()
+				.apply('t', 10000);
+		}
+
+		/**
+		 * 绘制伤害字符串
+		 * @param {string|number} damage 伤害
+		 * @param {number} x
+		 * @param {number} y
+		 * @param {string} color 颜色
+		 */
+		this.drawDamageStr = async function (damage, x, y, color) {
+			if (core.isReplaying()) return;
+			const damageStrArray = damage.toString().split('');
+			let destoryTime = 500,
+				showInterval = 50,
+				lengthIntertval = 10;
+			for (let i = 0, l = damageStrArray.length; i < l; i++) {
+				showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
+				x += lengthIntertval;
+				destoryTime -= showInterval;
+				await new Promise((res) => setTimeout(res, showInterval));
 			}
-		})
-		ani.mode(power(2, 'center'))
-			.time(delayTime)
-			.relative()
-			.move(10, 10)
-			.mode(power(2, 'center'))
-			.time(delayTime)
-			.absolute()
-			.apply('alpha', 1)
-			.mode(power(2, 'center'))
-			.time(delayTime)
-			.absolute()
-			.apply('fontSize', 16)
-			.mode(linear())
-			.time(destoryTime)
-			.relative()
-			.apply('t', 10000);
-	}
-
-	/**
-	 * 绘制伤害字符串
-	 * @param {string|number} damage 伤害
-	 * @param {number} x
-	 * @param {number} y
-	 * @param {string} color 颜色
-	 */
-	this.drawDamageStr = async function (damage, x, y, color) {
-		if (core.isReplaying()) return;
-		const damageStrArray = damage.toString().split('');
-		let destoryTime = 500,
-			showInterval = 50,
-			lengthIntertval = 10;
-		for (let i = 0, l = damageStrArray.length; i < l; i++) {
-			showSingleCharacter(damageStrArray[i], 100, destoryTime, x, y, color);
-			x += lengthIntertval;
-			destoryTime -= showInterval;
-			await new Promise((res) => setTimeout(res, showInterval));
 		}
-	}
 
-	this.failAnimation;
-	this.drawFailStr = async function (callback) {
-		const ctx = 'fail';
-		await new Promise((res) => {
-			core.setCurtain([50, 50, 50, 0.8], 100, null, res());
-		});
-		core.plugin.failAnimation = new Animation();
-		const ani = core.plugin.failAnimation;
-		ani.ticker.add(() => {
-			core.createCanvas(ctx, 0, 0, 416, 416, 200);
-			core.setTextAlign(ctx, 'center')
-			core.setOpacity(ctx, 0.3 + ani.x);
-			core.fillText(ctx, 'Game Over', 200, 300 + ani.y, 'red', 'Bold 40px Verdana');
-		})
-		ani.mode(linear())
-			.time(800)
-			.relative()
-			.move(0.7, -100)
-		await ani.all();
-		await sleep(1000);
-		ani.mode(linear())
-			.time(800)
-			.relative()
-			.move(-0.5, -100)
-		await ani.all();
-		callback();
-	}
-
-	this.clearFailAnimation = function () {
-		if (core.plugin.failAnimation instanceof Animation) {
-			core.plugin.failAnimation.ticker.destroy();
+		this.failAnimation;
+		this.drawFailStr = async function (callback) {
+			const ctx = 'fail';
+			await new Promise((res) => {
+				core.setCurtain([50, 50, 50, 0.8], 100, null, res());
+			});
+			core.plugin.failAnimation = new Animation();
+			const ani = core.plugin.failAnimation;
+			ani.ticker.add(() => {
+				core.createCanvas(ctx, 0, 0, 416, 416, 200);
+				core.setTextAlign(ctx, 'center')
+				core.setOpacity(ctx, 0.3 + ani.x);
+				core.fillText(ctx, 'Game Over', 200, 300 + ani.y, 'red', 'Bold 40px Verdana');
+			})
+			ani.mode(linear())
+				.time(800)
+				.relative()
+				.move(0.7, -100)
+			await ani.all();
+			await sleep(1000);
+			ani.mode(linear())
+				.time(800)
+				.relative()
+				.move(-0.5, -100)
+			await ani.all();
+			callback();
 		}
-	}
 
-},
-    "回合制战斗": function () {
+		this.clearFailAnimation = function () {
+			if (core.plugin.failAnimation instanceof Animation) {
+				core.plugin.failAnimation.ticker.destroy();
+			}
+		}
+
+	},
+	"回合制战斗": function () {
 
 		// #region 回合制战斗的具体过程 **************************************************
 		const abbreviateList = {
@@ -5907,8 +5907,9 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			/**
 			 * 执行debuff效果
 			 * @param {string} action
+			 * @param {number} weakPoint 衰弱点数
 			 */
-			execDebuff(action) {
+			execDebuff(action, weakPoint) {
 				switch (action) {
 					case 'destroyArmor': //81-破甲刃
 						this.def -= 12;
@@ -5921,7 +5922,10 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						if (this.status !== 'weak') this.status = 'poison';
 						break;
 					case 'weak':
-						if (this.status !== 'poison') this.status = 'weak';
+						if (this.status !== 'poison') {
+							this.weakPoint += weakPoint;
+							this.status = 'weak';
+						}
 						break;
 				}
 			}
@@ -6519,13 +6523,12 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 						super.execDebuff(action);
 					} else {
 						if (action === 'weak') {
-							hero.weakPoint += this.weakPoint;
 							this.atkStatus.debuff = 'weak';
 						}
 						else if (action === 'poison') {
 							this.atkStatus.debuff = 'poison';
 						}
-						hero.execDebuff(action);
+						hero.execDebuff(action, this.weakPoint);
 					}
 				}
 			}
@@ -7959,7 +7962,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		}
 		// #endregion
 	},
-    "弹幕插件": function () {
+	"弹幕插件": function () {
 
 		/** 塔的英文名 */
 		const towerName = "xinxin2";
@@ -8172,7 +8175,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 	},
-    "楼传判定": function () {
+	"楼传判定": function () {
 
 		function canMove(sx, sy, destX, destY) {
 			let ans = -1;
