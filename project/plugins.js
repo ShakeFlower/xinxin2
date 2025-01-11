@@ -7492,6 +7492,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 
 		/** 在勇士图标上播放的动画的偏移量 */
 		const heroOffsetList = {
+			'vampire': { 'y': -20 },
 			'brownWizard': { 'y': -20 },
 			'grayPriest': { 'y': -20 },
 			'redPriest': { 'y': -20 },
