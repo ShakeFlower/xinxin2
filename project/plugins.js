@@ -7492,28 +7492,53 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
+		this.t = function () {
+			const battle = new Battle('swordEmperor', 7, 3);
+			drawBattleUI(battle);
+			drawBattleIcon(battle, 1);
+		}
+
 		/** 在勇士图标上播放的动画的偏移量 */
 		const heroOffsetList = {
-			'vampire': { 'y': -20 },
-			'brownWizard': { 'y': -20 },
-			'grayPriest': { 'y': -20 },
-			'redPriest': { 'y': -20 },
-			'greenKing': { 'y': -10 },
-			'yellowKing': { 'y': -100 },
-			'redKing': { 'y': -50 },
-			'E380': { 'x': -20 },
-			'goldSlime': { 'x': -80, 'y': -10 },
-			'skeletonPriest': { 'x': 10 },
-			'E436': { 'x': -40 },
-			'E447': { 'x': -50, 'y': -50 },
+			'g1': { 'y': 10 },
+			'g4': { 'y': -10 },
+			'g5': { 'y': 5 },
+			'g7': { 'y': -20 },
+			'g7-cri': { 'y': -35 },
+			'g10-cri': { 'x': -10, 'y': -20 },
+			'g12': { 'x': -4 },
+			'g12-cri': { 'x': -4 },
+			'g13': { 'y': -20 },
+			'g13-cri': { 'y': -20 },
+			'g19': { 'x': 35, 'y': -10 },
+			'g20': { 'x': -10 },
+			'g20-cri': { 'x': -10 },
+			'g22': { 'y': -20 },
+			'g23': { 'y': -10 },
+			'g23-cri': { 'y': -10 },
+			'g26-cri': { 'x': -10 },
+			'g28': { 'x': 20, 'y': -5 },
+			'g30': { 'y': -100 },
+			'g30-cri': { 'x': -10, 'y': -115 },
+			'g31': { 'y': -50 },
+			'g31-cri': { 'y': -50 },
+			'g35': { 'x': -80, 'y': -10 },
+			'g35-cri': { 'x': -80, 'y': -20 },
+			'g36': { 'x': -40 },
+			'g36-cri': { 'x': 20 },
+			'g43': { 'x': -50 },
+			'g43-cri': { 'x': -50 },
+			'g48': { 'x': -50, 'y': -50 },
+			'g48-cri': { 'x': -50, 'y': -50 },
 			'gsh1': { 'x': -2, 'y': -30 },
 			'gsh3': { 'x': -30 },
 		},
 			/** 在公主图标上播放的动画的偏移量 */
 			princessOffsetList = {
-				'E377': { 'x': -60, 'y': 15 },
-				'E378': { 'x': -60, 'y': 15 },
-				'redKing': { 'y': -20 },
+				'g14': { 'x': -60, 'y': 15 },
+				'g14-cri': { 'x': -60, 'y': 15 },
+				'g22': { 'y': -10 },
+				'g31': { 'x': -10, 'y': -30 },
 			},
 			/** 在敌人图标上播放的动画的偏移量 */
 			enemyOffsetList = {
@@ -7542,7 +7567,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					if (atkStatusH.enemyShieldAnimate) {
 						core.plugin.drawAnimateByPixel(atkStatusH.enemyShieldAnimate, ex, ey); // 这里播放盾大师盾反的动画
 					}
-					let [oex, oey] = [0, 0, 0];
+					let [oex, oey] = [0, 0];
 					const hAnimate = atkStatusH.animate;
 					if (enemyOffsetList.hasOwnProperty(hAnimate)) {
 						currOffset = enemyOffsetList[hAnimate];
@@ -7557,19 +7582,17 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 					break;
 				case 'enemy':
 					if (atkStatusE.frozen) break;
-					const eid = battle.enemy.id,
-						sid = atkStatusE.heroAnimate || '';
 					let [ohx, ohy, opx, opy, osx, osy] = [0, 0, 0, 0, 0, 0];
-					if (heroOffsetList.hasOwnProperty(eid)) {
-						currOffset = heroOffsetList[eid];
+					if (heroOffsetList.hasOwnProperty(atkStatusE.animate)) {
+						currOffset = heroOffsetList[atkStatusE.animate];
 						[ohx, ohy] = [currOffset.x || 0, currOffset.y || 0];
 					}
-					if (princessOffsetList.hasOwnProperty(eid)) {
-						currOffset = princessOffsetList[eid];
+					if (princessOffsetList.hasOwnProperty(atkStatusE.animate)) {
+						currOffset = princessOffsetList[atkStatusE.animate];
 						[opx, opy] = [currOffset.x || 0, currOffset.y || 0];
 					}
-					if (heroOffsetList.hasOwnProperty(sid)) {
-						currOffset = heroOffsetList[sid];
+					if (heroOffsetList.hasOwnProperty(atkStatusE.heroAnimate)) {
+						currOffset = heroOffsetList[atkStatusE.heroAnimate];
 						[osx, osy] = [currOffset.x || 0, currOffset.y || 0];
 					}
 					if (atkStatusE.miss) {  // 这里播放miss的动画
