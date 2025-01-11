@@ -6631,7 +6631,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 				const isEnemyCombo = this.actIndex > 0 && this.actIndex < this.order.length - 1;
 				switch (this.speed) {
 					case 'quick':
-						this.waitTime = isEnemyCombo ? 5 : 50;
+						this.waitTime = isEnemyCombo ? 10 : 20;
 						break;
 					case 'normal':
 						this.waitTime = isEnemyCombo ? 200 : 400;
@@ -7391,6 +7391,7 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 		 * @returns {SkillMenu}
 		 */
 		function generateSkillMenu(battle) {
+			if (core.isReplaying()) return {};
 			const skillMenu = new SkillMenu('skillButton');
 			const btn1 = new StatusButton('btn1', 52, 352, 32, 32);
 			const btn2 = new StatusButton('btn2', 92, 352, 32, 32);
