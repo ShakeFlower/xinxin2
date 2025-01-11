@@ -7492,12 +7492,6 @@ var plugins_bb40132b_638b_4a9f_b028_d3fe47acc8d1 =
 			}
 		}
 
-		this.t = function () {
-			const battle = new Battle('swordEmperor', 7, 3);
-			drawBattleUI(battle);
-			drawBattleIcon(battle, 1);
-		}
-
 		/** 在勇士图标上播放的动画的偏移量 */
 		const heroOffsetList = {
 			'g1': { 'y': 10 },
